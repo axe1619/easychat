@@ -3,8 +3,7 @@ import Spinner from 'shared/components/Spinner.vue';
 import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import { useVuelidate } from '@vuelidate/core';
-import { required, minLength } from '@vuelidate/validators';
-
+import { required } from '@vuelidate/validators';
 import WootSubmitButton from '../../../../../components/buttons/FormSubmitButton.vue';
 import Modal from '../../../../../components/Modal.vue';
 
@@ -57,9 +56,9 @@ export default {
     isUpdating() {
       return this.uiFlags.isUpdating;
     },
-    isRegexEnabled() {
-      return this.regexEnabled;
-    },
+    // isRegexEnabled() {
+    //   return this.regexEnabled;
+    // },
   },
   setup() {
     return { v$: useVuelidate() };
@@ -81,7 +80,7 @@ export default {
       required
     },
     agentDescription: {
-      required
+      default:''
     },
     agentPrompt: {
       required
@@ -169,15 +168,12 @@ export default {
         </div>
 
         <div class="flex flex-row justify-end items-center w-full gap-2 px-0 py-2">
-          <Spinner v-if="isUpdating" />
-          <woot-submit-button :disabled="isButtonDisabled || isUpdating"
-            :button-text="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.SUBMIT')" />
+          <WootSubmitButton :disabled="isButtonDisabled || isUpdating"
+            :button-text="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.SUBMIT')" :loading="isUpdating" />
           <button class="button clear" @click.prevent="onClose">
             {{ $t('AGENTS_AI.CARDS.CONFIGURATION.FORM.CANCEL') }}
           </button>
         </div>
-
-
       </form>
     </div>
   </Modal>

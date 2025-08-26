@@ -1,37 +1,44 @@
 {
     "AGENTS_AI": {
-        "HEADER_INDEX":{
-            "TITLE":"Agents AI",
-            "DESCRIPTION":"Select one of your AI agents to modify its properties or capabilities according to your business needs."
+        "HEADER_INDEX": {
+            "TITLE": "Agents AI",
+            "DESCRIPTION": "Select one of your AI agents to modify its properties or capabilities according to your business needs."
         },
-        "HEADER_CAPABILITIES":{
-            "TITLE":"Capabilities",
-            "DESCRIPTION_A":"In this section, you can configure how you want your AI agent to help you respond to messages, provide information, or perform tasks automatically.",
-            "DESCRIPTION_B":"Customize its behavior, response tone, and the features you want to enable. No technical knowledge is needed—just choose what works best for your business and let the agent do the rest."
+        "HEADER_CAPABILITIES": {
+            "TITLE": "Capabilities",
+            "DESCRIPTION_A": "In this section, you can configure how you want your AI agent to help you respond to messages, provide information, or perform tasks automatically.",
+            "DESCRIPTION_B": "Customize its behavior, response tone, and the features you want to enable. No technical knowledge is needed—just choose what works best for your business and let the agent do the rest."
         },
-        "CARDS":{
-            "IN_DEPLOY":"In development",
-            "RAG":{
-                "NAME":"Source of knowledge",
-                "DESCRIPTION":"Add PDF files with information about your business. These documents will help train the agent so its responses are better focused on the topics you provide.",
-                "FORM":{
-                    "LABEL_COLLECTION":"Document title.",
-                    "PLACEHOLDER_COLLECTION":"Enter the title to identify the document.",
-                    "LABEL_FILE":"Select a document.",
-                    "SUBMIT":"Add"
+        "CARDS": {
+            "IN_DEPLOY": "In development",
+            "RAG": {
+                "NAME": "Source of knowledge",
+                "DESCRIPTION": "Add, view, edit, or delete additional information about your business that the AI agent will use in its responses.",
+                "ADD": "Add new information...",
+                "FORM": {
+                    "NAME": "Add information to the AI agent",
+                    "DESCRIPTION": "Add PDF files with information about your business. These documents will help train the agent so its responses are better focused on the topics you provide.",
+                    "LABEL_ID": "Information identifier",
+                    "PLACEHOLDER_ID": "Enter a unique name as an identifier",
+                    "ERROR_ID": "The identifier is required",
+                    "LABEL_DESCRIPTION": "Information description",
+                    "PLACEHOLDER_DESCRIPTION": "Enter a brief description of the information",
+                    "LABEL_FILE": "Select a document",
+                    "SUBMIT": "Add",
+                    "CANCEL": "Cancel"
                 }
             },
-            "CALENDAR":{
-                "NAME":"Manage your calendar",
-                "DESCRIPTION":"Click the button to authorize access to your calendar. This will allow the agent to view, edit, and add events on your behalf."
+            "CALENDAR": {
+                "NAME": "Manage your calendar",
+                "DESCRIPTION": "Click the button to authorize access to your calendar. This will allow the agent to view, edit, and add events on your behalf."
             },
-            "CATALOG":{
-                "NAME":"Product catalog",
-                "DESCRIPTION":"In this section, you can add products from the company's catalog, providing the artificial intelligence agent with the necessary information about each item. This way, the agent can understand the product's features, prices, and availability, and use them effectively during the sales process."
+            "CATALOG": {
+                "NAME": "Product catalog",
+                "DESCRIPTION": "In this section, you can add products from the company's catalog, providing the artificial intelligence agent with the necessary information about each item. This way, the agent can understand the product's features, prices, and availability, and use them effectively during the sales process."
             },
-            "CONFIGURATION":{
-                "NAME":"Agent configuration",
-                "DESCRIPTION":"This section allows you to configure the main information for an AI agent, including its name, description, and other relevant parameters. Here you can define the information that will identify the agent and customize its behavior according to the system's needs.",
+            "CONFIGURATION": {
+                "NAME": "Agent configuration",
+                "DESCRIPTION": "This section allows you to configure the main information for an AI agent, including its name, description, and other relevant parameters. Here you can define the information that will identify the agent and customize its behavior according to the system's needs.",
                 "FORM": {
                     "NAME": {
                         "LABEL": "Agent's Name",
@@ -48,20 +55,43 @@
                         "PLACEHOLDER": "Enter your agent's initial prompt",
                         "ERROR": "The prompt is required"
                     },
-                    "SCHEDULE":{
-                        "LABEL":"Enable AI Agent Wake-Up Schedule",
-                        "INIT":"Start",
-                        "FINISH":"Finish"
+                    "SCHEDULE": {
+                        "LABEL": "Enable AI Agent Wake-Up Schedule",
+                        "INIT": "Start",
+                        "FINISH": "Finish"
                     },
                     "SUBMIT": "Update",
                     "CANCEL": "Cancel"
                 }
             }
         },
-        "MODALS":{
-            "RAG":{},
-            "CALENDAR":{
-                "ADD_GOOGLE_ACOUNT":"Add your Google account"
+        "ALERT": {
+            "AGENT_BOT": {
+                "UPDATE": {
+                    "SUCCESS": "Agent data updated successfully",
+                    "ERROR": "Error updating agent data"
+                }
+            },
+            "RAG": {
+                "CREATE": {
+                    "SUCCESS": "File uploaded successfully",
+                    "UNIQUE_ERROR": "A file with the same identifier already exists",
+                    "ERROR": "There was an error uploading the files"
+                },
+                "UPDATE": {
+                    "SUCCESS": "Successfully modified description",
+                    "ERROR": "There was an error modifying the description"
+                },
+                "DELETE": {
+                    "SUCCESS": "File removed from knowledge source",
+                    "ERROR": "There was an error deleting the file from the knowledge source"
+                }
+            }
+        },
+        "MODALS": {
+            "RAG": {},
+            "CALENDAR": {
+                "ADD_GOOGLE_ACOUNT": "Add your Google account"
             }
         }
     }
