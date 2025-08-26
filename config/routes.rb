@@ -174,7 +174,14 @@ Rails.application.routes.draw do
           end
           resources :labels, only: [:index, :show, :create, :update, :destroy]
           resources :conversation_states, only: [:index, :show, :create, :update, :destroy]
-          resources :rags #! probar de quitar desde only si es q hay problemas
+          resources :rags
+          resources :whatsapp_instances, only: [:create], param: :instance_name do
+            member do
+              post :connect
+              get  :state
+              post :set_webhook
+            end
+          end
           resources :kanban_states, only: [:index, :create, :update, :destroy] do
             collection do
               put :update_order_batch

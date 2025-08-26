@@ -142,10 +142,11 @@ export const actions = {
       // Ignore error
     }
   },
-  get: async ({ commit }) => {
+  get: async ({ commit }, payload = {}) => {
+    const { cache = true } = payload
     commit(types.default.SET_INBOXES_UI_FLAG, { isFetching: true });
     try {
-      const response = await InboxesAPI.get(true);
+      const response = await InboxesAPI.get(cache);
       commit(types.default.SET_INBOXES_UI_FLAG, { isFetching: false });
       commit(types.default.SET_INBOXES, response.data.payload);
     } catch (error) {

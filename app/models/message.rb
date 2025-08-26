@@ -8,6 +8,7 @@
 #  content_attributes        :json
 #  content_type              :integer          default("text"), not null
 #  external_source_ids       :jsonb
+#  message_sub_type          :integer          default("none"), not null
 #  message_type              :integer          not null
 #  private                   :boolean          default(FALSE), not null
 #  processed_message_content :text
@@ -80,6 +81,7 @@ class Message < ApplicationRecord
   attr_accessor :echo_id
 
   enum message_type: { incoming: 0, outgoing: 1, activity: 2, template: 3 }
+  enum message_sub_type: { none: 0, remarketing: 1 }, _prefix: :subtype
   enum content_type: {
     text: 0,
     input_text: 1,

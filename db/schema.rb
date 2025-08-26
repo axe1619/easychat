@@ -502,6 +502,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_205707) do
     t.bigint "conversation_sentiment_id"
     t.datetime "last_sentiment_analysis"
     t.boolean "active_agent_bot", default: true, null: false
+    t.boolean "enabled_remarketing", default: false, null: false
     t.index ["account_id", "display_id"], name: "index_conversations_on_account_id_and_display_id", unique: true
     t.index ["account_id", "id"], name: "index_conversations_on_id_and_account_id"
     t.index ["account_id", "inbox_id", "status", "assignee_id"], name: "conv_acid_inbid_stat_asgnid_idx"
@@ -639,6 +640,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_205707) do
     t.bigint "portal_id"
     t.integer "sender_name_type", default: 0, null: false
     t.string "business_name"
+    t.boolean "enabled_remarketing", default: false
+    t.text "behavior_remarketing"
+    t.integer "cout_max_remarketing_message", default: 0
+    t.integer "time_wait_last_message", default: 0
+    t.integer "unit_time", default: 0
     t.index ["account_id"], name: "index_inboxes_on_account_id"
     t.index ["channel_id", "channel_type"], name: "index_inboxes_on_channel_id_and_channel_type"
     t.index ["portal_id"], name: "index_inboxes_on_portal_id"
@@ -733,6 +739,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_205707) do
     t.jsonb "additional_attributes", default: {}
     t.text "processed_message_content"
     t.jsonb "sentiment", default: {}
+    t.integer "message_sub_type", default: 0, null: false
     t.index "((additional_attributes -> 'campaign_id'::text))", name: "index_messages_on_additional_attributes_campaign_id", using: :gin
     t.index ["account_id", "created_at", "message_type"], name: "index_messages_on_account_created_type"
     t.index ["account_id", "inbox_id"], name: "index_messages_on_account_id_and_inbox_id"

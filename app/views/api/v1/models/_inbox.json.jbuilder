@@ -2,6 +2,11 @@ json.id resource.id
 json.avatar_url resource.try(:avatar_url)
 json.channel_id resource.channel_id
 json.name resource.name
+json.enabled_remarketing resource.enabled_remarketing 
+json.behavior_remarketing resource.behavior_remarketing 
+json.cout_max_remarketing_message resource.cout_max_remarketing_message 
+json.time_wait_last_message resource.time_wait_last_message 
+json.unit_time resource.unit_time 
 json.channel_type resource.channel_type
 json.greeting_enabled resource.greeting_enabled
 json.greeting_message resource.greeting_message

@@ -1,0 +1,13 @@
+json.id @whatsapp_instance.id
+json.instance_name @whatsapp_instance.instance_name
+json.chatwoot_account_id @whatsapp_instance.chatwoot_account_id
+json.chatwoot_url @whatsapp_instance.chatwoot_url
+json.chatwoot_sign_msg @whatsapp_instance.chatwoot_sign_msg
+json.chatwoot_reopen_conversation @whatsapp_instance.chatwoot_reopen_conversation
+json.chatwoot_conversation_pending @whatsapp_instance.chatwoot_conversation_pending
+json.sign_delimiter @whatsapp_instance.sign_delimiter
+json.import_contacts @whatsapp_instance.import_contacts
+json.import_messages @whatsapp_instance.import_messages
+json.days_limit_import_messages @whatsapp_instance.days_limit_import_messages
+json.auto_create @whatsapp_instance.auto_create
+json.webhook_url @whatsapp_instance.webhook_url

@@ -17,6 +17,7 @@ import WidgetBuilder from './WidgetBuilder.vue';
 import BotConfiguration from './components/BotConfiguration.vue';
 import { FEATURE_FLAGS } from '../../../../featureFlags';
 import SenderNameExamplePreview from './components/SenderNameExamplePreview.vue';
+import Remarketing from './components/Remarketing.vue';
 
 export default {
   components: {
@@ -32,6 +33,7 @@ export default {
     WidgetBuilder,
     SenderNameExamplePreview,
     MicrosoftReauthorize,
+    Remarketing
   },
   mixins: [inboxMixin],
   setup() {
@@ -98,6 +100,10 @@ export default {
           key: 'businesshours',
           name: this.$t('INBOX_MGMT.TABS.BUSINESS_HOURS'),
         },
+        {
+          key: 'remarketing',
+          name: this.$t('INBOX_MGMT.TABS.REMARKETING'),
+        }
       ];
 
       if (this.isAWebWidgetInbox) {
@@ -242,7 +248,7 @@ export default {
       this.$store.dispatch('agents/get');
       this.$store.dispatch('teams/get');
       this.$store.dispatch('labels/get');
-      this.$store.dispatch('inboxes/get').then(() => {
+      this.$store.dispatch('inboxes/revalidate', { newKey: null }).then(() => {
         this.avatarUrl = this.inbox.avatar_url;
         this.selectedInboxName = this.inbox.name;
         this.webhookUrl = this.inbox.webhook_url;
@@ -761,6 +767,9 @@ export default {
     </div>
     <div v-if="selectedTabKey === 'businesshours'">
       <WeeklyAvailability :inbox="inbox" />
+    </div>
+    <div v-if="selectedTabKey === 'remarketing'">
+      <Remarketing :inbox="inbox" />
     </div>
     <div v-if="selectedTabKey === 'widgetBuilder'">
       <WidgetBuilder :inbox="inbox" />

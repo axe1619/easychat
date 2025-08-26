@@ -7,19 +7,24 @@
 #  id                            :integer          not null, primary key
 #  allow_messages_after_resolved :boolean          default(TRUE)
 #  auto_assignment_config        :jsonb
+#  behavior_remarketing          :text
 #  business_name                 :string
 #  channel_type                  :string
+#  cout_max_remarketing_message  :integer          default(0)
 #  csat_survey_enabled           :boolean          default(FALSE)
 #  email_address                 :string
 #  enable_auto_assignment        :boolean          default(TRUE)
 #  enable_email_collect          :boolean          default(TRUE)
+#  enabled_remarketing           :boolean          default(FALSE)
 #  greeting_enabled              :boolean          default(FALSE)
 #  greeting_message              :string
 #  lock_to_single_conversation   :boolean          default(FALSE), not null
 #  name                          :string           not null
 #  out_of_office_message         :string
 #  sender_name_type              :integer          default("friendly"), not null
+#  time_wait_last_message        :integer          default(0)
 #  timezone                      :string           default("UTC")
+#  unit_time                     :integer          default(0)
 #  working_hours_enabled         :boolean          default(FALSE)
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null

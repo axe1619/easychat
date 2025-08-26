@@ -10,6 +10,7 @@
 #  cached_label_list         :text
 #  contact_last_seen_at      :datetime
 #  custom_attributes         :jsonb
+#  enabled_remarketing       :boolean          default(FALSE), not null
 #  first_reply_created_at    :datetime
 #  identifier                :string
 #  justification             :text
