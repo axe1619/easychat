@@ -10,15 +10,22 @@
             "DESCRIPTION_B": "Personaliza su comportamiento, el tono de sus respuestas y las funciones que deseas activar. No necesitas conocimientos técnicos: solo elige lo que mejor se adapte a tu negocio y deja que el agente trabaje por ti."
         },
         "CARDS": {
-            "IN_DEPLOY":"En desarrollo",
+            "IN_DEPLOY": "En desarrollo",
             "RAG": {
                 "NAME": "Fuente de conocimiento",
-                "DESCRIPTION": "Agrega archivos PDF con información sobre tu negocio. Estos documentos servirán para entrenar al agente y ayudarlo a responder de forma más precisa y enfocada según la información que tú le proporciones.",
+                "DESCRIPTION": "Agrega, consulta, edita o borra información adicional sobre tu negocio que el agente de IA usara en sus respuestas.",
+                "ADD": "Agregar nueva información...",
                 "FORM": {
-                    "LABEL_COLLECTION": "Título del documento.",
-                    "PLACEHOLDER_COLLECTION": "Ingresa el título para identificar el documento.",
-                    "LABEL_FILE": "Selecciona un documento.",
-                    "SUBMIT": "Agregar"
+                    "NAME": "Agrega información al agente de IA",
+                    "DESCRIPTION": "Agrega un documento PDF con información sobre tu negocio. Estos documentos servirán para entrenar al agente y ayudarlo a responder de forma más precisa y enfocada según la información que tú le proporciones.",
+                    "LABEL_ID": "Identificador de información",
+                    "PLACEHOLDER_ID": "Introduzca un nombre único como identificador",
+                    "ERROR_ID": "El identificador es requerido",
+                    "LABEL_DESCRIPTION": "Descripción de la información",
+                    "PLACEHOLDER_DESCRIPTION": "Ingrese una breve descripción de la información",
+                    "LABEL_FILE": "Selecciona un documento",
+                    "SUBMIT": "Agregar",
+                    "CANCEL": "Cancelar"
                 }
             },
             "CALENDAR": {
@@ -48,13 +55,36 @@
                         "PLACEHOLDER": "Ingresa el prompt inicial de tu agente",
                         "ERROR": "El prompt es requerido"
                     },
-                    "SCHEDULE":{
-                        "LABEL":"Habilitar horario de activación del agente de IA.",
-                        "INIT":"Iniciar",
-                        "FINISH":"Finalizar"
+                    "SCHEDULE": {
+                        "LABEL": "Habilitar horario de activación del agente de IA.",
+                        "INIT": "Iniciar",
+                        "FINISH": "Finalizar"
                     },
                     "SUBMIT": "Actualizar",
                     "CANCEL": "Cancelar"
+                }
+            }
+        },
+        "ALERT": {
+            "AGENT_BOT": {
+                "UPDATE": {
+                    "SUCCESS": "Datos de agente actualizados correctamente",
+                    "ERROR": "Error al actualizar los datos del agente"
+                }
+            },
+            "RAG": {
+                "CREATE": {
+                    "SUCCESS": "Archivo cargado correctamente",
+                    "UNIQUE_ERROR": "Ya existe un archivo con el mismo identificador",
+                    "ERROR": "Hubo un error al subir los archivos"
+                },
+                "UPDATE": {
+                    "SUCCESS": "Descripción modificada exitosamente",
+                    "ERROR": "Hubo un error al modificar la descripción"
+                },
+                "DELETE": {
+                    "SUCCESS": "Archivo eliminado de la fuente de conocimiento",
+                    "ERROR": "Hubo un error al eliminar el archivo de la fuente de conocimiento"
                 }
             }
         },

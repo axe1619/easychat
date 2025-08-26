@@ -1,6 +1,6 @@
 <script>
 import { mapGetters } from 'vuex';
-import ModalAgentRag from './components/ModalAgentRag.vue';
+import ModalAgentRag from './components/agentRag/ModalAgentRag.vue';
 import ModalAgentCalendar from './components/ModalAgentCalendar.vue';
 import ModalAgentConfigutarion from './components/ModalAgentConfiguration.vue';
 
@@ -28,10 +28,34 @@ export default {
     },
     cards() {
       return [
-        { id: 1, inDeploy: true, action: () => { this.showAgentRag = true }, name: this.$t('AGENTS_AI.CARDS.RAG.NAME'), image: '/assets/images/dashboard/agents-ai/rag.webp' },
-        { id: 2, inDeploy: true, action: () => { this.showAgentCalendar = true }, name: this.$t('AGENTS_AI.CARDS.CALENDAR.NAME'), image: '/assets/images/dashboard/agents-ai/calendar.png' },
-        { id: 3, inDeploy: true, action: () => { this.showAgentRag = true }, name: this.$t('AGENTS_AI.CARDS.CATALOG.NAME'), image: '/assets/images/dashboard/agents-ai/catalog.png' },
-        { id: 4, inDeploy: false, action: () => { this.showAgentConfiguration = true }, name: this.$t('AGENTS_AI.CARDS.CONFIGURATION.NAME'), image: '/assets/images/dashboard/agents-ai/agent-settings.png' },
+        { 
+          id: 1, 
+          inDeploy: false, 
+          action: () => { this.showAgentRag = true }, 
+          name: this.$t('AGENTS_AI.CARDS.RAG.NAME'), 
+          image: '/assets/images/dashboard/agents-ai/rag.webp' 
+        },
+        { 
+          id: 2, 
+          inDeploy: true, 
+          action: () => { this.showAgentCalendar = true }, 
+          name: this.$t('AGENTS_AI.CARDS.CALENDAR.NAME'), 
+          image: '/assets/images/dashboard/agents-ai/calendar.png' 
+        },
+        { 
+          id: 3, 
+          inDeploy: true, 
+          action: () => { this.showAgentRag = true }, 
+          name: this.$t('AGENTS_AI.CARDS.CATALOG.NAME'), 
+          image: '/assets/images/dashboard/agents-ai/catalog.png' 
+        },
+        { 
+          id: 4, 
+          inDeploy: false, 
+          action: () => { this.showAgentConfiguration = true }, 
+          name: this.$t('AGENTS_AI.CARDS.CONFIGURATION.NAME'), 
+          image: '/assets/images/dashboard/agents-ai/agent-settings.png' 
+        },
       ];
     }
   },
@@ -54,7 +78,7 @@ export default {
 
     <!-- MODALS  -->
     <woot-modal :show.sync="this.showAgentRag" :on-close="hideAgentRag">
-      <ModalAgentRag :on-close="hideAgentRag" />
+      <ModalAgentRag :on-close="hideAgentRag" :botId="agentBot.id" :accountId="agentBot.account_id" />
     </woot-modal>
 
     <woot-modal :show.sync="this.showAgentCalendar" :on-close="hideAgentCalendar">
@@ -81,7 +105,7 @@ export default {
         $t('AGENTS_AI.HEADER_CAPABILITIES.DESCRIPTION_B') }}</p>
 
       <div class="grid max-w-3xl grid-cols-2 mx-0 mt-6 sm:grid-cols-3 lg:grid-cols-4">
-        <button v-for="card in this.cards" :key="card.id" @click="card.action" :disabled="card.inDeploy"
+        <button v-for="card in cards" :key="card.id" @click="card.action" :disabled="card.inDeploy"
           class="bg-white dark:bg-slate-900 cursor-pointer flex flex-col justify-end transition-all duration-200 ease-in py-4 px-2 items-center border border-solid border-slate-25 dark:border-slate-800 hover:border-woot-500 dark:hover:border-woot-500 hover:shadow-md">
           <div class="w-full h-32 p-2 flex justify-center items-center">
             <img :src="card.image" :alt="card.name" class="h-full object-cover" />
