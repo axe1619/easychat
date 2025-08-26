@@ -174,6 +174,7 @@ Rails.application.routes.draw do
           end
           resources :labels, only: [:index, :show, :create, :update, :destroy]
           resources :conversation_states, only: [:index, :show, :create, :update, :destroy]
+          resources :rags #! probar de quitar desde only si es q hay problemas
           resources :kanban_states, only: [:index, :create, :update, :destroy] do
             collection do
               put :update_order_batch

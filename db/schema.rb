@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_19_163544) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_25_205707) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -851,6 +851,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_19_163544) do
     t.index ["portal_id", "user_id"], name: "index_portals_members_on_portal_id_and_user_id", unique: true
     t.index ["portal_id"], name: "index_portals_members_on_portal_id"
     t.index ["user_id"], name: "index_portals_members_on_user_id"
+  end
+
+  create_table "rags", force: :cascade do |t|
+    t.integer "agent_bot_id"
+    t.string "date"
+    t.string "collection_name"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "account_id"
   end
 
   create_table "related_categories", force: :cascade do |t|
