@@ -4,6 +4,10 @@
       "AGENT_ACTIVE_BOT": {
         "SUCCESS":"Se actualizo el estado del agente ia",
         "FALIED":"No se pudo actualizar el estado del agente ia"
+      },
+      "STATE_REMARKETING": {
+        "SUCCESS":"Se actualizo el estado remarketing",
+        "FALIED":"No se pudo actualizar el estado remarketing"
       }
     },
     "SELECT_A_CONVERSATION": "Por favor, selecciona una conversación del panel izquierdo",
@@ -287,6 +291,7 @@
   },
   "CONVERSATION_SIDEBAR": {
     "ACTIVE_AGENT_IA": "Estado Agente IA",
+    "STATE_REMARKEING": "Estado Remarketing",
     "ASSIGNEE_LABEL": "Agente asignado",
     "SELF_ASSIGN": "Asignar a mi",
     "TEAM_LABEL": "Equipo asignado",

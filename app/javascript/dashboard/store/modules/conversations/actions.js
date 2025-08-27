@@ -390,6 +390,15 @@ const actions = {
     commit(getTypeList(types.ASSIGN_TEAM), { team, conversationId });
   },
 
+  assignStateRemarketing: async ({ dispatch }, { conversationId, state }) => {
+    const attributes = { enabled_remarketing: state }
+    await ConversationApi.update({ conversationId, attributes });
+  },
+
+  setCurrentChatStateRemarketing({ commit }, { state, conversationId }) {
+    commit(types.ASSIGN_STATE_REMARKETING, { state, conversationId });
+  },
+
   toggleStatus: async (
     { commit },
     { conversationId, status, snoozedUntil = null }
