@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_20_221512) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_25_200515) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -503,6 +503,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_20_221512) do
     t.datetime "last_sentiment_analysis"
     t.boolean "active_agent_bot", default: true, null: false
     t.boolean "enabled_remarketing", default: false, null: false
+    t.datetime "last_activity_outgoing_at"
+    t.datetime "last_activity_incoming_at"
     t.index ["account_id", "display_id"], name: "index_conversations_on_account_id_and_display_id", unique: true
     t.index ["account_id", "id"], name: "index_conversations_on_id_and_account_id"
     t.index ["account_id", "inbox_id", "status", "assignee_id"], name: "conv_acid_inbid_stat_asgnid_idx"
