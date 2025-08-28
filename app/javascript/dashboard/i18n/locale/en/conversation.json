@@ -1,5 +1,15 @@
 {
   "CONVERSATION": {
+    "UPDATE": {
+      "AGENT_ACTIVE_BOT": {
+        "SUCCESS": "The status of the ia agent is updated",
+        "FALIED": "The status of the ia agent could not be updated"
+      },
+      "STATE_REMARKETING": {
+        "SUCCESS": "Remarketing status updated",
+        "FALIED": "Remarketing status could not be updated"
+      }
+    },
     "SELECT_A_CONVERSATION": "Please select a conversation from left pane",
     "CSAT_REPLY_MESSAGE": "Please rate the conversation",
     "404": "Sorry, we cannot find the conversation. Please try again",
@@ -284,6 +294,8 @@
     }
   },
   "CONVERSATION_SIDEBAR": {
+    "ACTIVE_AGENT_IA": "AI Agent State",
+    "STATE_REMARKEING": "Remarketing State",
     "ASSIGNEE_LABEL": "Assigned Agent",
     "SELF_ASSIGN": "Assign to me",
     "TEAM_LABEL": "Assigned Team",

@@ -38,6 +38,7 @@ json.justification conversation.justification
 json.conversation_sentiment_id conversation.conversation_sentiment_id
 json.last_sentiment_analysis conversation.last_sentiment_analysis.to_i
 json.active_agent_bot conversation.active_agent_bot
+json.enabled_remarketing conversation.enabled_remarketing
 json.conversations_state_name conversation.conversation_state&.name
 json.conversations_state do 
   if conversation.conversations_state_id

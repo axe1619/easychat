@@ -15,6 +15,8 @@
 #  identifier                :string
 #  justification             :text
 #  last_activity_at          :datetime         not null
+#  last_activity_incoming_at :datetime
+#  last_activity_outgoing_at :datetime
 #  last_sentiment_analysis   :datetime
 #  priority                  :integer
 #  score                     :float
@@ -212,6 +214,11 @@ class Conversation < ApplicationRecord
 
   def dispatch_conversation_updated_event(previous_changes = nil)
     dispatcher_dispatch(CONVERSATION_UPDATED, previous_changes)
+  end
+  
+  def exceeded_remarketing_attempts(limit)
+    last_messages = messages.reorder(created_at: :desc).limit(limit).pluck(:message_sub_type)
+    last_messages.size == limit && last_messages.all?{ |s| s.to_sym == :remarketing }
   end
 
   private

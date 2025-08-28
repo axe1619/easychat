@@ -431,7 +431,10 @@ class Message < ApplicationRecord
 
   def set_conversation_activity
     # rubocop:disable Rails/SkipsModelValidations
-    conversation.update_columns(last_activity_at: created_at)
+    updates = { last_activity_at: created_at }
+    updates[:last_activity_outgoing_at] = created_at if outgoing?
+    updates[:last_activity_incoming_at] = created_at if incoming?
+    conversation.update_columns(updates)
     # rubocop:enable Rails/SkipsModelValidations
   end
 end
