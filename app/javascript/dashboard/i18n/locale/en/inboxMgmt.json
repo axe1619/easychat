@@ -269,7 +269,10 @@
           "PLACEHOLDER": "Please enter an inbox name",
           "ERROR": "This field is required"
         },
-        "GENERATE_QR_BUTTON": "Generate QR"
+        "GENERATE_QR_BUTTON": "Generate QR",
+        "API": {
+          "ERROR_MESSAGE": "We were not able to create a whatsapp web channel, please try again"
+        }
       },
       "API_CHANNEL": {
         "TITLE": "API Channel",

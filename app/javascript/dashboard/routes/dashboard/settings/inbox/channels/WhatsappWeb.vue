@@ -1,9 +1,9 @@
 <script>
 import PageHeader from '../../SettingsSubPageHeader.vue';
-import axios from 'axios';
 import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import router from '../../../../index';
+import WhatsappInstancesClient from '../../../../../../dashboard/api/channel/whatsappInstancesClient';
 
 export default {
   components: {
@@ -17,8 +17,7 @@ export default {
       connectionState: 'Desconectado',
       phoneNumber: '',
       inboxName: '',
-      sessionId: '',
-      userId: '',
+      instanceName: null,
       isLoading: false,
       qrGenerated: false,
       qrScanned: false,
@@ -53,130 +52,125 @@ export default {
       }
 
       try {
-        const payload = {
-          instanceName: this.inboxName,
-          integration: "WHATSAPP-BAILEYS",
-          qrcode: true,
-          chatwoot_account_id: this.accountId,
-          chatwoot_token: this.currentUser.access_token,
-          chatwoot_url: "https://easycontact.top",
-          chatwoot_sign_msg: false,
-          chatwoot_reopen_conversation: true,
-          chatwoot_conversation_pending: true
-        };
+        if (this.qrGenerated && !this.qrScanned && this.instanceName) {
+          const data = await WhatsappInstancesClient.connect(this.instanceName);
 
-        const response = await axios.post(
-          'http://34.41.191.74:3030/instance/create',
-          payload,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': '429683C4C977415CAAFCCE10F7D57E11'
-            }
-          });
-
-        if (response.data.qrcode) {
-          this.qrCode = response.data.qrcode.base64;
-          this.connectionState = 'QR generado';
-          this.qrGenerated = true;
-          this.startStatusPolling();
-        } else {
-          this.errorMessage = 'No se pudo obtener el código QR.';
-        }
-      } catch (error) {
-        console.error('Error al generar QR:', error);
-        useAlert(error.response?.data?.response?.message?.[0] || 'Error desconocido');
-        this.errorMessage = 'Error al cargar el QR. Inténtalo nuevamente.';
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    async generateQR() {
-      this.errorMessage = '';
-      this.qrCode = '';
-      this.qrImageLoaded = false;
-      this.isLoading = true;
-      this.qrScanned = false;
-
-      if (!this.inboxName) {
-        this.errorMessage = 'El nombre del inbox es requerido.';
-        this.isLoading = false;
-        return;
-      }
-
-      try {
-        if (this.qrGenerated && !this.qrScanned) {
-          const response = await axios.get(`http://34.41.191.74:3030/instance/connect/${this.inboxName}`, {
-            headers: {
-              'apikey': '429683C4C977415CAAFCCE10F7D57E11'
-            }
-          });
-
-          if (response.data?.status === 'CONNECTED') {
+          if (data?.status === 'CONNECTED') {
             this.connectionState = 'Conectado';
             this.qrScanned = true;
-            this.phoneNumber = response.data?.phone?.id || '';
-            return;
-          } else {
-            this.qrCode = response.data.base64
-            this.connectionState = 'Intentando reconectar...';
-            this.startStatusPolling();
+            this.phoneNumber = data?.phone?.id || '';
             return;
           }
-        }
 
+          this.qrCode = data?.qrcode?.base64 || data?.base64 || '';
+          this.connectionState = 'Intentando reconectar...';
+          this.startStatusPolling();
+          return;
+        }
         const payload = {
-          instanceName: this.inboxName,
-          integration: "WHATSAPP-BAILEYS",
-          qrcode: true,
-          chatwoot_account_id: this.accountId,
-          chatwoot_token: this.currentUser.access_token,
-          chatwoot_url: "https://easycontact.top",
-          chatwoot_sign_msg: false,
-          chatwoot_reopen_conversation: true,
-          chatwoot_conversation_pending: true
+          whatsapp_instance: {
+            instance_name: this.inboxName,
+            chatwoot_account_id: this.accountId,
+            chatwoot_token: this.currentUser.access_token,
+            chatwoot_url: 'https://easycontact.top',
+            chatwoot_sign_msg: false,
+            chatwoot_reopen_conversation: true,
+            chatwoot_conversation_pending: true,
+          },
         };
 
-        const response = await axios.post(
-          'http://34.41.191.74:3030/instance/create',
-          payload,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': '429683C4C977415CAAFCCE10F7D57E11'
-            }
-          });
+        const createRes = await WhatsappInstancesClient.create(payload);
+        const created = createRes?.data?.instance || createRes?.data || {};
+        this.instanceName = created.instanceName || this.inboxName;
+        if (this.instanceName) {
+          const data = await WhatsappInstancesClient.connect(this.instanceName);
 
-        if (response.data.qrcode) {
-          this.qrCode = response.data.qrcode.base64;
-          this.connectionState = 'QR generado';
-          this.qrGenerated = true;
-          this.startStatusPolling();
+          if (data?.status === 'open') {
+            this.connectionState = 'Conectado';
+            this.qrScanned = true;
+            this.phoneNumber = data?.phone?.id || '';
+            return;
+          }
+
+          this.qrCode = data?.base64 || data?.base64 || '';
+          if (this.qrCode) {
+            this.connectionState = 'QR generado';
+            this.qrGenerated = true;
+            this.startStatusPolling();
+          } else {
+            this.errorMessage = 'No se pudo obtener el código QR.';
+          }
         } else {
-          this.errorMessage = 'No se pudo obtener el código QR.';
+          this.errorMessage = 'No se pudo crear la instancia.';
         }
       } catch (error) {
-        console.error('Error al generar o reconectar QR:', error);
-        useAlert(error.response?.data?.response?.message?.[0] || 'Error desconocido');
-        this.errorMessage = 'Error al generar/reconectar QR. Inténtalo nuevamente.';
+        console.error('Error al generar/reconectar QR:', error);
+        const msg = this.extractErrorMessage(error);
+        useAlert(msg);
+        this.errorMessage = msg;
+        if (/already in use/i.test(msg) && this.inboxName) {
+          this.instanceName = this.inboxName;
+          try {
+            const data = await WhatsappInstancesClient.connect(this.instanceName);
+
+            if (data?.status === 'CONNECTED' || data?.status === 'open') {
+              this.connectionState = 'Conectado';
+              this.qrScanned = true;
+              this.phoneNumber = data?.phone?.id || '';
+            } else {
+              this.qrCode = data?.qrcode?.base64 || data?.base64 || '';
+              if (this.qrCode) {
+                this.connectionState = 'QR generado';
+                this.qrGenerated = true;
+                this.startStatusPolling();
+              }
+            }
+          } catch (e2) {
+            const msg2 = this.extractErrorMessage(e2);
+            useAlert(msg2);
+            this.errorMessage = msg2;
+          }
+        }
       } finally {
         this.isLoading = false;
       }
     },
+    extractErrorMessage(error) {
+      const data = error?.response?.data ?? error?.data ?? error;
+      const tryParse = val => {
+        if (typeof val === 'string') {
+          try { return JSON.parse(val); } catch { /* noop */ }
+        }
+        return val;
+      };
+
+      const body = tryParse(data?.body) || tryParse(data);
+      const rawMsg = body?.response?.message ?? data?.response?.message;
+      if (Array.isArray(rawMsg)) {
+        const flat = rawMsg.flat ? rawMsg.flat(Infinity) : [].concat(...rawMsg);
+        if (flat.length) return String(flat[0]);
+      }
+      if (rawMsg) return String(rawMsg);
+
+      if (body?.error) return String(body.error);
+      if (data?.error) return String(data.error);
+      if (data?.message) return String(data.message);
+      if (error?.message) return String(error.message);
+
+      return 'Error desconocido';
+    },
+
     startStatusPolling() {
       if (this.statusInterval) clearInterval(this.statusInterval);
+      if (!this.instanceName) return;
 
       this.statusInterval = setInterval(async () => {
         try {
-          const res = await axios.get(`http://34.41.191.74:3030/instance/connectionState/${this.inboxName}`, {
-            headers: {
-              'apikey': '429683C4C977415CAAFCCE10F7D57E11'
-            }
-          });
+          const { data } = await WhatsappInstancesClient.connectionState(
+            this.instanceName
+          );
 
-          const data = res.data;
-
-          if (data?.instance.state === 'open') {
+          if (data?.instance?.state === 'open') {
             this.connectionState = 'Conectado';
             this.qrScanned = true;
             this.phoneNumber = data?.phone?.id || '';
@@ -184,13 +178,14 @@ export default {
             this.statusInterval = null;
           }
         } catch (err) {
-          console.error('Error en polling de estado:', err);
+          console.error('Error en polling de estado:', this.extractErrorMessage(err));
         }
       }, 3000);
     },
+
     async createChannel() {
       try {
-        this.setWebhook();
+        await this.setWebhook();
         const apiChannel = await this.$store.dispatch('inboxes/createChannel', {
           name: this.inboxName,
           channel: {
@@ -206,34 +201,35 @@ export default {
           },
         });
       } catch (error) {
-        useAlert(this.$t('INBOX_MGMT.ADD.API_CHANNEL.API.ERROR_MESSAGE'));
+        useAlert(this.$t('INBOX_MGMT.ADD.WHATSAPPWEB.API.ERROR_MESSAGE'));
       }
     },
+
     async setWebhook() {
+      if (!this.instanceName) {
+        useAlert('Primero crea/conecta la instancia.');
+        return;
+      }
+
       const payload = {
         enabled: true,
-        accountId: `${this.accountId}`,
+        accountId: String(this.accountId),
         token: this.currentUser.access_token,
-        url: "https://easycontact.top",
         signMsg: false,
-        sign_delimiter: "\n",
+        sign_delimiter: '\n',
         reopenConversation: true,
         conversationPending: true,
         import_contacts: false,
         import_messages: false,
         days_limit_import_messages: 0,
         auto_create: true,
-        webhook_url: `http://34.41.191.74:3030/chatwoot/webhook/${this.inboxName}`
       };
-      await axios.post(`http://34.41.191.74:3030/chatwoot/set/${this.inboxName}`,
-        payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': '429683C4C977415CAAFCCE10F7D57E11'
-          }
-      });
+
+      await WhatsappInstancesClient
+        .setWebhook(this.instanceName, payload)
+        .then(r => (r && r.data ? r.data : r));
     }
+
   },
 
   beforeDestroy() {
@@ -262,19 +258,18 @@ export default {
             :placeholder="$t('INBOX_MGMT.ADD.WHATSAPPWEB.INBOX_NAME.PLACEHOLDER')"
             v-model="inboxName"
             @input="sanitizeInput"
+            @keyup.enter="generateQR"
             required
           />
           <button
-           v-if="!qrScanned"
+            v-if="!qrScanned"
             @click="generateQR"
             class="px-4 py-2 bg-green-600 text-white rounded"
             :disabled="isLoading"
           >
             <span>{{ qrGenerated && !qrScanned ? 'Reconectar QR' : 'Generar QR' }}</span>
           </button>
-
         </div>
-
         <span v-if="qrImageLoaded && connectionState !== 'Conectado'">Escanee el código QR:</span>
         <p v-if="isLoading">Cargando...</p>
         <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
