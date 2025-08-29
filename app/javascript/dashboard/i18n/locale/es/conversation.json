@@ -1,5 +1,11 @@
 {
   "CONVERSATION": {
+    "STATUS": {
+      "OPEN": "abierta",
+      "RESOLVED": "resuelta",
+      "PENDING": "pendiente",
+      "SNOOZED": "pospuesta"
+    },
     "UPDATE": {
       "AGENT_ACTIVE_BOT": {
         "SUCCESS":"Se actualizo el estado del agente ia",
