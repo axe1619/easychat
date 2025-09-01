@@ -264,8 +264,8 @@ export default {
       class="px-0 py-3 border-b group-hover:border-transparent flex-1 border-slate-50 dark:border-slate-800/75 w-[calc(100%-40px)]"
     >
       <div class="flex justify-between">
-        <InboxName v-if="showInboxName" :show_state="true" :inbox="inbox" :conversation_state="chat.conversations_state" />
-        <div class="flex gap-2 ml-2 rtl:mr-2 rtl:ml-0">
+        <InboxName v-if="showInboxName" :show_inbox_name="true" :show_state="true" :inbox="inbox" :conversation="chat" />
+        <div class="flex gap-2 ml-2 rtl:mr-2 rtl:ml-0 items-center">
           <span
             v-if="showAssignee && assignee.name"
             class="text-slate-500 dark:text-slate-400 text-xs font-medium leading-3 py-0.5 px-0 inline-flex text-ellipsis overflow-hidden whitespace-nowrap"
@@ -277,16 +277,7 @@ export default {
             />
             {{ assignee.name }}
           </span>
-          <template v-if="chat.conversations_state_name!=null && !showInboxName">
-            <span :style="{ backgroundColor: chat.conversations_state.color}" class="text-xs inline-flex items-center rounded-md px-2 py-1 text-slate-900 dark:text-slate-100 font-medium">
-                {{ chat.conversations_state_name }}
-            </span>
-          </template>
-          <template v-else-if="chat.conversations_state_name==null && !showInboxName">
-            <span class="text-xs inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-slate-900 dark:text-slate-100 font-medium ring-1 ring-gray-500/10 ring-inset">
-                no categorizada
-            </span>
-          </template>
+          <InboxName v-if="!showInboxName" :show_inbox_name="false" :show_state="true" :inbox="inbox" :conversation="chat" />
           <PriorityMark :priority="chat.priority" />
         </div>
       </div>

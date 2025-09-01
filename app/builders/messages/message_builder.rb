@@ -148,6 +148,7 @@ class Messages::MessageBuilder
       sender: sender,
       content_type: @params[:content_type],
       items: @items,
+      message_sub_type: @params[:message_sub_type] || :none,
       in_reply_to: @in_reply_to,
       echo_id: @params[:echo_id],
       source_id: @params[:source_id]

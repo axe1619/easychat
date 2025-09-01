@@ -99,6 +99,21 @@ export default {
           });
       },
     },
+    enabledRemarketing: {
+      get() {
+        return this.currentChat.enabled_remarketing;
+      },
+      set(state) {
+        const conversationId = this.currentChat.id;
+        this.$store.dispatch('setCurrentChatStateRemarketing', { state, conversationId })
+        this.$store.dispatch('assignStateRemarketing', { state, conversationId })
+          .then(() => {
+            useAlert(this.$t('CONVERSATION.UPDATE.STATE_REMARKETING.SUCCESS'));
+          }).catch(() => {
+            useAlert(this.$t('CONVERSATION.UPDATE.STATE_REMARKETING.FALIED'));
+          })
+      }
+    },
     assignedTeam: {
       get() {
         return this.currentChat.meta.team;
@@ -263,6 +278,9 @@ export default {
         useAlert(this.$t('CONVERSATION.UPDATE.AGENT_ACTIVE_BOT.FALIED'));
         console.warn({ error })
       }
+    },
+    onSwitchRemarketing(value){
+      this.enabledRemarketing = value
     }
   },
   mounted() {
@@ -273,6 +291,15 @@ export default {
 
 <template>
   <div class="bg-white dark:bg-slate-900">
+    <div class="multiselect-wrap--small flex justify-between items-center mb-3">
+      <span class="text-sm font-medium text-slate-800 dark:text-slate-100">
+        {{ $t('CONVERSATION_SIDEBAR.STATE_REMARKEING') }}
+      </span>
+      <SwitchButton
+        :value="enabledRemarketing"
+        @input="onSwitchRemarketing"
+      />
+    </div>
     <div class="multiselect-wrap--small flex justify-between items-center mb-3">
       <span class="text-sm font-medium text-slate-800 dark:text-slate-100">
         {{ $t('CONVERSATION_SIDEBAR.ACTIVE_AGENT_IA') }}
