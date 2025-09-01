@@ -41,16 +41,10 @@ json.active_agent_bot conversation.active_agent_bot
 json.enabled_remarketing conversation.enabled_remarketing
 json.conversations_state_name conversation.conversation_state&.name
 json.conversations_state do 
-  if conversation.conversations_state_id
-    state = ConversationState.find(conversation.conversations_state_id)
-    json.name state.name
-    json.description state.description
-    json.color state.color
-  else
-    json.name nil
-    json.description nil
-    json.color nil
-  end
+  json.id conversation.conversation_state&.id
+  json.name conversation.conversation_state&.name
+  json.description conversation.conversation_state&.description
+  json.color conversation.conversation_state&.color
 end
 json.id conversation.display_id
 if conversation.messages.where(account_id: conversation.account_id).last.blank?

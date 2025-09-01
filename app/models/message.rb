@@ -144,6 +144,7 @@ class Message < ApplicationRecord
       conversation: conversation_push_event_data,
       conversations_state_name: conversation.conversation_state&.name,
       conversations_state: {
+        id:conversation.conversation_state&.id,
         name:conversation.conversation_state&.name,
         color:conversation.conversation_state&.color,
         description:conversation.conversation_state&.description
