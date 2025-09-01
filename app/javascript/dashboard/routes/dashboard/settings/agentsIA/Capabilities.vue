@@ -3,17 +3,20 @@ import { mapGetters } from 'vuex';
 import ModalAgentRag from './components/agentRag/ModalAgentRag.vue';
 import ModalAgentCalendar from './components/ModalAgentCalendar.vue';
 import ModalAgentConfigutarion from './components/ModalAgentConfiguration.vue';
+import ModalAgentCatalog from './components/agentCatalog/ModalAgentCatalog.vue';
 
 export default {
   components: {
     ModalAgentRag,
     ModalAgentCalendar,
+    ModalAgentCatalog,
     ModalAgentConfigutarion
   },
   data() {
     return {
       showAgentRag: false,
       showAgentCalendar: false,
+      showAgentCatalog: false,
       showAgentConfiguration: false,
     }
   },
@@ -45,7 +48,7 @@ export default {
         { 
           id: 3, 
           inDeploy: true, 
-          action: () => { this.showAgentRag = true }, 
+          action: () => { this.showAgentCatalog = true }, 
           name: this.$t('AGENTS_AI.CARDS.CATALOG.NAME'), 
           image: '/assets/images/dashboard/agents-ai/catalog.png' 
         },
@@ -65,6 +68,7 @@ export default {
   methods: {
     hideAgentRag() { this.showAgentRag = false },
     hideAgentCalendar() { this.showAgentCalendar = false },
+    hideAgentCatalog() { this.showAgentCatalog = false },
     hideAgentConfiguration() { this.showAgentConfiguration = false },
     getAgentBot() {
       console.log(this.agentBot)
@@ -83,6 +87,10 @@ export default {
 
     <woot-modal :show.sync="this.showAgentCalendar" :on-close="hideAgentCalendar">
       <ModalAgentCalendar :on-close="hideAgentCalendar" />
+    </woot-modal>
+
+    <woot-modal :show.sync="this.showAgentCatalog" :on-close="hideAgentCatalog">
+      <ModalAgentCatalog :on-close="hideAgentCatalog" :botId="agentBot.id" :accountId="agentBot.account_id" />
     </woot-modal>
 
     <woot-modal :show.sync="this.showAgentConfiguration" :on-close="hideAgentConfiguration">

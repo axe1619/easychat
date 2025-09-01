@@ -6,6 +6,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import WootSubmitButton from '../../../../../components/buttons/FormSubmitButton.vue';
 import Modal from '../../../../../components/Modal.vue';
+import TinyEditor from '../widgets/TinyEditor.vue';
 
 export default {
   name: "ModalAgentConfigutarion",
@@ -156,6 +157,8 @@ export default {
             ? $t('AGENTS_AI.CARDS.CONFIGURATION.FORM.PROMPT.ERROR')
             : ''
             " />
+        
+        <!-- <TinyEditor v-model="agentPrompt"/> -->
 
         <div class="flex">
           <input class="me-2" id="scheduleEnabledId" v-model="scheduleEnabled" type="checkbox" @click="toggleScheduleEnabled" />
