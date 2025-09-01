@@ -14,6 +14,10 @@
       "STATE_REMARKETING": {
         "SUCCESS": "Remarketing status updated",
         "FALIED": "Remarketing status could not be updated"
+      },
+      "STATE_SORTER": {
+        "SUCCESS": "Sorter state updated",
+        "FALIED": "Sorter state could not be updated"
       }
     },
     "SELECT_A_CONVERSATION": "Please select a conversation from left pane",
@@ -123,6 +127,16 @@
     },
     "KANBAN_STATE":{
       "TITLE": "Board",
+      "CHANGE_PRIORITY":{
+        "SELECT_PLACEHOLDER": "None",
+        "INPUT_PLACEHOLDER": "Select state",
+        "NO_RESULTS": "No results found",
+        "SUCCESSFUL": "Changed state of conversation id %{conversationId} to %{state}",
+        "FAILED": "Couldn't change state. Please try again."
+      }
+    },
+    "SORTER_STATE":{
+      "TITLE": "Sorter",
       "CHANGE_PRIORITY":{
         "SELECT_PLACEHOLDER": "None",
         "INPUT_PLACEHOLDER": "Select state",
