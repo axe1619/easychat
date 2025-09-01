@@ -34,7 +34,28 @@
             },
             "CATALOG": {
                 "NAME": "Product catalog",
-                "DESCRIPTION": "In this section, you can add products from the company's catalog, providing the artificial intelligence agent with the necessary information about each item. This way, the agent can understand the product's features, prices, and availability, and use them effectively during the sales process."
+                "DESCRIPTION_A": "Import your products via an Excel file with a CSV extension. Use the ",
+                "DESCRIPTION_LINK":"sample template",
+                "DESCRIPTION_B":" to add your products and the necessary data. Please note that columns with red names are required fields.",
+                "BUTTON_IMPORT": "Import",
+                "BUTTON_EXPORT": "Export",
+                "BUTTON_SELECT": "Open CSV file",
+                "IMPORT": {
+                    "UPLOAD": {
+                        "NAME": "Import your catalog from a CSV file",
+                        "DESCRIPTION": "Download the Excel template and fill in the blanks with your product information. Don't change the column names in the template. If the column name is red, it means that field is required.",
+                        "SUCCESS": "The catalog was loaded successfully",
+                        "ERROR": "There was an error loading the catalog",
+                        "FILE_ERROR": "Only CSV files are allowed",
+                        "CONTENT_ERROR": "The content is not in the required format",
+                        "TABLE_ERROR": {
+                            "HEADER": "Incorrect names were detected in some of your column headers",
+                            "HEADER_INCOMPLETE": "Your csv file does not have all the necessary columns",
+                            "ROW": "Empty required fields were detected",
+                            "CODES":"Duplicate codes were detected"
+                        }
+                    }
+                }
             },
             "CONFIGURATION": {
                 "NAME": "Agent configuration",
