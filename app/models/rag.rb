@@ -16,5 +16,4 @@ class Rag < ApplicationRecord
   belongs_to :agent_bot
 
   validates :agent_bot_id, :date, :collection_name, :account_id, presence: true
-  # description es opcional
 end
