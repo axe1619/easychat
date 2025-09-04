@@ -48,6 +48,7 @@ import SLAReports from './modules/SLAReports';
 import sorter from './modules/sorter';
 import kanbanState from './modules/kanbanState';
 import rags from './modules/rags';
+import catalogs from './modules/catalogs';
 
 const plugins = [];
 
@@ -100,7 +101,8 @@ export default new Vuex.Store({
     slaReports: SLAReports,
     sorter,
     kanbanState,
-    rags
+    rags,
+    catalogs,
   },
   plugins,
 });
