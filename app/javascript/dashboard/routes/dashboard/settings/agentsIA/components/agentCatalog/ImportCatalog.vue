@@ -26,21 +26,30 @@ export default {
     computed: {
         ...mapGetters({
             agentBots: 'agentBots/getBots',
-            uiFlags: 'agentBots/getUIFlags',
-            rags: 'rags/getRags',
-            ragsUI: 'rags/getUIFlags',
+            catalogs: 'catalogs/getCatalogs',
+            uiFlags: 'catalogs/getUIFlags',
         }),
-        agentRags() {
-            return this.$store.getters['rags/getRagsByAgentBotId'](Number(this.botId));
+        botCatalogs() {
+            return this.$store.getters['catalogs/getCatalogsByAgentBotId'](Number(this.botId));
         },
-        isButtonDisabled() {
-            return (
-                this.v$.file.$invalid
-            );
+        botAccCatalogs() {
+            return this.$store.getters['catalogs/getCatalogsByBotAndAccount']({
+                agent_bot_id: this.botId,
+                account_id: this.accountId,
+            });
         },
         isUpdating() {
             return this.uiFlags.isUpdating;
         },
+        isCreating() {
+            return this.uiFlags.isCreating;
+        }
+    },
+    mounted() {
+        this.$store.dispatch('catalogs/get', {
+            agent_bot_id: this.botId,
+            account_id: this.accountId,
+        });
     },
     data() {
         return {
@@ -61,9 +70,6 @@ export default {
         file: {
             required
         }
-    },
-    mounted() {
-        this.$store.dispatch('rags/get', { agent_bot_id: this.botId });
     },
     methods: {
         onFileChange(e) {
@@ -96,12 +102,10 @@ export default {
                     this.headers = headers;
                     this.rows = rows;
                     const verify1 = this.verifyHeaders(headers, this.validHeaders);
-                    if(verify1 === false){
+                    if (verify1 === false) {
                         const verify2 = this.checkRequiredFields(rows);
-                        if(verify2 === false) this.duplicateCodes = this.verifyDuplicateCodes(rows);
+                        if (verify2 === false) this.duplicateCodes = this.verifyDuplicateCodes(rows);
                     }
-                    if (headers)
-                        console.log('CSV parseado:', { headers, rowsCount: rows.length })
                 } catch (err) {
                     console.log(err)
                     this.error = this.$t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.ERROR');
@@ -188,7 +192,7 @@ export default {
                 this.error = this.$t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.TABLE_ERROR.HEADER_INCOMPLETE');
                 return true;
             }
-            if (!arr1.every((val, i) => val === arr2[i])){
+            if (!arr1.every((val, i) => val === arr2[i])) {
                 this.error = this.$t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.TABLE_ERROR.HEADER');
                 return true;
             }
@@ -197,7 +201,7 @@ export default {
         verifyDuplicateCodes(rows) {
             const counts = rows.reduce((acc, val) => {
                 acc[val.codigo] = (acc[val.codigo] || 0) + 1;
-                if(acc[val.codigo] > 1) this.error = this.$t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.TABLE_ERROR.CODES');
+                if (acc[val.codigo] > 1) this.error = this.$t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.TABLE_ERROR.CODES');
                 return acc
             }, {})
             return rows.map(val => counts[val.codigo] > 1)
@@ -211,8 +215,39 @@ export default {
             }
             return false;
         },
+        async getCatalogs() {
+            await this.$store.dispatch('catalogs/get', {
+                agent_bot_id: Number(this.botId)
+                // account_id: this.accountId,
+            });
+            console.log('botCatalogs:', this.botCatalogs)
+            console.log('botAccCatalogs:', this.botAccCatalogs)
+        },
         async submitFile() {
-        }
+            // const items = this.rows.map(r => ({ ...r, account_id: this.accountId, agent_bot_id: this.botId }))
+            // console.log(items)
+            // const created = await this.$store.dispatch('catalogs/createMany', items)
+            // console.log('created', created)
+            const items = [
+                { codigo: 'P-10', nombre: 'Prod 10', descripcion: 'X', agent_bot_id: this.botId, account_id: this.accountId },
+                { codigo: 'P-11', nombre: 'Prod 11', descripcion: 'Y', agent_bot_id: this.botId, account_id: this.accountId },
+            ];
+            await this.$store.dispatch('catalogs/bulkCreate', {
+                items,
+                refreshWith: { agent_bot_id: this.botId, account_id: this.accountId },
+            });
+        },
+        async createOne() {
+            const payload = {
+                codigo: 'P-001',
+                nombre: 'Producto A',
+                descripcion: 'Desc',
+                agent_bot_id: this.botId,
+                account_id: this.accountId,
+                precio: '100',
+            };
+            await this.$store.dispatch('catalogs/create', payload);
+        },
     },
 }
 </script>
@@ -220,9 +255,12 @@ export default {
     <div class="flex flex-col h-auto overflow-auto">
         <woot-modal-header :header-title="$t('AGENTS_AI.CARDS.CATALOG.IMPORT.NAME')">
             <p>{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_A') }}<a class="text-woot-500 dark:text-woot-500"
-                    href="/downloads/import-contacts-sample.csv">{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_LINK') }}</a>{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_B') }}
+                    href="/downloads/import-contacts-sample.csv">{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_LINK')
+                    }}</a>{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_B') }}
             </p>
         </woot-modal-header>
+
+        <button class="button clear" @click="getCatalogs">GET...</button>
 
         <div class="flex flex-col w-full px-8 py-8">
             <div class="flex">
@@ -237,7 +275,7 @@ export default {
             <div class="flex flex-row justify-end items-center w-full gap-2 px-0 py-2">
                 <span v-if="error" class="text-sm text-red-400 dark:text-red-500 me-auto font-medium">{{ error }}</span>
                 <WootSubmitButton :disabled="rows.length === 0 || (error !== null)"
-                    :button-text="$t('AGENTS_AI.CARDS.RAG.FORM.SUBMIT')" :loading="uploading" />
+                    :button-text="$t('AGENTS_AI.CARDS.RAG.FORM.SUBMIT')" :loading="isCreating" @click="createOne" />
                 <button class="button clear" @click.prevent="toggleImportCatalog">
                     {{ $t('AGENTS_AI.CARDS.RAG.FORM.CANCEL') }}
                 </button>
@@ -258,7 +296,7 @@ export default {
                 <tbody>
                     <tr v-for="(r, ri) in rows" :key="ri">
                         <td v-for="(h, ci) in headers" :key="ci" class="p-2 border-b"
-                            :class="{ 'bg-red-300': ((ci < 3) && (r[h] === '') || ((ci === 0) && duplicateCodes[ri]) ) }">
+                            :class="{ 'bg-red-300': ((ci < 3) && (r[h] === '') || ((ci === 0) && duplicateCodes[ri])) }">
                             {{ r[h] }}
                         </td>
                     </tr>
