@@ -181,6 +181,9 @@ Rails.application.routes.draw do
               get  :state
               post :set_webhook
             end
+            collection do
+              post :sync_templates
+            end
           end
           resources :kanban_states, only: [:index, :create, :update, :destroy] do
             collection do
