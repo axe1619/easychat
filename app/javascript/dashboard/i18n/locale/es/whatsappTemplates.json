@@ -1,5 +1,9 @@
 {
     "WHATSAPP_TEMPLATES": {
+        "STATUS":{
+            "SUCCESS":"Plantillas obtenidas con éxito",
+            "FAILED":"No se pudieron cargar las plantillas"
+        },
         "MODAL": {
             "TITLE": "Plantillas de Whatsapp",
             "SUBTITLE": "Seleccione la plantilla de Whatsapp que desea enviar",

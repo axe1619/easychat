@@ -1,5 +1,9 @@
 {
     "WHATSAPP_TEMPLATES": {
+        "STATUS": {
+            "SUCCESS": "Templates successfully obtained",
+            "FAILED": "Templates could not be loaded"
+        },
         "MODAL": {
             "TITLE": "Whatsapp Templates",
             "SUBTITLE": "Select the whatsapp template you want to send",

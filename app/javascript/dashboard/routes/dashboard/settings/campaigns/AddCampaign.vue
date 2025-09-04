@@ -322,7 +322,7 @@ export default {
           <label>
             Templates whatsapp 
             <small class="font-medium text-gray">
-              ( Las plantillas nuevas puede tomar alrededor de 3hr en ser aceptadas )
+              ( Las plantillas nuevas puede tomar alrededor de 1hr en ser aceptadas )
             </small>
           </label>
           <WhatsappTemplates
