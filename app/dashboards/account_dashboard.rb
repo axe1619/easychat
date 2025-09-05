@@ -22,6 +22,7 @@ class AccountDashboard < Administrate::BaseDashboard
     name: Field::String.with_options(searchable: true),
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
+    expires_at: Field::DateTime,
     users: CountField,
     conversations: CountField,
     locale: Field::Select.with_options(collection: LANGUAGES_CONFIG.map { |_x, y| y[:iso_639_1_code] }),
@@ -53,6 +54,7 @@ class AccountDashboard < Administrate::BaseDashboard
     updated_at
     locale
     status
+    expires_at
     conversations
     account_users
   ] + enterprise_show_page_attributes).freeze
@@ -65,6 +67,7 @@ class AccountDashboard < Administrate::BaseDashboard
     name
     locale
     status
+    expires_at
   ] + enterprise_form_attributes).freeze
 
   # COLLECTION_FILTERS
