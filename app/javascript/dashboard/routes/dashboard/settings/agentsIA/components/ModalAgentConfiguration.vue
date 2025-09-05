@@ -6,10 +6,12 @@ import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import WootSubmitButton from '../../../../../components/buttons/FormSubmitButton.vue';
 import Modal from '../../../../../components/Modal.vue';
+import TinyEditor from '../widgets/TinyEditor.vue';
+
 
 export default {
   name: "ModalAgentConfigutarion",
-  components: { Modal, WootSubmitButton, Spinner },
+  components: { Modal, WootSubmitButton, Spinner, TinyEditor },
   props: {
     onClose: {
       type: Function,
@@ -73,6 +75,7 @@ export default {
       initAt: this.botInitAt,
       finishAt: this.botFinishAt,
       show: true,
+      darkMode: true,
     };
   },
   validations: {
@@ -80,46 +83,42 @@ export default {
       required
     },
     agentDescription: {
-      default:''
+      default: ''
     },
     agentPrompt: {
       required
     },
     initAt: {
-      default:''
+      default: ''
     },
     finishAt: {
-      default:''
+      default: ''
     },
   },
   methods: {
     toggleScheduleEnabled() {
-      if(!this.scheduleEnabled === false){
+      if (!this.scheduleEnabled === false) {
         this.initAt = '';
         this.finishAt = '';
       }
       this.scheduleEnabled = !this.scheduleEnabled;
     },
+    printTheme() {
+      const html = document.documentElement
+      const styleAttr = html.getAttribute('style')
+      console.log('styleAttr', styleAttr)
+    },
     async updateAgentBot() {
-      const updateAgentBotData = {
-        AgentId: this.agentId,
-        AgentName: this.agentName,
-        AgentDescription: this.agentDescription,
-        AgentPrompt: this.agentPrompt,
-        initAt: this.initAt,
-        finishAt: this.finishAt,
-        scheduleEnabled: this.scheduleEnabled,
+      const data = {
+        id: this.agentId,
+        name: this.agentName,
+        description: this.agentDescription,
+        prompt: this.agentPrompt,
+        init_at: this.initAt,
+        finish_at: this.finishAt,
       }
-      console.log(updateAgentBotData)
       try {
-        await this.$store.dispatch('agentBots/update', {
-          id: this.agentId,
-          name: this.agentName,
-          description: this.agentDescription,
-          prompt: this.agentPrompt,
-          init_at: this.initAt,
-          finish_at: this.finishAt,
-        });
+        await this.$store.dispatch('agentBots/update', data);
         useAlert(this.$t('AGENT_BOTS.EDIT.API.SUCCESS_MESSAGE'));
       } catch (error) {
         useAlert(this.$t('AGENT_BOTS.CSML_BOT_EDITOR.BOT_CONFIG.API_ERROR'));
@@ -149,22 +148,30 @@ export default {
             " :placeholder="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.DESCRIPTION.PLACEHOLDER')"
           @blur="v$.agentDescription.$touch" />
 
-        <woot-text-area v-model.trim="agentPrompt" :class="{ error: v$.agentPrompt.$error }" class="w-full"
+        <!-- <woot-text-area v-model.trim="agentPrompt" :class="{ error: v$.agentPrompt.$error }" class="w-full"
           :label="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.PROMPT.LABEL')"
           :placeholder="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.PROMPT.PLACEHOLDER')" data-testid="label-description"
           @input="v$.agentPrompt.$touch" :error="v$.agentPrompt.$error
             ? $t('AGENTS_AI.CARDS.CONFIGURATION.FORM.PROMPT.ERROR')
             : ''
-            " />
+            " /> -->
+
+
+        <!-- <button @click="printTheme">Cambiar tema</button> -->
+        <span
+          class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">{{ $t('AGENTS_AI.CARDS.CONFIGURATION.FORM.PROMPT.LABEL') }}</span>
+        <TinyEditor v-model="agentPrompt" :height="250"/>
 
         <div class="flex">
-          <input class="me-2" id="scheduleEnabledId" v-model="scheduleEnabled" type="checkbox" @click="toggleScheduleEnabled" />
+          <input class="me-2" id="scheduleEnabledId" v-model="scheduleEnabled" type="checkbox"
+            @click="toggleScheduleEnabled" />
           <label for="scheduleEnabledId">{{ $t('AGENTS_AI.CARDS.CONFIGURATION.FORM.SCHEDULE.LABEL') }}</label>
         </div>
 
         <div v-if="scheduleEnabled" class="flex items-center justify-evenly w-full my-3">
           <woot-input v-model="initAt" :label="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.SCHEDULE.INIT')" type="time" />
-          <woot-input v-model="finishAt" :label="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.SCHEDULE.FINISH')" type="time" />
+          <woot-input v-model="finishAt" :label="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.SCHEDULE.FINISH')"
+            type="time" />
         </div>
 
         <div class="flex flex-row justify-end items-center w-full gap-2 px-0 py-2">

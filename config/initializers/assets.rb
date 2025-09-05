@@ -18,3 +18,15 @@ Rails.application.config.assets.precompile += %w[dashboardChart.js]
 # Ref: https://stackoverflow.com/questions/56960709/rails-font-cors-policy
 # https://github.com/rails/sprockets/issues/632#issuecomment-551324428
 Rails.application.config.assets.precompile << ['*.svg', '*.eot', '*.woff', '*.ttf']
+
+# que Sprockets conozca la carpeta
+Rails.application.config.assets.paths << Rails.root.join('app', 'assets', 'javascript')
+
+# que precompile lo necesario
+Rails.application.config.assets.precompile += %w[
+  tinymce/tinymce.min.js
+  tinymce/skins/**/*
+  tinymce/plugins/**/*
+  tinymce/langs/**/*
+]
+

@@ -175,6 +175,12 @@ Rails.application.routes.draw do
           resources :labels, only: [:index, :show, :create, :update, :destroy]
           resources :conversation_states, only: [:index, :show, :create, :update, :destroy]
           resources :rags
+          resources :catalogs do
+            collection do
+              post :bulk_create
+              post :bulk_destroy
+            end
+          end
           resources :whatsapp_instances, only: [:create], param: :instance_name do
             member do
               post :connect

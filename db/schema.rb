@@ -238,6 +238,53 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_04_154126) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
+  create_table "catalogs", force: :cascade do |t|
+    t.string "codigo", null: false
+    t.string "nombre", null: false
+    t.string "descripcion", null: false
+    t.string "descripcion_larga"
+    t.string "categoria"
+    t.string "subcategoria"
+    t.string "precio"
+    t.string "moneda"
+    t.string "unidad_medida"
+    t.string "presentacion"
+    t.string "stock_disponible"
+    t.string "stock_minimo"
+    t.string "descuento"
+    t.string "precio_oferta"
+    t.string "impuesto"
+    t.string "estado"
+    t.string "marca"
+    t.string "proveedor"
+    t.string "codigo_barras"
+    t.string "imagen_url"
+    t.string "galeria_imagenes"
+    t.string "ficha_tecnica_url"
+    t.string "manual_url"
+    t.string "video_url"
+    t.string "pais_origen"
+    t.string "garantia"
+    t.string "fecha_creacion"
+    t.string "fecha_actualizacion"
+    t.string "etiquetas"
+    t.string "politicas_envio"
+    t.string "politicas_devolucion"
+    t.string "variantes"
+    t.string "relacionados"
+    t.string "ratings"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "account_id", null: false
+    t.bigint "agent_bot_id", null: false
+    t.index ["account_id", "agent_bot_id"], name: "index_catalogs_on_account_id_and_agent_bot_id"
+    t.index ["account_id"], name: "index_catalogs_on_account_id"
+    t.index ["agent_bot_id"], name: "index_catalogs_on_agent_bot_id"
+    t.check_constraint "char_length(btrim(codigo::text)) > 0", name: "catalogs_codigo_not_blank"
+    t.check_constraint "char_length(btrim(descripcion::text)) > 0", name: "catalogs_descripcion_not_blank"
+    t.check_constraint "char_length(btrim(nombre::text)) > 0", name: "catalogs_nombre_not_blank"
+  end
+
   create_table "categories", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "portal_id", null: false
@@ -1051,6 +1098,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_04_154126) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "catalogs", "accounts"
+  add_foreign_key "catalogs", "agent_bots"
   add_foreign_key "inboxes", "portals"
   add_foreign_key "kanban_states", "accounts", on_delete: :restrict
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).

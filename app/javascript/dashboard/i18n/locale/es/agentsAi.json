@@ -34,7 +34,28 @@
             },
             "CATALOG": {
                 "NAME": "Catálogo de productos",
-                "DESCRIPTION": "En esta sección se pueden agregar los productos del catálogo de la empresa, proporcionando al agente de inteligencia artificial la información necesaria sobre cada artículo. De esta manera, el agente podrá conocer las características, precios y disponibilidad de los productos, y utilizarlos de forma efectiva durante el proceso de ventas."
+                "DESCRIPTION_A": "Importa tus productos a través de un archivo Excel con extensión csv. Usa la ",
+                "DESCRIPTION_LINK":"plantilla de ejemplo",
+                "DESCRIPTION_B":" para agregar tus productos con los datos necesarios. Ten en cuenta que las columnas con nombres en color rojo son espacios obligatorios.",
+                "BUTTON_IMPORT": "Importar",
+                "BUTTON_EXPORT": "Exportar",
+                "BUTTON_SELECT": "Abrir archivo CSV",
+                "IMPORT":{
+                    "NAME": "Importa tu catálogo desde un archivo CSV",
+                    "DESCRIPTION": "Descarga la plantilla Excel y llena los espacios vacíos con los datos de tus productos. No modifiques el nombre de las columnas de la plantilla y si el nombre de la columna está en rojo significa que ese campo es obligatorio.",
+                    "UPLOAD":{
+                        "SUCCESS":"El catálogo se cargó correctamente",
+                        "ERROR":"Hubo un error al cargar el catálogo",
+                        "FILE_ERROR":"Solo se permiten archivos CSV",
+                        "CONTENT_ERROR":"El contenido no esta en el formato requerido",
+                        "TABLE_ERROR":{
+                            "HEADER":"Se detectaron nombres incorrectos en algunos encabezados de tus columnas",
+                            "HEADER_INCOMPLETE":"Tu archivo csv no cuenta con todas las columnas necesarias",
+                            "ROW":"Se detectaron campos obligatorios vacíos",
+                            "CODES":"Se detectaron códigos duplicados"
+                        }
+                    }
+                }
             },
             "CONFIGURATION": {
                 "NAME": "Configuración del agente",
