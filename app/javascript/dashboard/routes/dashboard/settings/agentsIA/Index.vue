@@ -24,9 +24,9 @@ onMounted(() => {
     <p class="mb-4 text-base font-normal line-clamp-5 sm:line-clamp-none max-w-3xl tracking-[-0.1px]">{{
       t('AGENTS_AI.HEADER_INDEX.DESCRIPTION') }}</p>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div class="flex">
       <div v-for="a in agentList" :key="a.id"
-        class="max-w-40 bg-white dark:bg-slate-900 cursor-pointer flex flex-col justify-end transition-all duration-200 ease-in px-0 items-center border border-solid border-slate-25 dark:border-slate-800 hover:border-woot-500 dark:hover:border-woot-500 hover:shadow-md rounded">
+        class="w-60 m-2 bg-white dark:bg-slate-900 cursor-pointer flex flex-col justify-end transition-all duration-200 ease-in px-0 items-center border border-solid border-slate-25 dark:border-slate-800 hover:border-woot-500 dark:hover:border-woot-500 hover:shadow-md rounded">
         <router-link :to="'capabilities?agent=' + a.id" class="w-full h-full p-3 flex flex-col justify-between">
           <div class="w-full h-32 p-2 flex justify-center items-center">
             <img :src="a.avatar_url || avatarDefault" :alt="a.name" class="h-full object-cover" />

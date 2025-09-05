@@ -47,7 +47,7 @@ export default {
         },
         { 
           id: 3, 
-          inDeploy: true, 
+          inDeploy: false, 
           action: () => { this.showAgentCatalog = true }, 
           name: this.$t('AGENTS_AI.CARDS.CATALOG.NAME'), 
           image: '/assets/images/dashboard/agents-ai/catalog.png' 

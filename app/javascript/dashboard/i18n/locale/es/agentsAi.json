@@ -34,25 +34,29 @@
             },
             "CATALOG": {
                 "NAME": "Catálogo de productos",
-                "DESCRIPTION_A": "Importa tus productos a través de un archivo Excel con extensión csv. Usa la ",
-                "DESCRIPTION_LINK":"plantilla de ejemplo",
-                "DESCRIPTION_B":" para agregar tus productos con los datos necesarios. Ten en cuenta que las columnas con nombres en color rojo son espacios obligatorios.",
                 "BUTTON_IMPORT": "Importar",
                 "BUTTON_EXPORT": "Exportar",
                 "BUTTON_SELECT": "Abrir archivo CSV",
-                "IMPORT":{
+                "IMPORT": {
                     "NAME": "Importa tu catálogo desde un archivo CSV",
-                    "DESCRIPTION": "Descarga la plantilla Excel y llena los espacios vacíos con los datos de tus productos. No modifiques el nombre de las columnas de la plantilla y si el nombre de la columna está en rojo significa que ese campo es obligatorio.",
-                    "UPLOAD":{
-                        "SUCCESS":"El catálogo se cargó correctamente",
-                        "ERROR":"Hubo un error al cargar el catálogo",
-                        "FILE_ERROR":"Solo se permiten archivos CSV",
-                        "CONTENT_ERROR":"El contenido no esta en el formato requerido",
-                        "TABLE_ERROR":{
-                            "HEADER":"Se detectaron nombres incorrectos en algunos encabezados de tus columnas",
-                            "HEADER_INCOMPLETE":"Tu archivo csv no cuenta con todas las columnas necesarias",
-                            "ROW":"Se detectaron campos obligatorios vacíos",
-                            "CODES":"Se detectaron códigos duplicados"
+                    "DESCRIPTION_A": "Importa tus productos a través de un archivo Excel con extensión csv. Usa la ",
+                    "DESCRIPTION_LINK": "plantilla de ejemplo",
+                    "DESCRIPTION_B": " para agregar tus productos con los datos necesarios. Ten en cuenta que las tres primeras columnas son campos obligatorios.",
+                    "UPLOAD": {
+                        "SUCCESS": "El catálogo se cargó correctamente",
+                        "ERROR": "Hubo un error al cargar el catálogo",
+                        "FILE_ERROR": "Solo se permiten archivos CSV",
+                        "CONTENT_ERROR": "El contenido no esta en el formato requerido",
+                        "TABLE_ERROR": {
+                            "HEADER": "Se detectaron nombres incorrectos en algunos encabezados de tus columnas",
+                            "HEADER_INCOMPLETE": "Tu archivo csv no cuenta con todas las columnas necesarias",
+                            "ROW": "Se detectaron campos obligatorios vacíos",
+                            "CODES": "Se detectaron códigos duplicados"
+                        },
+                        "BUTTON": {
+                            "ADD": "Agregar",
+                            "REPLACE": "Reemplazar",
+                            "CANCEL": "Cancelar"
                         }
                     }
                 }

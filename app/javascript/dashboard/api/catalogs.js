@@ -6,10 +6,6 @@ class CatalogsAPI extends ApiClient {
     super('catalogs', { accountScoped: true });
   }
 
-  // get(params = {}) {
-  //   return axios.get(this.url, { params });
-  // }
-
   bulkCreate(list) {
     return axios.post(`${this.url}/bulk_create`, { catalogs: list });
   }

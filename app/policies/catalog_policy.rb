@@ -1,9 +1,13 @@
+# app/policies/catalog_policy.rb
 class CatalogPolicy < ApplicationPolicy
-  def index?   = @account_user.present?
-  def show?    = @account_user.present?
+  def index?   = true
+  def show?    = true
   def create?  = true
   def update?  = true
   def destroy? = true
+
+  alias bulk_create?  create?
+  alias bulk_destroy? destroy?
 
   class Scope < Scope
     def resolve
