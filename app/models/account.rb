@@ -6,6 +6,7 @@
 #  auto_resolve_duration :integer
 #  custom_attributes     :jsonb
 #  domain                :string(100)
+#  expires_at            :datetime
 #  feature_flags         :bigint           default(0), not null
 #  limits                :jsonb
 #  locale                :integer          default("en")

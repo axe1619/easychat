@@ -67,7 +67,7 @@ class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
     if state_assigned_by_agent_ia.nil?
       return
     end
-    conversation_state = ConversationState.find_by(name: state_assigned_by_agent_ia)
+    conversation_state = ConversationState.find_by(id: state_assigned_by_agent_ia["id"])
     if conversation_state.nil?
       return
     end
@@ -87,7 +87,7 @@ class Messages::Facebook::MessageBuilder < Messages::Messenger::MessageBuilder
       if !response_data['status'] 
         return nil
       end
-      return response_data["data"]
+      return JSON.parse(response_data["data"])
     rescue StandardError => e
       return nil
     end

@@ -14,6 +14,10 @@
       "STATE_REMARKETING": {
         "SUCCESS":"Se actualizo el estado remarketing",
         "FALIED":"No se pudo actualizar el estado remarketing"
+      },
+      "STATE_SORTER": {
+        "SUCCESS": "Se actualizo el estado clasificador",
+        "FALIED": "No se pudo actualizar el estado remarketing"
       }
     },
     "SELECT_A_CONVERSATION": "Por favor, selecciona una conversación del panel izquierdo",
@@ -123,6 +127,16 @@
     },
      "KANBAN_STATE":{
       "TITLE": "Tablero",
+      "CHANGE_PRIORITY":{
+        "SELECT_PLACEHOLDER": "Ninguna",
+        "INPUT_PLACEHOLDER": "Seleccionar estado",
+        "NO_RESULTS": "No se encontraron resultados",
+        "SUCCESSFUL": "Se ha cambiado el estado del id de conversación %{conversationId} a %{state}",
+        "FAILED": "No se pudo cambiar el estado. Por favor, inténtelo de nuevo."
+      }
+    },
+    "SORTER_STATE":{
+      "TITLE": "Clasificador",
       "CHANGE_PRIORITY":{
         "SELECT_PLACEHOLDER": "Ninguna",
         "INPUT_PLACEHOLDER": "Seleccionar estado",

@@ -6,6 +6,7 @@ import { mapGetters } from 'vuex';
 import { FEATURE_FLAGS } from '../../../featureFlags';
 import { hasPermissions } from '../../../helper/permissionsHelper';
 import { routesWithPermissions } from '../../../routes';
+import { differenceInDays, differenceInHours, differenceInMinutes } from "date-fns"
 
 export default {
   components: {
@@ -46,9 +47,15 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      expires_at: undefined
+    }
+  },
   computed: {
     ...mapGetters({
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
+      getAccount: 'accounts/getAccount',
     }),
     hasSecondaryMenu() {
       return this.menuConfig.menuItems && this.menuConfig.menuItems.length;
@@ -220,6 +227,18 @@ export default {
         contacts: contactMenuItems,
       };
     },
+    formattedRemainingTime() {
+      if (!this.expires_at)
+        return this.$t('GENERAL.ACCOUNT.EXPIRE.DATE', { day: "-", hour: "-", minute: "-" })
+      const now = new Date()
+      const expires = new Date(this.expires_at)
+      if (expires <= now)
+        return this.$t('GENERAL.ACCOUNT.EXPIRE.MESSAGE')
+      const day = differenceInDays(expires, now)
+      const hour = differenceInHours(expires, now) % 24
+      const minute = differenceInMinutes(expires, now) % 60
+      return this.$t('GENERAL.ACCOUNT.EXPIRE.DATE', { day, hour, minute })
+    }
   },
   methods: {
     showAddLabelPopup() {
@@ -231,7 +250,14 @@ export default {
     showNewLink(featureFlag) {
       return this.isFeatureEnabledonAccount(this.accountId, featureFlag);
     },
+    initializeAccount() {
+      const { expires_at } = this.getAccount(this.accountId);
+      this.expires_at = expires_at
+    }
   },
+  mounted() {
+    this.initializeAccount()
+  }
 };
 </script>
 
@@ -244,7 +270,7 @@ export default {
     <transition-group
       name="menu-list"
       tag="ul"
-      class="pt-2 mb-0 ml-0 list-none"
+      class="pt-2 mb-0 ml-0 list-none flex-1"
     >
       <SecondaryNavItem
         v-for="menuItem in accessibleMenuItems"
@@ -258,5 +284,10 @@ export default {
         @addLabel="showAddLabelPopup"
       />
     </transition-group>
+    <div class="rounded p-2 text-slate-700 dark:text-slate-100 bg-slate-50 dark:bg-slate-800">
+      <small>
+        <span class="font-bold">{{ $t('GENERAL.ACCOUNT.EXPIRE.TITLE') }}</span>{{ formattedRemainingTime }}
+      </small>
+    </div>
   </div>
 </template>

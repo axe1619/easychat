@@ -190,6 +190,15 @@ export const mutations = {
     Vue.set(chat.meta, 'team', team);
   },
 
+  [types.ASSIGN_STATE_SORTER](_state, { state, conversationId }) {
+    try {
+      const [chat] = _state.allConversations.filter(c => c.id === conversationId);
+      Vue.set(chat, 'conversations_state', state);
+    } catch (error) {
+      console.warn({ error })
+    }
+  },
+
   [types.ASSIGN_STATE_REMARKETING](_state, { state, conversationId }) {
     try {
       const [chat] = _state.allConversations.filter(c => c.id === conversationId);

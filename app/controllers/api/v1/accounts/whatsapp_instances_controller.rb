@@ -1,5 +1,5 @@
-class Api::V1::Accounts::WhatsappInstancesController < ApplicationController
-
+class Api::V1::Accounts::WhatsappInstancesController < Api::V1::Accounts::BaseController
+  before_action :current_account, only: [:sync_templates]
   # POST /api/v1/accounts/:account_id/whatsapp_instances
   def create
     wi = whatsapp_instance_params
@@ -67,4 +67,14 @@ class Api::V1::Accounts::WhatsappInstancesController < ApplicationController
       :chatwoot_conversation_pending
     ).to_h
   end
+
+  def sync_templates
+    Current.account.whatsapp_channels
+      .limit(Limits::BULK_EXTERNAL_HTTP_CALLS_LIMIT)
+      .each do |channel|
+      Channels::Whatsapp::TemplatesSyncJob.perform_later(channel)
+    end
+    head :ok
+  end
+
 end

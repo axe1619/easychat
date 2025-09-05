@@ -1,5 +1,4 @@
 import ApiClient from '../ApiClient';
-import axios from 'axios';
 
 class WhatsappInstancesClient extends ApiClient {
   constructor() {
@@ -23,6 +22,10 @@ class WhatsappInstancesClient extends ApiClient {
   setWebhook(instanceName, data) {
     const slug = encodeURIComponent(instanceName);
     return axios.post(`${this.url}/${slug}/set_webhook`, data);
+  }
+
+  sync_templates() {
+    return axios.post(`${this.url}/sync_templates`);
   }
 }
 
