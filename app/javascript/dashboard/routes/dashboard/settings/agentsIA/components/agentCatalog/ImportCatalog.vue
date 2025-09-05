@@ -32,24 +32,23 @@ export default {
         botCatalogs() {
             return this.$store.getters['catalogs/getCatalogsByAgentBotId'](Number(this.botId));
         },
-        botAccCatalogs() {
-            return this.$store.getters['catalogs/getCatalogsByBotAndAccount']({
-                agent_bot_id: this.botId,
-                account_id: this.accountId,
-            });
-        },
         isUpdating() {
             return this.uiFlags.isUpdating;
         },
         isCreating() {
             return this.uiFlags.isCreating;
+        },
+        isBulkCreating() {
+            return this.uiFlags.isBulkCreating;
+        },
+        isBulkDeleting() {
+            return this.uiFlags.isBulkDeleting;
         }
     },
     mounted() {
-        this.$store.dispatch('catalogs/get', {
-            agent_bot_id: this.botId,
-            account_id: this.accountId,
-        });
+        this.$store.dispatch('catalogs/get', { agent_bot_id: this.botId })
+        const items = this.$store.getters['catalogs/getCatalogsByAgentBotId'](Number(this.botId))
+        this.catalogExists = items.length > 0
     },
     data() {
         return {
@@ -60,7 +59,7 @@ export default {
             headers: [],
             rows: [],
             duplicateCodes: [],
-
+            catalogExists: false
         };
     },
     setup() {
@@ -216,32 +215,42 @@ export default {
             return false;
         },
         async getCatalogs() {
-            await this.$store.dispatch('catalogs/get', {
-                agent_bot_id: Number(this.botId)
-                // account_id: this.accountId,
-            });
+            await this.$store.dispatch('catalogs/get', { agent_bot_id: Number(this.botId) });
             console.log('botCatalogs:', this.botCatalogs)
             console.log('botAccCatalogs:', this.botAccCatalogs)
         },
-        async submitFile() {
-            // const items = this.rows.map(r => ({ ...r, account_id: this.accountId, agent_bot_id: this.botId }))
-            // console.log(items)
-            // const created = await this.$store.dispatch('catalogs/createMany', items)
-            // console.log('created', created)
-            const items = [
-                { codigo: 'P-10', nombre: 'Prod 10', descripcion: 'X', agent_bot_id: this.botId, account_id: this.accountId },
-                { codigo: 'P-11', nombre: 'Prod 11', descripcion: 'Y', agent_bot_id: this.botId, account_id: this.accountId },
-            ];
-            await this.$store.dispatch('catalogs/bulkCreate', {
+        async createMany() {
+            const items = this.rows.map(r => ({ ...r, account_id: this.accountId, agent_bot_id: this.botId }))
+            const { ok, failed } = await this.$store.dispatch('catalogs/createMany', {
                 items,
-                refreshWith: { agent_bot_id: this.botId, account_id: this.accountId },
+                refreshWith: { agent_bot_id: Number(this.botId), account_id: Number(this.accountId) },
+                stopOnError: false,
+            })
+            useAlert(this.$t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.SUCCESS'))
+            this.toggleImportCatalog()
+            // console.log('Creados OK:', ok)
+            // console.log('Fallidos  :', failed)
+        },
+        async deleteMany() {
+            const ids = this.botCatalogs.map(i => (i.id))
+            console.log('IDs:', ids)
+            const { ok, failed } = await this.$store.dispatch('catalogs/deleteMany', {
+                ids,
+                refreshWith: { agent_bot_id: Number(this.botId), account_id: Number(this.accountId) },
+                stopOnError: false,
             });
+            // console.log('Eliminados:', ok);
+            // console.log('Fallidos:', failed);
+        },
+        async replaceMany() {
+            this.deleteMany()
+            this.createMany()
         },
         async createOne() {
             const payload = {
-                codigo: 'P-001',
-                nombre: 'Producto A',
-                descripcion: 'Desc',
+                codigo: 'P-002',
+                nombre: 'Producto B',
+                descripcion: 'Desc B',
                 agent_bot_id: this.botId,
                 account_id: this.accountId,
                 precio: '100',
@@ -254,13 +263,13 @@ export default {
 <template>
     <div class="flex flex-col h-auto overflow-auto">
         <woot-modal-header :header-title="$t('AGENTS_AI.CARDS.CATALOG.IMPORT.NAME')">
-            <p>{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_A') }}<a class="text-woot-500 dark:text-woot-500"
-                    href="/downloads/import-contacts-sample.csv">{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_LINK')
-                    }}</a>{{ $t('AGENTS_AI.CARDS.CATALOG.DESCRIPTION_B') }}
+            <p>{{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.DESCRIPTION_A') }}<a class="text-woot-500 dark:text-woot-500"
+                    href="/downloads/import-catalog-sample.csv">{{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.DESCRIPTION_LINK')
+                    }}</a>{{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.DESCRIPTION_B') }}
             </p>
         </woot-modal-header>
 
-        <button class="button clear" @click="getCatalogs">GET...</button>
+        <!-- <button class="button clear" @click="getCatalogs">GET...</button> -->
 
         <div class="flex flex-col w-full px-8 py-8">
             <div class="flex">
@@ -274,16 +283,23 @@ export default {
 
             <div class="flex flex-row justify-end items-center w-full gap-2 px-0 py-2">
                 <span v-if="error" class="text-sm text-red-400 dark:text-red-500 me-auto font-medium">{{ error }}</span>
-                <WootSubmitButton :disabled="rows.length === 0 || (error !== null)"
-                    :button-text="$t('AGENTS_AI.CARDS.RAG.FORM.SUBMIT')" :loading="isCreating" @click="createOne" />
-                <button class="button clear" @click.prevent="toggleImportCatalog">
-                    {{ $t('AGENTS_AI.CARDS.RAG.FORM.CANCEL') }}
+                <button v-if="catalogExists" class="button primary"
+                    :disabled="rows.length === 0 || (error !== null)" @click="replaceMany">
+                    <Spinner v-if="isBulkCreating || isBulkDeleting" />
+                    {{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.BUTTON.REPLACE') }}
+                </button>
+                <button v-else class="button primary" :disabled="rows.length === 0 || (error !== null)"
+                    @click="createMany">
+                    <Spinner v-if="isBulkCreating || isBulkDeleting" />
+                    {{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.BUTTON.ADD') }}
+                </button>
+                <button class="button clear" @click="toggleImportCatalog">
+                    {{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.BUTTON.CANCEL') }}
                 </button>
             </div>
         </div>
 
         <div v-if="rows.length" class="overflow-scroll border rounded mx-8 mb-8 max-h-96">
-
             <table class="min-w-full border-collapse">
                 <thead class="bg-slate-600 sticky top-0 z-10">
                     <tr>

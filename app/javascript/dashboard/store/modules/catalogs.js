@@ -26,13 +26,11 @@ export const getters = {
     return item || {};
   },
   getCatalogsByAgentBotId: $state => agentBotId => {
-    console.log('Desde modules/getCatalogsByAgentBotId', agentBotId)
     return $state.records.filter(r => Number(r.agent_bot_id) === Number(agentBotId))
   },
   getCatalogsByBotAndAccount:
     $state =>
-      ({ agent_bot_id, account_id }) =>
-      {
+      ({ agent_bot_id, account_id }) => {
         return $state.records.filter(
           r =>
             Number(r.agent_bot_id) === Number(agent_bot_id) &&
@@ -86,21 +84,49 @@ export const actions = {
     }
   },
 
-  bulkCreate: async ({ commit, dispatch }, { items, refreshWith } = {}) => {
+  createMany: async ({ commit, dispatch }, { items = [], refreshWith, stopOnError = false } = {}) => {
     commit(types.SET_CATALOG_UI_FLAG, { isBulkCreating: true });
+
+    const results = { ok: [], failed: [] };
+
     try {
-      const { data } = await CatalogsAPI.bulkCreate(items);
-      // El bulk_create del backend devuelve created_ids + errors.
-      // Para tener la lista actualizada, refrescamos si nos pasan filtros:
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i];
+        try {
+          const { data } = await CatalogsAPI.create(item);
+          commit(types.ADD_CATALOG, data);
+          results.ok.push(data);
+        } catch (error) {
+          results.failed.push({ item, error });
+          if (stopOnError) break;
+        }
+      }
       if (refreshWith) {
         await dispatch('get', refreshWith);
       }
-      return data;
-    } catch (error) {
-      throwErrorMessage(error);
-      return null;
+      return results;
     } finally {
       commit(types.SET_CATALOG_UI_FLAG, { isBulkCreating: false });
+    }
+  },
+
+  bulkCreate: async ({ commit, dispatch }, { items, refreshWith } = {}) => {
+    commit(types.SET_CATALOG_UI_FLAG, { isBulkCreating: true })
+    try {
+      console.log('items:', items)
+      const { data } = await CatalogsAPI.bulkCreate(items)
+      // El bulk_create del backend devuelve created_ids + errors.
+      // Para tener la lista actualizada, refrescamos si nos pasan filtros:
+      if (refreshWith) {
+        await dispatch('get', refreshWith)
+      }
+      return data;
+    } catch (error) {
+      console.log('ERROR:', error)
+      throwErrorMessage(error)
+      return null
+    } finally {
+      commit(types.SET_CATALOG_UI_FLAG, { isBulkCreating: false })
     }
   },
 
@@ -129,6 +155,34 @@ export const actions = {
       return false;
     } finally {
       commit(types.SET_CATALOG_UI_FLAG, { isDeleting: false });
+    }
+  },
+
+  deleteMany: async ({ commit, dispatch }, { ids = [], refreshWith, stopOnError = false } = {}) => {
+    commit(types.SET_CATALOG_UI_FLAG, { isBulkDeleting: true });
+
+    const results = { ok: [], failed: [] };
+
+    try {
+      for (let i = 0; i < ids.length; i += 1) {
+        const id = ids[i];
+        try {
+          await CatalogsAPI.delete(id);
+          commit(types.DELETE_CATALOG, id);
+          results.ok.push(id);
+        } catch (error) {
+          results.failed.push({ id, error });
+          if (stopOnError) break;
+        }
+      }
+
+      if (refreshWith) {
+        await dispatch('get', refreshWith);
+      }
+
+      return results;
+    } finally {
+      commit(types.SET_CATALOG_UI_FLAG, { isBulkDeleting: false });
     }
   },
 

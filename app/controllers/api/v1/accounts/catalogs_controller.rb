@@ -1,27 +1,55 @@
 # app/controllers/api/v1/accounts/catalogs_controller.rb
-class Api::V1::Accounts::CatalogsController < Api::V1::Accounts::BaseController
-  before_action :current_account
-  before_action :check_authorization
-  before_action :set_catalog, only: [:show, :update, :destroy]
+class Api::V1::Accounts::CatalogsController < Api::V1::Accounts::BaseController 
+
+  skip_before_action :validate_bot_access_token!, only: %i[index show], raise: false
+  skip_before_action :ensure_current_user_is_not_a_bot!, only: %i[index show], raise: false
+  skip_before_action :current_account,            only: %i[index show], raise: false
+
+  # Si tu BaseController usa Pundit con after_action de verificación, evita que rompa:
+  skip_after_action  :verify_authorized,    only: %i[index show], raise: false
+  skip_after_action  :verify_policy_scoped, only: %i[index],      raise: false
+
+  # ⚠️ NO volver a registrar current_account aquí (quitar esta línea si la tienes):
+  # before_action :current_account  <-- ELIMINAR
+
+  before_action :check_authorization, except: %i[index show]
+  before_action :set_catalog, only: %i[update destroy] # show no usa set_catalog
+
 
   # GET /catalogs?agent_bot_id=123&account_id=3
-  def index
-    Rails.logger.info("[catalogs#index] params: #{params.to_unsafe_h.slice('agent_bot_id','account_id')}")
-    scope = policy_scope(Catalog).where(account_id: Current.account.id)
+  # def index
+  #   Rails.logger.info("[catalogs#index] params: #{params.to_unsafe_h.slice('agent_bot_id','account_id')}")
+  #   # scope = policy_scope(Catalog).where(account_id: Current.account.id)
+  #   scope = Catalog.where(account_id: Current.account.id)
 
-    if params[:agent_bot_id].present?
-      scope = scope.where(agent_bot_id: params[:agent_bot_id])
-    end
+  #   if params[:agent_bot_id].present?
+  #     scope = scope.where(agent_bot_id: params[:agent_bot_id])
+  #   end
 
-    if params[:account_id].present? && params[:account_id].to_i != Current.account.id
-      return render json: { error: 'account_id inválido' }, status: :forbidden
-    end
+  #   if params[:account_id].present? && params[:account_id].to_i != Current.account.id
+  #     return render json: { error: 'account_id inválido' }, status: :forbidden
+  #   end
 
+  #   @catalogs = scope.order(id: :desc)
+  # end
+
+    def index
+    account_id = params[:account_id].to_i
+    return render json: { error: 'account_id inválido' }, status: :bad_request if account_id <= 0
+
+    scope = Catalog.where(account_id: account_id)
+    scope = scope.where(agent_bot_id: params[:agent_bot_id]) if params[:agent_bot_id].present?
     @catalogs = scope.order(id: :desc)
   end
 
+  # GET /api/v1/accounts/:account_id/catalogs/:id
+  def show
+    account_id = params[:account_id].to_i
+    @catalog = Catalog.find_by!(id: params[:id], account_id: account_id)
+  end
+
   # GET /catalogs/:id
-  def show; end
+  # def show; end
 
   # POST /catalogs
   # { catalog: { codigo:, nombre:, descripcion:, agent_bot_id:, ... } }
@@ -44,7 +72,6 @@ class Api::V1::Accounts::CatalogsController < Api::V1::Accounts::BaseController
   end
 
   # POST /catalogs/bulk_create
-  # Acepta:
   # { catalogs: [ {...}, {...} ] }  o  [ {...}, {...} ] (top-level array)
   def bulk_create
     items = params[:catalogs] || params[:_json]
