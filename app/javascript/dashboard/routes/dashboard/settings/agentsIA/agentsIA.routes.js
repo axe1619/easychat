@@ -4,6 +4,7 @@ import { frontendURL } from '../../../../helper/URLHelper';
 const SettingsWrapper = () => import('../Wrapper.vue');
 const IndexAgentsAI = () => import('./Index.vue');
 const Capabilities = () => import('./Capabilities.vue');
+const AgentTest = () => import('./components/AgentTest.vue');
 
 export default {
   routes: [
@@ -50,6 +51,14 @@ export default {
             permissions: ['administrator'],
           },
         },
+        {
+          path: 'agent-test',
+          name: 'settings_agent_test',
+          component: AgentTest,
+          meta: {
+            permissions: ['administrator'],
+          },
+        }
       ],
     },
   ],
