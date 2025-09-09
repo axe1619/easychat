@@ -16,6 +16,7 @@ export default {
           headerTitle: 'AGENTS_AI.HEADER_INDEX.TITLE',
           headerButtonText: 'SETTINGS.INBOXES.NEW_INBOX',
           icon: 'credit-card-person',
+          showNewButton: false,
           // newButtonRoutes: ['settings_agents_ia'],
           showBackButton,
         };
