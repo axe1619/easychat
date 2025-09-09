@@ -60,6 +60,10 @@ export default {
           thumbnail: `/assets/images/dashboard/priority/${CONVERSATION_PRIORITY.LOW}.svg`,
         },
       ],
+      sorterNone: {
+        id: null,
+        name: this.$t('CONVERSATION.SORTER_STATE.CHANGE_PRIORITY.SELECT_PLACEHOLDER')
+      }, 
       valueAgentBot: null
     };
   },
@@ -69,6 +73,7 @@ export default {
       currentUser: 'getCurrentUser',
       teams: 'teams/getTeams',
       kanbanState: 'kanbanState/getKanbanState',
+      sorter: 'sorter/getSorters',
     }),
     hasAnAssignedTeam() {
       return !!this.currentChat?.meta?.team;
@@ -183,6 +188,27 @@ export default {
         }
       }
     },
+    assignedSorterState: {
+      get() {
+        const sorter = this.currentChat.conversations_state
+        if (!sorter) {
+          return this.sorterNone;
+        }
+        return sorter
+      },
+      set(state) {
+        const state_before = this.currentChat.conversations_state
+        const conversationId = this.conversationId
+        this.$store.dispatch('setCurrentChatStateSorter', { state, conversationId })
+        this.$store.dispatch('assignStateSorter', { state, conversationId })
+          .then(() => {
+            useAlert(this.$t('CONVERSATION.UPDATE.STATE_SORTER.SUCCESS'));
+          }).catch(() => {
+            this.$store.dispatch('setCurrentChatStateSorter', { state: state_before, conversationId })
+            useAlert(this.$t('CONVERSATION.UPDATE.STATE_SORTER.FALIED'));
+          })
+      }
+    },
     showSelfAssign() {
       if (!this.assignedAgent) {
         return true;
@@ -264,6 +290,9 @@ export default {
       if (this.kanbanState.length == 0)
         return
       this.assignedKanbanState = selectedKanbaStateItem
+    },
+    onClickAssignSorterState(selectedSorterStateItem) {
+      this.assignedSorterState = selectedSorterStateItem
     },
     async onSwitchAgentBot(value) {
       this.valueAgentBot = value
@@ -380,6 +409,18 @@ export default {
           $t('CONVERSATION.PRIORITY.CHANGE_PRIORITY.INPUT_PLACEHOLDER')
         "
         @click="onClickAssignPriority"
+      />
+    </div>
+    <div class="multiselect-wrap--small">
+      <ContactDetailsItem compact :title="$t('CONVERSATION.SORTER_STATE.TITLE')" />
+      <MultiselectDropdown
+        :options="sorter"
+        :selected-item="assignedSorterState"
+        :multiselector-title="$t('CONVERSATION.SORTER_STATE.TITLE')"
+        :multiselector-placeholder="$t('CONVERSATION.SORTER_STATE.CHANGE_PRIORITY.SELECT_PLACEHOLDER')"
+        :no-search-result="$t('CONVERSATION.SORTER_STATE.CHANGE_PRIORITY.NO_RESULTS')"
+        :input-placeholder="$t('CONVERSATION.SORTER_STATE.CHANGE_PRIORITY.INPUT_PLACEHOLDER')"
+        @click="onClickAssignSorterState"
       />
     </div>
     <div class="multiselect-wrap--small">

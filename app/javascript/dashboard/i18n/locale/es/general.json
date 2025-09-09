@@ -1,5 +1,12 @@
 {
   "GENERAL": {
+    "ACCOUNT": {
+      "EXPIRE": {
+        "TITLE": "Habilitado por: ",
+        "DATE": "{day} dias, {hour} horas, {minute} minutos",
+        "MESSAGE": "Cuenta expirada"
+      }
+    },
     "SHOWING_RESULTS": "Mostrando {firstIndex}-{lastIndex} de {totalCount} elementos",
     "PHONE_INPUT": {
       "PLACEHOLDER": "Buscar",

@@ -1,8 +1,14 @@
 <script>
+import Spinner from '../../../../../shared/components/Spinner.vue';
+import whatsappInstancesClient from '../../../../api/channel/whatsappInstancesClient';
+import { useAlert } from 'dashboard/composables';
 // TODO: Remove this when we support all formats
 const formatsToRemove = ['DOCUMENT', 'VIDEO'];
 
 export default {
+  components: {
+    Spinner
+  },
   props: {
     inboxId: {
       type: Number,
@@ -12,6 +18,9 @@ export default {
   data() {
     return {
       query: '',
+      loading: {
+        template: false
+      }
     };
   },
   computed: {
@@ -36,6 +45,20 @@ export default {
       return template.components.find(component => component.type === 'BODY')
         .text;
     },
+    fetchTemplatesWhatsapp() {
+      this.loading.template = true
+      whatsappInstancesClient.sync_templates()
+        .then(async () => {
+          await this.$store.dispatch('inboxes/get', { cache: false })
+          useAlert(this.$t('WHATSAPP_TEMPLATES.STATUS.SUCCESS'));
+        })
+        .catch((error) => {
+          useAlert(this.$t('WHATSAPP_TEMPLATES.STATUS.FAILED'));
+          console.warn({ error })
+        }).finally(() => {
+          this.loading.template = false
+        })
+    }
   },
 };
 </script>
@@ -50,6 +73,18 @@ export default {
         :placeholder="$t('WHATSAPP_TEMPLATES.PICKER.SEARCH_PLACEHOLDER')"
         class="templates__search-input"
       />
+      <div>
+        <woot-button
+          v-if="!loading.template"
+          v-tooltip.top-end="'reload'"
+          size="tiny"
+          icon="loading" 
+          variant="smooth"
+          color-scheme="secondary"
+          @click="fetchTemplatesWhatsapp"
+        />
+        <Spinner v-if="loading.template" size="small" colorScheme="primary" />
+      </div>
     </div>
     <div class="template__list-container">
       <div v-for="(template, i) in filteredTemplateMessages" :key="template.id">
@@ -105,6 +140,7 @@ export default {
 
   .templates__search-input {
     @apply bg-transparent border-0 text-xs h-9 m-0;
+    width: 100%;
   }
 }
 .template__list-container {

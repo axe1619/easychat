@@ -1,5 +1,12 @@
 {
   "GENERAL": {
+    "ACCOUNT": {
+      "EXPIRE": {
+        "TITLE": "Enabled for: ",
+        "DATE": "{day} days, {hour} hours, {minute} minutes",
+        "MESSAGE": "Account expired"
+      }
+    },
     "SHOWING_RESULTS": "Showing {firstIndex}-{lastIndex} of {totalCount} items",
     "PHONE_INPUT": {
       "PLACEHOLDER": "Search",

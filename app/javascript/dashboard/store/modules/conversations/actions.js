@@ -390,6 +390,15 @@ const actions = {
     commit(getTypeList(types.ASSIGN_TEAM), { team, conversationId });
   },
 
+  assignStateSorter: async ({ dispatch }, { conversationId, state }) => {
+    const attributes = { conversations_state_id: state.id }
+    await ConversationApi.update({ conversationId, attributes });
+  },
+
+  setCurrentChatStateSorter({ commit }, { state, conversationId }) {
+    commit(types.ASSIGN_STATE_SORTER, { state, conversationId });
+  },
+
   assignStateRemarketing: async ({ dispatch }, { conversationId, state }) => {
     const attributes = { enabled_remarketing: state }
     await ConversationApi.update({ conversationId, attributes });
