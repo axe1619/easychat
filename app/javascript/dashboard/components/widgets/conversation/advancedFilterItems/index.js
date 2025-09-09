@@ -110,6 +110,14 @@ const filterTypes = [
     filterOperators: OPERATOR_TYPES_5,
     attributeModel: 'standard',
   },
+  {
+    attributeKey: 'conversations_state_id',
+    attributeI18nKey: 'SORTER',
+    inputType: 'search_select',
+    dataType: 'text',
+    filterOperators: OPERATOR_TYPES_1,
+    attributeModel: 'standard',
+  },
 ];
 
 export const filterAttributeGroups = [
@@ -144,6 +152,10 @@ export const filterAttributeGroups = [
       {
         key: 'labels',
         i18nKey: 'LABELS',
+      },
+      {
+        key: 'conversations_state_id',
+        i18nKey: 'SORTER',
       },
       {
         key: 'created_at',
