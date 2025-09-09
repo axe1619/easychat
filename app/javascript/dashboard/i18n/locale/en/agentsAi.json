@@ -4,6 +4,42 @@
             "TITLE": "Agents AI",
             "DESCRIPTION": "Select one of your AI agents to modify its properties or capabilities according to your business needs."
         },
+        "BUTTON":{
+            "ADD":"Add agent"
+        },
+        "ADD": {
+            "NAME": "Add new agent",
+            "DESCRIPTION": "Enter your new AI agent's details. This data will define the agent's behavior, so customize it to your business's needs.",
+            "FORM": {
+                "NAME": {
+                    "LABEL": "Agent's Name",
+                    "PLACEHOLDER": "Enter your agent's name",
+                    "ERROR": "Name is required"
+                },
+                "DESCRIPTION": {
+                    "LABEL": "Agent Description",
+                    "PLACEHOLDER": "Enter a description of the agent",
+                    "ERROR": "Description is required"
+                },
+                "SELECT":{
+                    "LABEL":"Agent Type",
+                    "0":"General",
+                    "1":"Sales"
+                },
+                "PROMPT": {
+                    "LABEL": "Agent Prompt",
+                    "PLACEHOLDER": "Enter your agent's initial prompt",
+                    "ERROR": "The prompt is required"
+                },
+                "SCHEDULE": {
+                    "LABEL": "Enable AI Agent Wake-Up Schedule",
+                    "INIT": "Start",
+                    "FINISH": "Finish"
+                },
+                "SUBMIT": "Add",
+                "CANCEL": "Cancel"
+            }
+        },
         "HEADER_CAPABILITIES": {
             "TITLE": "Capabilities",
             "DESCRIPTION_A": "In this section, you can configure how you want your AI agent to help you respond to messages, provide information, or perform tasks automatically.",
@@ -96,6 +132,10 @@
         },
         "ALERT": {
             "AGENT_BOT": {
+                "CREATE": {
+                    "SUCCESS": "New agent successfully registered",
+                    "ERROR": "Error registering new agent"
+                },
                 "UPDATE": {
                     "SUCCESS": "Agent data updated successfully",
                     "ERROR": "Error updating agent data"

@@ -119,9 +119,9 @@ export default {
       }
       try {
         await this.$store.dispatch('agentBots/update', data);
-        useAlert(this.$t('AGENT_BOTS.EDIT.API.SUCCESS_MESSAGE'));
+        useAlert(this.$t('AGENT_BOTS.ALERT.AGENT_BOT.UPDATE.SUCCESS'));
       } catch (error) {
-        useAlert(this.$t('AGENT_BOTS.CSML_BOT_EDITOR.BOT_CONFIG.API_ERROR'));
+        useAlert(this.$t('AGENT_BOTS.ALERT.AGENT_BOT.UPDATE.ERROR'));
       }
     }
   },
