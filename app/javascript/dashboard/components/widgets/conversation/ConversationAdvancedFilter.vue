@@ -182,6 +182,8 @@ export default {
               };
             }),
           ];
+        case 'conversations_state_id':
+          return this.$store.getters['sorter/getSorters'];
         case 'assignee_id':
           return this.$store.getters['agents/getAgents'];
         case 'contact':
