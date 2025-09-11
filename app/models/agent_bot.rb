@@ -30,7 +30,7 @@ class AgentBot < ApplicationRecord
   has_many :messages, as: :sender, dependent: :nullify
   belongs_to :account, optional: true
   enum bot_type: { webhook: 0, csml: 1 }
-  enum agent_type: { default: 0, sales: 1 }
+  enum agent_type: { general: 0, sales: 1 }
 
   validate :validate_agent_bot_config
   validates :outgoing_url, length: { maximum: Limits::URL_LENGTH_LIMIT }

@@ -17,7 +17,7 @@ export default {
       default:
         'undo redo | bold italic underline | bullist numlist | link | fullscreen | code'
     },
-    plugins: { type: String, default: 'searchreplace fullscreen code lists link' },
+    plugins: { type: String, default: 'searchreplace fullscreen' }, //code lists link
   },
 
   data() {

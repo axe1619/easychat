@@ -4,6 +4,42 @@
             "TITLE": "Agentes IA",
             "DESCRIPTION": "Elige un agente de inteligencia artificial en la lista de abajo, para poder modificar sus capacidades de acorde a las necesidades de tu empresa."
         },
+        "BUTTON": {
+            "ADD": "Añadir agente"
+        },
+        "ADD": {
+            "NAME": "Agregar nuevo agente",
+            "DESCRIPTION": "Ingresa los datos de tu nuevo agente de inteligencia artificial. Estos datos definirán el comportamiento del agente, así que personalizalo según las necesidades de tu empresa.",
+            "FORM": {
+                "NAME": {
+                    "LABEL": "Nombre del agente",
+                    "PLACEHOLDER": "Ingrese el nombre de su agente",
+                    "ERROR": "El nombre es requerido"
+                },
+                "DESCRIPTION": {
+                    "LABEL": "Descripción del agente",
+                    "PLACEHOLDER": "Introduzca una descripción de la agente",
+                    "ERROR": "La descripción es requerida"
+                },
+                "SELECT": {
+                    "LABEL": "Tipo de agente",
+                    "0": "General",
+                    "1": "Ventas"
+                },
+                "PROMPT": {
+                    "LABEL": "Prompt del agente",
+                    "PLACEHOLDER": "Ingresa el prompt inicial de tu agente",
+                    "ERROR": "El prompt es requerido"
+                },
+                "SCHEDULE": {
+                    "LABEL": "Habilitar horario de activación del agente de IA.",
+                    "INIT": "Iniciar",
+                    "FINISH": "Finalizar"
+                },
+                "SUBMIT": "Agregar",
+                "CANCEL": "Cancelar"
+            }
+        },
         "HEADER_CAPABILITIES": {
             "TITLE": "Capacidades",
             "DESCRIPTION_A": "En esta sección puedes configurar cómo deseas que tu agente de inteligencia artificial te ayude a responder mensajes, brindar información o realizar tareas de forma automática.",
@@ -92,6 +128,10 @@
         },
         "ALERT": {
             "AGENT_BOT": {
+                "CREATE": {
+                    "SUCCESS": "Nuevo agente registrado correctamente",
+                    "ERROR": "Error al registrar el nuevo agente"
+                },
                 "UPDATE": {
                     "SUCCESS": "Datos de agente actualizados correctamente",
                     "ERROR": "Error al actualizar los datos del agente"

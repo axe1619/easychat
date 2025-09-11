@@ -29,36 +29,49 @@ export default {
       const botId = this.$route.query.agent;
       return this.$store.getters['agentBots/getBot'](botId);
     },
+
     cards() {
       return [
-        { 
-          id: 1, 
-          inDeploy: false, 
-          action: () => { this.showAgentRag = true }, 
-          name: this.$t('AGENTS_AI.CARDS.RAG.NAME'), 
-          image: '/assets/images/dashboard/agents-ai/rag.webp' 
+        {
+          id: 1,
+          inDeploy: false,
+          action: () => { this.showAgentRag = true },
+          name: this.$t('AGENTS_AI.CARDS.RAG.NAME'),
+          image: '/assets/images/dashboard/agents-ai/rag.webp'
         },
-        { 
-          id: 2, 
-          inDeploy: true, 
-          action: () => { this.showAgentCalendar = true }, 
-          name: this.$t('AGENTS_AI.CARDS.CALENDAR.NAME'), 
-          image: '/assets/images/dashboard/agents-ai/calendar.png' 
+        {
+          id: 2,
+          inDeploy: true,
+          action: () => { this.showAgentCalendar = true },
+          name: this.$t('AGENTS_AI.CARDS.CALENDAR.NAME'),
+          image: '/assets/images/dashboard/agents-ai/calendar.png'
         },
-        { 
-          id: 3, 
-          inDeploy: false, 
-          action: () => { this.showAgentCatalog = true }, 
-          name: this.$t('AGENTS_AI.CARDS.CATALOG.NAME'), 
-          image: '/assets/images/dashboard/agents-ai/catalog.png' 
+        {
+          id: 3,
+          inDeploy: false,
+          action: () => { this.showAgentCatalog = true },
+          name: this.$t('AGENTS_AI.CARDS.CATALOG.NAME'),
+          image: '/assets/images/dashboard/agents-ai/catalog.png'
         },
-        { 
-          id: 4, 
-          inDeploy: false, 
-          action: () => { this.showAgentConfiguration = true }, 
-          name: this.$t('AGENTS_AI.CARDS.CONFIGURATION.NAME'), 
-          image: '/assets/images/dashboard/agents-ai/agent-settings.png' 
+        {
+          id: 4,
+          inDeploy: false,
+          action: () => { this.showAgentConfiguration = true },
+          name: this.$t('AGENTS_AI.CARDS.CONFIGURATION.NAME'),
+          image: '/assets/images/dashboard/agents-ai/agent-settings.png'
         },
+        {
+          id: 5,
+          inDeploy: false,
+          action: () => {
+            this.$router.push({
+              name: 'settings_agent_test',
+              query: { agent: this.agentBot?.id },
+            });
+          },
+          name: this.$t('AGENTS_AI.CARDS.SNAPSHOT.NAME'),
+          image: '/assets/images/dashboard/agents-ai/agent-test.png'
+        }
       ];
     }
   },

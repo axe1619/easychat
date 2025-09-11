@@ -4,6 +4,42 @@
             "TITLE": "Agents AI",
             "DESCRIPTION": "Select one of your AI agents to modify its properties or capabilities according to your business needs."
         },
+        "BUTTON":{
+            "ADD":"Add agent"
+        },
+        "ADD": {
+            "NAME": "Add new agent",
+            "DESCRIPTION": "Enter your new AI agent's details. This data will define the agent's behavior, so customize it to your business's needs.",
+            "FORM": {
+                "NAME": {
+                    "LABEL": "Agent's Name",
+                    "PLACEHOLDER": "Enter your agent's name",
+                    "ERROR": "Name is required"
+                },
+                "DESCRIPTION": {
+                    "LABEL": "Agent Description",
+                    "PLACEHOLDER": "Enter a description of the agent",
+                    "ERROR": "Description is required"
+                },
+                "SELECT":{
+                    "LABEL":"Agent Type",
+                    "0":"General",
+                    "1":"Sales"
+                },
+                "PROMPT": {
+                    "LABEL": "Agent Prompt",
+                    "PLACEHOLDER": "Enter your agent's initial prompt",
+                    "ERROR": "The prompt is required"
+                },
+                "SCHEDULE": {
+                    "LABEL": "Enable AI Agent Wake-Up Schedule",
+                    "INIT": "Start",
+                    "FINISH": "Finish"
+                },
+                "SUBMIT": "Add",
+                "CANCEL": "Cancel"
+            }
+        },
         "HEADER_CAPABILITIES": {
             "TITLE": "Capabilities",
             "DESCRIPTION_A": "In this section, you can configure how you want your AI agent to help you respond to messages, provide information, or perform tasks automatically.",
@@ -88,10 +124,18 @@
                     "SUBMIT": "Update",
                     "CANCEL": "Cancel"
                 }
+            },
+            "SNAPSHOT": {
+              "NAME": "Agent Test",
+              "DESCRIPTION": "Test your agent's capabilities in a simulated conversation, providing a more realistic experience for your customers."
             }
         },
         "ALERT": {
             "AGENT_BOT": {
+                "CREATE": {
+                    "SUCCESS": "New agent successfully registered",
+                    "ERROR": "Error registering new agent"
+                },
                 "UPDATE": {
                     "SUCCESS": "Agent data updated successfully",
                     "ERROR": "Error updating agent data"
@@ -113,10 +157,30 @@
                 }
             }
         },
-        "MODALS": {
-            "RAG": {},
-            "CALENDAR": {
-                "ADD_GOOGLE_ACOUNT": "Add your Google account"
+        "MODALS":{
+            "RAG":{},
+            "CALENDAR":{
+                "ADD_GOOGLE_ACOUNT":"Add your Google account"
+            },
+            "SNAPSHOT": {
+              "TITLE": "Agent Test",
+              "SUBTITLE": "Configure and test your chatbot with personalized parameters.",
+              "USER_PROMPT_LABEL": "User Prompt",
+              "USER_PROMPT_PLACEHOLDER": "Type the interaction prompt to start the test…",
+              "INSTRUCTIONS_TITLE": "Instructions",
+              "BULLET_CONFIGURE": "Configure your chatbot’s parameters.",
+              "BULLET_TRY": "Try different interaction scenarios.",
+              "BULLET_MONITOR": "Monitor response quality.",
+              "BULLET_TUNE": "Adjust the configuration as needed.",
+              "BUTTON_START": "Start ChatBot",
+              "BUTTON_STARTING": "Starting…",
+              "BUTTON_SET_CONFIG": "Set as configuration",
+              "BUTTON_SET_CONFIG_HINT": "Save this prompt as the agent’s default configuration",
+              "CHAT_TITLE": "Conversation",
+              "CHAT_PLACEHOLDER": "Write a message and press Enter…",
+              "CHAT_EMPTY": "Start the test to see messages here.",
+              "SEND": "Send",
+              "CLOSE": "Close"
             }
         }
     }

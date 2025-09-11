@@ -301,7 +301,7 @@ export default {
 
         <div v-if="rows.length" class="overflow-scroll border rounded mx-8 mb-8 max-h-96">
             <table class="min-w-full border-collapse">
-                <thead class="bg-slate-600 sticky top-0 z-10">
+                <thead class="bg-slate-600 sticky top-0 z-10 text-white">
                     <tr>
                         <th v-for="(h, i) in headers" :key="i" class="text-left p-2 border-b"
                             :class="{ 'bg-red-300': h !== validHeaders[i] }">

@@ -19,6 +19,11 @@ module.exports = {
         inter: ['Inter', ...defaultTheme.fontFamily.sans],
         interDisplay: ['Inter Display', ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        blue: {
+          500: '#3498db',
+        },
+      },
     },
     screens: {
       xs: '480px',
