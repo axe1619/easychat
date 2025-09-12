@@ -49,6 +49,7 @@ import sorter from './modules/sorter';
 import kanbanState from './modules/kanbanState';
 import rags from './modules/rags';
 import catalogs from './modules/catalogs';
+import calendars from './modules/calendars';
 
 const plugins = [];
 
@@ -103,6 +104,7 @@ export default new Vuex.Store({
     kanbanState,
     rags,
     catalogs,
+    calendars
   },
   plugins,
 });

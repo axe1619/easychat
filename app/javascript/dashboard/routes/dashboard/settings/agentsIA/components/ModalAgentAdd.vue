@@ -50,8 +50,8 @@ export default {
       finishAt: '',
       show: true,
       agentTypes: [
-        { value: 0, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.0'), url:`${baseUrl}/agent/maria` },
-        { value: 1, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.1'), url:`${baseUrl}/agent/sales` }
+        { value: 0, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.0'), url:`${baseUrl}/api/agent/maria` },
+        { value: 1, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.1'), url:`${baseUrl}/api/agent/sales` }
       ]
     };
   },
