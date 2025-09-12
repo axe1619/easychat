@@ -187,6 +187,8 @@ Rails.application.routes.draw do
               post :connect
               get  :state
               post :set_webhook
+              post :restart
+              post :logout
             end
             collection do
               post :sync_templates

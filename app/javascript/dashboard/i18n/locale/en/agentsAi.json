@@ -178,7 +178,7 @@
               "BULLET_TUNE": "Adjust the configuration as needed.",
               "BUTTON_START": "Start ChatBot",
               "BUTTON_STARTING": "Starting…",
-              "BUTTON_SET_CONFIG": "Set as configuration",
+              "BUTTON_SET_CONFIG": "Set configuration",
               "BUTTON_SET_CONFIG_HINT": "Save this prompt as the agent’s default configuration",
               "CHAT_TITLE": "Conversation",
               "CHAT_PLACEHOLDER": "Write a message and press Enter…",
