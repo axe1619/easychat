@@ -175,6 +175,7 @@ Rails.application.routes.draw do
           resources :labels, only: [:index, :show, :create, :update, :destroy]
           resources :conversation_states, only: [:index, :show, :create, :update, :destroy]
           resources :rags
+          resources :calendars
           resources :catalogs do
             collection do
               post :bulk_create

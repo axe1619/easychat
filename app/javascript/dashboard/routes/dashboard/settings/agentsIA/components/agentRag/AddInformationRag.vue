@@ -119,7 +119,7 @@ export default {
 
             try {
                 this.uploading = true
-                await apiAgent.post(`/rag/add-pdf`, fd, {
+                await apiAgent.post(`/api/rag/add-pdf`, fd, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 })
                 const data = {

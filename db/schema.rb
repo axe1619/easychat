@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_04_154126) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_11_155813) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -203,6 +203,20 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_04_154126) do
     t.datetime "updated_at", null: false
     t.boolean "active", default: true, null: false
     t.index ["account_id"], name: "index_automation_rules_on_account_id"
+  end
+
+  create_table "calendars", force: :cascade do |t|
+    t.string "platform", null: false
+    t.text "id_token", null: false
+    t.text "access_token", null: false
+    t.text "refresh_token", null: false
+    t.integer "account_id", null: false
+    t.integer "agent_bot_id", null: false
+    t.string "email"
+    t.string "user_name"
+    t.string "picture"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "campaigns", force: :cascade do |t|

@@ -41,7 +41,7 @@ export default {
         },
         {
           id: 2,
-          inDeploy: true,
+          inDeploy: false,
           action: () => { this.showAgentCalendar = true },
           name: this.$t('AGENTS_AI.CARDS.CALENDAR.NAME'),
           image: '/assets/images/dashboard/agents-ai/calendar.png'
@@ -99,7 +99,7 @@ export default {
     </woot-modal>
 
     <woot-modal :show.sync="this.showAgentCalendar" :on-close="hideAgentCalendar">
-      <ModalAgentCalendar :on-close="hideAgentCalendar" />
+      <ModalAgentCalendar :on-close="hideAgentCalendar" :botId="agentBot.id" :accountId="agentBot.account_id" />
     </woot-modal>
 
     <woot-modal :show.sync="this.showAgentCatalog" :on-close="hideAgentCatalog">
@@ -127,7 +127,7 @@ export default {
 
       <div class="grid max-w-3xl grid-cols-2 mx-0 mt-6 sm:grid-cols-3 lg:grid-cols-4">
         <button v-for="card in cards" :key="card.id" @click="card.action" :disabled="card.inDeploy"
-          class="bg-white dark:bg-slate-900 cursor-pointer flex flex-col justify-end transition-all duration-200 ease-in py-4 px-2 items-center border border-solid border-slate-25 dark:border-slate-800 hover:border-woot-500 dark:hover:border-woot-500 hover:shadow-md">
+          class="bg-white dark:bg-slate-900 cursor-pointer flex flex-col justify-end transition-all duration-200 ease-in py-4 px-2 items-center border border-solid border-slate-200 dark:border-slate-800 hover:border-woot-500 dark:hover:border-woot-500 hover:shadow-md">
           <div class="w-full h-32 p-2 flex justify-center items-center">
             <img :src="card.image" :alt="card.name" class="h-full object-cover" />
           </div>
