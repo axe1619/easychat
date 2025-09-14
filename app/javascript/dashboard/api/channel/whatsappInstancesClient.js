@@ -18,6 +18,18 @@ class WhatsappInstancesClient extends ApiClient {
     return axios.get(`${this.url}/${slug}/state`);
   }
 
+  // POST /whatsapp_instances/:instance_name/restart
+  restart(instanceName) {
+    const slug = encodeURIComponent(instanceName);
+    return axios.post(`${this.url}/${slug}/restart`);
+  }
+
+  // POST /api/v1/accounts/:account_id/whatsapp_instances/:name/logout
+  logout(instanceName) {
+    const slug = encodeURIComponent(instanceName);
+    return axios.post(`${this.url}/${slug}/logout`);
+  }
+
   // POST /whatsapp_instances/:instance_name/set_webhook
   setWebhook(instanceName, data) {
     const slug = encodeURIComponent(instanceName);

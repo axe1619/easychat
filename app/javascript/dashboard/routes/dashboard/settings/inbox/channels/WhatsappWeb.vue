@@ -237,6 +237,9 @@ export default {
       clearInterval(this.statusInterval);
       this.statusInterval = null;
     }
+    if (connectionState !== 'open') {
+      WhatsappInstancesClient.logout(this.instanceName);
+    }
   },
 };
 </script>

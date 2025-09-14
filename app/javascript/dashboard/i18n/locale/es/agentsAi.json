@@ -69,7 +69,7 @@
                 "DESCRIPTION": "Sincroniza tu cuenta y autoriza el acceso a tu calendario. Esto permitirá que el agente pueda ver, editar y agregar eventos en tu nombre.",
                 "BUTTON":{
                     "ADD_GOOGLE_ACOUNT": "Agrega tu cuenta de Google",
-                    "DELETE":"Eliminar"                                        
+                    "DELETE":"Eliminar"
                 }
             },
             "CATALOG": {
@@ -155,6 +155,32 @@
                     "SUCCESS": "Archivo eliminado de la fuente de conocimiento",
                     "ERROR": "Hubo un error al eliminar el archivo de la fuente de conocimiento"
                 }
+            }
+        },
+        "MODALS": {
+            "RAG": {},
+            "CALENDAR": {
+                "ADD_GOOGLE_ACOUNT": "Agrega tu cuenta de Google"
+            },
+            "SNAPSHOT": {
+              "TITLE": "Agente de IA",
+              "SUBTITLE": "Configura y prueba tu chatbot con parámetros personalizados.",
+              "USER_PROMPT_LABEL": "Prompt de usuario",
+              "USER_PROMPT_PLACEHOLDER": "Escriba la solicitud de interacción para iniciar la prueba…",
+              "INSTRUCTIONS_TITLE": "Instrucciones",
+              "BULLET_CONFIGURE": "Configura los parámetros de tu chatbot.",
+              "BULLET_TRY": "Pruebe diferentes escenarios de interacción.",
+              "BULLET_MONITOR": "Monitorear la calidad de la respuesta.",
+              "BULLET_TUNE": "Ajuste la configuración según sea necesario.",
+              "BUTTON_START": "Iniciar ChatBot",
+              "BUTTON_STARTING": "Iniciando…",
+              "BUTTON_SET_CONFIG": "Esblecer configuracion",
+              "BUTTON_SET_CONFIG_HINT": "Guarde este mensaje como la configuración predeterminada del agente",
+              "CHAT_TITLE": "Conversación",
+              "CHAT_PLACEHOLDER": "Escribe un mensaje y pulsa Enter…",
+              "CHAT_EMPTY": "Comience la prueba para ver los mensajes aquí.",
+              "SEND": "Enviar",
+              "CLOSE": "Cerrar"
             }
         }
     }

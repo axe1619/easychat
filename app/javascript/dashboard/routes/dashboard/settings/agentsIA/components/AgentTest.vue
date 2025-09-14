@@ -1,5 +1,5 @@
 <script>
-const SCRIPT_ID = 'snapshot-script';
+const SCRIPT_NAME = 'snapshot-script';
 
 export default {
   name: 'AgentTest',
@@ -116,7 +116,7 @@ export default {
               website_url: null,
               widget_color: null,
               welcome_title: 'Snapshot!',
-              welcome_tagline: null,
+              welcome_tagline: 'Bienvenido al entorno de prueba de Snapshot',
             },
           }
         );
@@ -164,26 +164,39 @@ export default {
       this.isRunning = false;
       this.injectError = null;
     },
-
-    removeScript() {
-      const s = document.getElementById(SCRIPT_ID);
-      if (s && s.parentNode) {
-        s.parentNode.removeChild(s);
+    onRemove() {
+      try {
+        console.log('removeScript beforeDestroy');
+        this.removeScript();
+      } catch (e) {
+        console.error('removeScript error:', e);
+      }
+      try {
+        console.log('deleteInbox');
+        this.deleteInbox();
+      } catch (e) {
+        console.error('deleteInbox error:', e);
       }
     },
+    removeScript() {
+      const scripts = document.getElementsByName(SCRIPT_NAME);
+      Array.from(scripts).forEach(el => el.remove());
+    },
     injectWidgetScript(rawScript) {
-      this.removeScript();
+      this.onRemove();
 
       if (!rawScript) return;
-
-      const match = String(rawScript).match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-      const code = match ? match[1] : rawScript;
+      const decoded = rawScript
+        .replace(/\\u003c/g, '<')
+        .replace(/\\u003e/g, '>');
+      const match = decoded.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+      const code = match ? match[1] : decoded;
 
       const blob = new Blob([code], { type: 'text/javascript' });
       const src = URL.createObjectURL(blob);
 
       const script = document.createElement('script');
-      script.id = SCRIPT_ID;
+      script.name = SCRIPT_NAME;
       script.type = 'text/javascript';
       script.src = src;
       script.async = true;
@@ -191,12 +204,11 @@ export default {
       script.onload = () => URL.revokeObjectURL(src);
       script.onerror = () => {
         URL.revokeObjectURL(src);
-        console.log('Failed to load injected script');
+        console.error('Failed to load injected script');
       };
 
       document.head.appendChild(script);
     },
-
     async deleteInbox() {
       if (!this.website?.id) return;
       try {
@@ -211,7 +223,9 @@ export default {
 
 <template>
   <div class="p-3">
-    <div class="grid gap-4 min-h-[520px] grid-cols-1 md:grid-cols-2 lg:grid-cols-[65%_35%]">
+    <div
+      class="grid gap-4 min-h-[520px] grid-cols-1 md:grid-cols-2 lg:grid-cols-[65%_35%]"
+    >
       <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm">
         <header class="flex flex-col gap-1 mb-4">
           <h2 class="text-xl font-bold">
@@ -245,7 +259,9 @@ export default {
             <textarea
               id="userPrompt"
               v-model.trim="userPrompt"
-              :placeholder="$t('AGENTS_AI.MODALS.SNAPSHOT.USER_PROMPT_PLACEHOLDER')"
+              :placeholder="
+                $t('AGENTS_AI.MODALS.SNAPSHOT.USER_PROMPT_PLACEHOLDER')
+              "
               maxlength="1000"
               :aria-describedby="'userPromptHint userPromptCount'"
               class="w-full h-full resize-y rounded-xl border border-slate-200 px-3 py-2 outline-none transition-shadow focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:focus:ring-offset-slate-900"
@@ -256,11 +272,15 @@ export default {
           </div>
 
           <aside class="space-y-2">
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 dark:bg-slate-800 dark:border-slate-700">
+            <div
+              class="bg-slate-50 border border-slate-200 rounded-xl p-4 dark:bg-slate-800 dark:border-slate-700"
+            >
               <h3 class="text-sm font-bold mb-2">
                 {{ $t('AGENTS_AI.MODALS.SNAPSHOT.INSTRUCTIONS_TITLE') }}
               </h3>
-              <ul class="list-disc pl-5 text-slate-700 dark:text-slate-200 space-y-1 text-sm leading-relaxed">
+              <ul
+                class="list-disc pl-5 text-slate-700 dark:text-slate-200 space-y-1 text-sm leading-relaxed"
+              >
                 <li>{{ $t('AGENTS_AI.MODALS.SNAPSHOT.BULLET_CONFIGURE') }}</li>
                 <li>{{ $t('AGENTS_AI.MODALS.SNAPSHOT.BULLET_TRY') }}</li>
                 <li>{{ $t('AGENTS_AI.MODALS.SNAPSHOT.BULLET_MONITOR') }}</li>
