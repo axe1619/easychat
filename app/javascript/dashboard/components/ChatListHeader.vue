@@ -1,11 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed,onMounted, onBeforeUnmount, watch, getCurrentInstance } from 'vue';
+import store from 'dashboard/store';
 import ConversationBasicFilter from './widgets/conversation/ConversationBasicFilter.vue';
 import whatsappInstancesClient from '../api/channel/whatsappInstancesClient';
 import { useAlert } from 'dashboard/composables';
 
 const props = defineProps({
   pageTitle: { type: String, required: true },
+  channelType: { type: String, required: true, default: '' },
   hasAppliedFilters: { type: Boolean, required: true },
   hasActiveFolders: { type: Boolean, required: true },
   activeStatus: { type: String, required: true },
@@ -17,8 +19,10 @@ const lastError = ref('');
 const showQR = ref(false);
 const qrCode = ref('');
 const qrImageLoaded = ref(false);
-const connectionState = ref('');
 const acting = ref(false);
+const currentUser = computed(() => store.getters['getCurrentUser']);
+const accountId = computed(() => store.getters['getCurrentAccountId']);
+let statusInterval = null;
 
 const emit = defineEmits([
   'addFolders',
@@ -35,26 +39,67 @@ const onBasicFilterChange = (value, type) => {
 
 const hideQR = () => {
   showQR.value = false;
+  if (connectionStatus.value === 'disconnected') {
+    logoutInstance();
+  }
+  clearStatusPolling();
+};
+
+onMounted(async () => {
+  await checkState();
+});
+
+const { proxy } = getCurrentInstance();
+watch(
+  () => proxy.$route.fullPath,
+  () => {
+    clearStatusPolling();
+    checkState();
+  }
+);
+
+onBeforeUnmount(() => {
+  clearStatusPolling();
+  logoutInstance();
+});
+
+const clearStatusPolling = () => {
+  if (statusInterval) {
+    clearInterval(statusInterval);
+  }
 };
 
 const normalizeState = data => {
   const raw = (data?.state || data?.connection || '').toString().toLowerCase();
   if (['connected', 'open', 'online'].includes(raw)) return 'connected';
-  if (['disconnected', 'closed', 'offline', 'qr'].includes(raw)) return 'disconnected';
+  if (['connecting','disconnected', 'close', 'offline', 'qr'].includes(raw))
+    return 'disconnected';
   if (data === true) return 'connected';
   if (data === false) return 'disconnected';
   return 'unknown';
 };
+
+const startStatusPolling = () => {
+  if (statusInterval) {
+    clearInterval(statusInterval)
+  };
+  statusInterval = setInterval(checkState, 3000);
+}
 
 const checkState = async () => {
   checking.value = true;
   lastError.value = '';
   try {
     const { data } = await whatsappInstancesClient.connectionState(props.pageTitle);
-    connectionStatus.value = normalizeState(data);
+    if (data?.instance?.state === 'open') {
+      connectionStatus.value = normalizeState(data?.instance);
+      hideQR();
+      clearStatusPolling();
+    }
   } catch (e) {
-    lastError.value = e?.response?.data?.error || e?.message || 'Error consultando estado';
-    connectionStatus.value = 'unknown';
+    lastError.value =
+      e?.response?.data?.error || e?.message || 'Error consultando estado';
+    connectionStatus.value = 'disconnected';
   } finally {
     checking.value = false;
   }
@@ -67,8 +112,10 @@ const restartInstance = async () => {
     await whatsappInstancesClient.restart(props.pageTitle);
     useAlert('Instancia reiniciada.');
   } catch (e) {
-    lastError.value = e?.response?.data?.error || e?.message || 'Error al reiniciar';
+    lastError.value =
+      e?.response?.data?.error || e?.message || 'Error al reiniciar';
     console.log(lastError.value, 'error');
+    connectionStatus.value = 'disconnected';
   } finally {
     acting.value = false;
   }
@@ -79,31 +126,46 @@ const logoutInstance = async () => {
   lastError.value = '';
   try {
     await whatsappInstancesClient.logout(props.pageTitle);
-    await checkState();
-    await createQr();
+    connectionStatus.value = 'disconnected';
   } catch (e) {
-    lastError.value = e?.response?.data?.error || e?.message || 'Error al cerrar sesión';
+    lastError.value =
+      e?.response?.data?.error || e?.message || 'Error al cerrar sesión';
     console.log(lastError.value, 'error');
   } finally {
     acting.value = false;
   }
 };
 
+const showModal = async () => {
+  showQR.value = true;
+  createQr();
+  startStatusPolling();
+};
+
 const createQr = async () => {
   try {
-    const data = await whatsappInstancesClient.connect(props.pageTitle);
-
-    if (data?.status === 'CONNECTED') {
-      connectionState.value = 'Conectado';
+    const payload = {
+      whatsapp_instance: {
+        instance_name: props.pageTitle,
+        chatwoot_account_id: accountId.value,
+        chatwoot_token: currentUser.value?.access_token,
+        chatwoot_url: 'https://easycontact.top',
+        chatwoot_sign_msg: false,
+        chatwoot_reopen_conversation: true,
+        chatwoot_conversation_pending: true,
+      },
+    };
+    const response = await whatsappInstancesClient.create(payload);
+    if (response?.status === 'open') {
+      connectionStatus.value = 'connected';
       showQR.value = false;
       return;
     }
 
-    qrCode.value = data?.qrcode?.base64 || data?.base64 || '';
-    connectionState.value = 'Intentando reconectar...';
-    showQR.value = true;
+    qrCode.value = response?.data?.qrcode?.base64 || response?.base64 || '';
   } catch (e) {
-    lastError.value = e?.response?.data?.error || e?.message || 'Error generando QR';
+    lastError.value =
+      e?.response?.data?.error || e?.message || 'Error generando QR';
   }
 };
 
@@ -116,7 +178,8 @@ const hasAppliedFiltersOrActiveFolders = computed(
   <div
     class="flex items-center justify-between px-4 py-0"
     :class="{
-      'pb-3 border-b border-slate-75 dark:border-slate-700': hasAppliedFiltersOrActiveFolders,
+      'pb-3 border-b border-slate-75 dark:border-slate-700':
+        hasAppliedFiltersOrActiveFolders,
     }"
   >
     <div class="flex max-w-[85%] justify-center items-center">
@@ -131,12 +194,15 @@ const hasAppliedFiltersOrActiveFolders = computed(
         v-if="!hasAppliedFiltersOrActiveFolders"
         class="p-1 my-0.5 mx-1 rounded-md capitalize bg-slate-50 dark:bg-slate-800 text-xxs text-slate-600 dark:text-slate-300"
       >
-        {{ $t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${props.activeStatus}.TEXT`) }}
+        {{
+          $t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${props.activeStatus}.TEXT`)
+        }}
       </span>
-
       <woot-button
-        v-if="connectionStatus !== 'disconnected'"
-        v-tooltip.bottom="$t('Reiniciar instancia')"
+        v-if="
+          channelType === 'Channel::Api' && connectionStatus !== 'disconnected'
+        "
+        v-tooltip.bottom="$t('CHAT_LIST_HEADER.WHATSAPP_WEB.RESTART')"
         size="tiny"
         variant="smooth"
         color-scheme="secondary"
@@ -146,8 +212,10 @@ const hasAppliedFiltersOrActiveFolders = computed(
         @click="restartInstance"
       />
       <woot-button
-        v-if="connectionStatus !== 'disconnected'"
-        v-tooltip.bottom="$t('Cerrar sesión para reconectar por QR')"
+        v-if="
+          channelType === 'Channel::Api' && connectionStatus !== 'disconnected'
+        "
+        v-tooltip.bottom="$t('CHAT_LIST_HEADER.WHATSAPP_WEB.LOGOUT')"
         size="tiny"
         variant="smooth"
         color-scheme="alert"
@@ -157,13 +225,15 @@ const hasAppliedFiltersOrActiveFolders = computed(
         @click="logoutInstance"
       />
       <woot-button
-        v-if="connectionStatus === 'disconnected'"
+        v-if="
+          channelType === 'Channel::Api' && connectionStatus === 'disconnected'
+        "
         variant="smooth"
         color-scheme="secondary"
         size="tiny"
-        @click="emit('foldersModal')"
+        @click="showModal"
       >
-        Conectar
+        {{$t('CHAT_LIST_HEADER.WHATSAPP_WEB.CONNECT')}}
       </woot-button>
     </div>
 
@@ -223,16 +293,35 @@ const hasAppliedFiltersOrActiveFolders = computed(
     </div>
 
     <woot-modal :show.sync="showQR" :on-close="hideQR">
-      <h3>Nuevo QR generado</h3>
-      <br />
-      <img
-        v-if="qrCode"
-        :src="qrCode"
-        alt="Código QR"
-        class="border p-2 rounded-md w-[300px] h-[300px]"
-        @load="qrImageLoaded = true"
-        @error="qrImageLoaded = false"
-      />
+      <woot-modal-header>
+        <h3 class="text-lg font-semibold w-full text-center">{{$t("CHAT_LIST_HEADER.WHATSAPP_WEB.TITLE")}}</h3>
+      </woot-modal-header>
+
+      <div class="px-8 pb-8">
+        <!-- Contenedor cuadrado y centrado -->
+        <div
+          class="mx-auto aspect-square w-[min(80vw,420px)] max-h-[min(80vh,420px)] flex items-center justify-center"
+        >
+          <img
+            v-if="qrCode"
+            :src="qrCode"
+            alt="Código QR"
+            class="w-full h-full object-contain border p-3 rounded-lg shadow-sm bg-white dark:bg-slate-900"
+            @load="qrImageLoaded = true"
+            @error="qrImageLoaded = false"
+          />
+
+          <!-- Fallback mientras carga -->
+          <div
+            v-else
+            class="w-full h-full grid place-items-center border rounded-lg bg-slate-50 dark:bg-slate-800"
+          >
+            <span class="text-sm text-slate-500 dark:text-slate-300"
+              >{{$t("CHAT_LIST_HEADER.WHATSAPP_WEB.LOADING")}}</span
+            >
+          </div>
+        </div>
+      </div>
     </woot-modal>
   </div>
 </template>

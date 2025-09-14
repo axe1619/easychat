@@ -146,7 +146,7 @@ end
   end
 
   def self.logout(name)
-    delete_request("/instance/logout/#{name}")
+    delete_request("/instance/delete/#{name}")
   end
 
 end
