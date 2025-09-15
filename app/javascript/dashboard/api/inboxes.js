@@ -28,6 +28,10 @@ class Inboxes extends CacheEnabledApiClient {
       agent_bot: botId,
     });
   }
+
+  syncConversationState(inboxId, data) {
+    return axios.post(`${this.url}/${inboxId}/sync_conversation_state_inboxes`, data);
+  }
 }
 
 export default new Inboxes();
