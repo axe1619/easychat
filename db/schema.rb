@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_04_154126) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_15_140308) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -508,6 +508,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_04_154126) do
     t.string "icon"
   end
 
+  create_table "conversation_state_inboxes", force: :cascade do |t|
+    t.bigint "inbox_id", null: false
+    t.bigint "conversation_state_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inbox_id", "conversation_state_id"], name: "index_conversation_state_inboxes", unique: true
+  end
+
   create_table "conversation_states", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -695,6 +703,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_04_154126) do
     t.integer "cout_max_remarketing_message", default: 0
     t.integer "time_wait_last_message", default: 0
     t.integer "unit_time", default: 0
+    t.integer "count_reload_conversation_state"
     t.index ["account_id"], name: "index_inboxes_on_account_id"
     t.index ["channel_id", "channel_type"], name: "index_inboxes_on_channel_id_and_channel_type"
     t.index ["portal_id"], name: "index_inboxes_on_portal_id"

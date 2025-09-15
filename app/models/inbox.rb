@@ -4,33 +4,34 @@
 #
 # Table name: inboxes
 #
-#  id                            :integer          not null, primary key
-#  allow_messages_after_resolved :boolean          default(TRUE)
-#  auto_assignment_config        :jsonb
-#  behavior_remarketing          :text
-#  business_name                 :string
-#  channel_type                  :string
-#  cout_max_remarketing_message  :integer          default(0)
-#  csat_survey_enabled           :boolean          default(FALSE)
-#  email_address                 :string
-#  enable_auto_assignment        :boolean          default(TRUE)
-#  enable_email_collect          :boolean          default(TRUE)
-#  enabled_remarketing           :boolean          default(FALSE)
-#  greeting_enabled              :boolean          default(FALSE)
-#  greeting_message              :string
-#  lock_to_single_conversation   :boolean          default(FALSE), not null
-#  name                          :string           not null
-#  out_of_office_message         :string
-#  sender_name_type              :integer          default("friendly"), not null
-#  time_wait_last_message        :integer          default(0)
-#  timezone                      :string           default("UTC")
-#  unit_time                     :integer          default(0)
-#  working_hours_enabled         :boolean          default(FALSE)
-#  created_at                    :datetime         not null
-#  updated_at                    :datetime         not null
-#  account_id                    :integer          not null
-#  channel_id                    :integer          not null
-#  portal_id                     :bigint
+#  id                              :integer          not null, primary key
+#  allow_messages_after_resolved   :boolean          default(TRUE)
+#  auto_assignment_config          :jsonb
+#  behavior_remarketing            :text
+#  business_name                   :string
+#  channel_type                    :string
+#  count_reload_conversation_state :integer
+#  cout_max_remarketing_message    :integer          default(0)
+#  csat_survey_enabled             :boolean          default(FALSE)
+#  email_address                   :string
+#  enable_auto_assignment          :boolean          default(TRUE)
+#  enable_email_collect            :boolean          default(TRUE)
+#  enabled_remarketing             :boolean          default(FALSE)
+#  greeting_enabled                :boolean          default(FALSE)
+#  greeting_message                :string
+#  lock_to_single_conversation     :boolean          default(FALSE), not null
+#  name                            :string           not null
+#  out_of_office_message           :string
+#  sender_name_type                :integer          default("friendly"), not null
+#  time_wait_last_message          :integer          default(0)
+#  timezone                        :string           default("UTC")
+#  unit_time                       :integer          default(0)
+#  working_hours_enabled           :boolean          default(FALSE)
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
+#  account_id                      :integer          not null
+#  channel_id                      :integer          not null
+#  portal_id                       :bigint
 #
 # Indexes
 #
@@ -77,6 +78,9 @@ class Inbox < ApplicationRecord
   has_one :agent_bot, through: :agent_bot_inbox
   has_many :webhooks, dependent: :destroy_async
   has_many :hooks, dependent: :destroy_async, class_name: 'Integrations::Hook'
+
+  has_many :conversation_state_inboxes
+  has_many :conversation_states, through: :conversation_state_inboxes
 
   enum sender_name_type: { friendly: 0, professional: 1 }
 
