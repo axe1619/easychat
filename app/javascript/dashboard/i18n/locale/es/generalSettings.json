@@ -170,6 +170,8 @@
   },
   "COMMON": {
     "OR": "O",
-    "CLICK_HERE": "haz clic aquí"
+    "CLICK_HERE": "haz clic aquí",
+    "LOADING": "Cargando...",
+    "SAVING": "Guardando..."
   }
 }
