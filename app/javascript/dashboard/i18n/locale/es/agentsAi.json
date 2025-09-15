@@ -128,6 +128,10 @@
                     "SUBMIT": "Actualizar",
                     "CANCEL": "Cancelar"
                 }
+            },
+            "SNAPSHOT": {
+              "NAME": "Agent Test",
+              "DESCRIPTION": "Test your agent's capabilities in a simulated conversation, providing a more realistic experience for your customers."
             }
         },
         "ALERT": {
@@ -167,14 +171,12 @@
               "SUBTITLE": "Configura y prueba tu chatbot con parámetros personalizados.",
               "USER_PROMPT_LABEL": "Prompt de usuario",
               "USER_PROMPT_PLACEHOLDER": "Escriba la solicitud de interacción para iniciar la prueba…",
-              "INSTRUCTIONS_TITLE": "Instrucciones",
-              "BULLET_CONFIGURE": "Configura los parámetros de tu chatbot.",
-              "BULLET_TRY": "Pruebe diferentes escenarios de interacción.",
-              "BULLET_MONITOR": "Monitorear la calidad de la respuesta.",
-              "BULLET_TUNE": "Ajuste la configuración según sea necesario.",
-              "BUTTON_START": "Iniciar ChatBot",
-              "BUTTON_STARTING": "Iniciando…",
-              "BUTTON_SET_CONFIG": "Esblecer configuracion",
+              "INSTRUCTIONS_TITLE": "Configura el prompt del agente",
+              "BULLET_CONFIGURE": "Escribe el prompt base que guiará todas las respuestas del agente.",
+              "BULLET_TRY": "Incluye contexto del negocio, objetivos y público al que se dirige.",
+              "BULLET_MONITOR": "Define tono, idioma y límites (qué decir y qué no).",
+              "BULLET_TUNE": "Guarda los cambios para aplicar el nuevo prompt.",
+              "BUTTON_SET_CONFIG": "Guardar",
               "BUTTON_SET_CONFIG_HINT": "Guarde este mensaje como la configuración predeterminada del agente",
               "CHAT_TITLE": "Conversación",
               "CHAT_PLACEHOLDER": "Escribe un mensaje y pulsa Enter…",

@@ -1,13 +1,16 @@
 <script>
+import TinyEditor from '../widgets/TinyEditor.vue';
+
 const SCRIPT_NAME = 'snapshot-script';
 
 export default {
   name: 'AgentTest',
-
+  components: { TinyEditor },
   data() {
     return {
       avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
       userPrompt: '',
+      originalPrompt: '',        // <- prompt de referencia para detectar cambios
       isRunning: false,
       scriptContent: '',
       website: null,
@@ -26,6 +29,13 @@ export default {
     canStart() {
       return !!this.agentBot && !this.isRunning;
     },
+    // Habilita el botón cuando hay cambios reales en el contenido
+    isDirty() {
+      return (
+        this.normalizeContent(this.userPrompt) !==
+        this.normalizeContent(this.originalPrompt)
+      );
+    },
   },
 
   async mounted() {
@@ -34,6 +44,8 @@ export default {
         await this.$store.dispatch('agentBots/show', this.botId);
       }
       this.userPrompt = this.agentBot?.prompt || '';
+      this.originalPrompt = this.agentBot?.prompt || '';
+      this.onStart(this.agentBot?.id);
     } catch (e) {
       console.log('agentBots/show error:', e);
     }
@@ -47,53 +59,39 @@ export default {
         try {
           await this.$store.dispatch('agentBots/show', newId);
           this.userPrompt = this.agentBot?.prompt || '';
+          this.originalPrompt = this.agentBot?.prompt || '';
         } catch (e) {
           console.error('agentBots/show (watch) error:', e);
         }
       },
     },
   },
+
   beforeRouteLeave(to, from, next) {
-    try {
-      this.removeScript();
-    } catch (e) {
-      console.log('removeScript error:', e);
-    }
-    try {
-      this.deleteInbox();
-    } catch (e) {
-      console.log('deleteInbox error:', e);
-    }
+    try { this.removeScript(); } catch (e) { console.log('removeScript error:', e); }
+    try { this.deleteInbox(); } catch (e) { console.log('deleteInbox error:', e); }
     next();
   },
   beforeRouteUpdate() {
-    try {
-      this.removeScript();
-    } catch (e) {
-      console.error('removeScript error:', e);
-    }
-    try {
-      this.deleteInbox();
-    } catch (e) {
-      console.error('deleteInbox error:', e);
-    }
+    try { this.removeScript(); } catch (e) { console.error('removeScript error:', e); }
+    try { this.deleteInbox(); } catch (e) { console.error('deleteInbox error:', e); }
   },
   beforeDestroy() {
-    try {
-      console.log('removeScript beforeDestroy');
-      this.removeScript();
-    } catch (e) {
-      console.error('removeScript error:', e);
-    }
-    try {
-      console.log('deleteInbox');
-      this.deleteInbox();
-    } catch (e) {
-      console.error('deleteInbox error:', e);
-    }
+    try { console.log('removeScript beforeDestroy'); this.removeScript(); } catch (e) { console.error('removeScript error:', e); }
+    try { console.log('deleteInbox'); this.deleteInbox(); } catch (e) { console.error('deleteInbox error:', e); }
   },
+
   methods: {
-    async onStart() {
+    // Normaliza el contenido para comparar (evita diferencias por espacios/br)
+    normalizeContent(val) {
+      return (val || '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/<p><br><\/p>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    },
+
+    async onStart(agentBotId) {
       if (!this.canStart) return;
 
       this.isRunning = true;
@@ -113,7 +111,7 @@ export default {
             greeting_message: 'Hi there!',
             channel: {
               type: 'web_widget',
-              website_url: null,
+              website_url: "https://www.easycontact.top/",
               widget_color: null,
               welcome_title: 'Snapshot!',
               welcome_tagline: 'Bienvenido al entorno de prueba de Snapshot',
@@ -124,14 +122,16 @@ export default {
         this.website = website || null;
         this.scriptContent = website?.web_widget_script || '';
 
-        if (this.website?.id && this.agentBot?.id) {
+        if (this.website?.id && agentBotId) {
           await this.$store.dispatch('agentBots/setAgentBotInbox', {
             inboxId: this.website.id,
-            botId: this.agentBot.id,
+            botId: agentBotId,
           });
+          this.injectWidgetScript(this.scriptContent);
+        } else {
+          throw new Error('Missing agentBotId or websiteId');
         }
 
-        this.injectWidgetScript(this.scriptContent);
       } catch (e) {
         console.error('onStart error:', e);
         this.injectError = e?.message || 'Unexpected error';
@@ -153,6 +153,9 @@ export default {
           init_at: this.agentBot.initAt,
           finish_at: this.agentBot.finishAt,
         });
+
+        // Al guardar con éxito, sincroniza el original para que el botón se deshabilite
+        this.originalPrompt = this.userPrompt;
       } catch (e) {
         console.log('updateAgent error:', e);
       } finally {
@@ -164,28 +167,21 @@ export default {
       this.isRunning = false;
       this.injectError = null;
     },
+
     onRemove() {
-      try {
-        console.log('removeScript beforeDestroy');
-        this.removeScript();
-      } catch (e) {
-        console.error('removeScript error:', e);
-      }
-      try {
-        console.log('deleteInbox');
-        this.deleteInbox();
-      } catch (e) {
-        console.error('deleteInbox error:', e);
-      }
+      try { console.log('removeScript beforeDestroy'); this.removeScript(); } catch (e) { console.error('removeScript error:', e); }
+      try { console.log('deleteInbox'); this.deleteInbox(); } catch (e) { console.error('deleteInbox error:', e); }
     },
+
     removeScript() {
       const scripts = document.getElementsByName(SCRIPT_NAME);
       Array.from(scripts).forEach(el => el.remove());
     },
+
     injectWidgetScript(rawScript) {
       this.onRemove();
-
       if (!rawScript) return;
+
       const decoded = rawScript
         .replace(/\\u003c/g, '<')
         .replace(/\\u003e/g, '>');
@@ -209,6 +205,7 @@ export default {
 
       document.head.appendChild(script);
     },
+
     async deleteInbox() {
       if (!this.website?.id) return;
       try {
@@ -223,9 +220,7 @@ export default {
 
 <template>
   <div class="p-3">
-    <div
-      class="grid gap-4 min-h-[520px] grid-cols-1 md:grid-cols-2 lg:grid-cols-[65%_35%]"
-    >
+    <div class="grid gap-4 min-h-[520px] grid-cols-1 md:grid-cols-2 lg:grid-cols-[65%_35%]">
       <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm">
         <header class="flex flex-col gap-1 mb-4">
           <h2 class="text-xl font-bold">
@@ -256,19 +251,8 @@ export default {
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
           <div class="md:col-span-2">
-            <textarea
-              id="userPrompt"
-              v-model.trim="userPrompt"
-              :placeholder="
-                $t('AGENTS_AI.MODALS.SNAPSHOT.USER_PROMPT_PLACEHOLDER')
-              "
-              maxlength="1000"
-              :aria-describedby="'userPromptHint userPromptCount'"
-              class="w-full h-full resize-y rounded-xl border border-slate-200 px-3 py-2 outline-none transition-shadow focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-700 dark:focus:ring-offset-slate-900"
-            ></textarea>
-            <div class="mt-1 text-xs text-slate-500" id="userPromptCount">
-              {{ (userPrompt || '').length }}/1000
-            </div>
+            <!-- TinyEditor con v-model -->
+            <TinyEditor v-model="userPrompt" />
           </div>
 
           <aside class="space-y-2">
@@ -292,27 +276,11 @@ export default {
             </div>
 
             <woot-button
-              color-scheme="success"
-              class="w-full mt-2 text-center"
-              size="expanded"
-              is-expanded
-              :disabled="!canStart"
-              @click="onStart"
-            >
-              <template v-if="isRunning">
-                {{ $t('COMMON.LOADING') }}…
-              </template>
-              <template v-else>
-                {{ $t('AGENTS_AI.MODALS.SNAPSHOT.BUTTON_START') }}
-              </template>
-            </woot-button>
-
-            <woot-button
               color-scheme="primary"
               class="w-full mt-2 text-center"
               size="expanded"
               is-expanded
-              :disabled="!agentBot || isUpdatingAgent"
+              :disabled="!agentBot || isUpdatingAgent || !isDirty"
               @click="updateAgent"
             >
               <template v-if="isUpdatingAgent">
