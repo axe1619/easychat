@@ -205,6 +205,20 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_15_140308) do
     t.index ["account_id"], name: "index_automation_rules_on_account_id"
   end
 
+  create_table "calendars", force: :cascade do |t|
+    t.string "platform", null: false
+    t.text "id_token", null: false
+    t.text "access_token", null: false
+    t.text "refresh_token", null: false
+    t.integer "account_id", null: false
+    t.integer "agent_bot_id", null: false
+    t.string "email"
+    t.string "user_name"
+    t.string "picture"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "campaigns", force: :cascade do |t|
     t.integer "display_id", null: false
     t.string "title", null: false

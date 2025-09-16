@@ -176,6 +176,7 @@ Rails.application.routes.draw do
           resources :labels, only: [:index, :show, :create, :update, :destroy]
           resources :conversation_states, only: [:index, :show, :create, :update, :destroy]
           resources :rags
+          resources :calendars
           resources :catalogs do
             collection do
               post :bulk_create
@@ -187,6 +188,8 @@ Rails.application.routes.draw do
               post :connect
               get  :state
               post :set_webhook
+              post :restart
+              post :logout
             end
             collection do
               post :sync_templates

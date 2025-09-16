@@ -55,6 +55,26 @@ class Api::V1::Accounts::WhatsappInstancesController < Api::V1::Accounts::BaseCo
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  # POST /api/v1/accounts/:account_id/whatsapp_instances/:instance_name/restart
+  def restart
+    name = params.require(:instance_name)
+    result = ::Whatsapp::WhatsappInstanceService.restart(name)
+    render json: result
+  rescue ::Whatsapp::WhatsappInstanceService::Error => e
+    render json: { error: e.message, status: e.status, body: e.body }, status: :bad_gateway
+  end
+
+  # POST /api/v1/accounts/:account_id/whatsapp_instances/:instance_name/logout
+  def logout
+    name = params.require(:instance_name)
+    result = ::Whatsapp::WhatsappInstanceService.logout(name)
+    render json: result
+  rescue ::Whatsapp::WhatsappInstanceService::Error => e
+    render json: { error: e.message, status: e.status, body: e.body },
+          status: (e.status || :bad_gateway)
+  end
+
+
   def whatsapp_instance_params
   # require + permit evita el “permitted: false”
     params.require(:whatsapp_instance).permit(

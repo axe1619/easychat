@@ -119,9 +119,9 @@ export default {
       }
       try {
         await this.$store.dispatch('agentBots/update', data);
-        useAlert(this.$t('AGENT_BOTS.ALERT.AGENT_BOT.UPDATE.SUCCESS'));
+        useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.UPDATE.SUCCESS'));
       } catch (error) {
-        useAlert(this.$t('AGENT_BOTS.ALERT.AGENT_BOT.UPDATE.ERROR'));
+        useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.UPDATE.ERROR'));
       }
     }
   },
