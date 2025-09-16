@@ -46,22 +46,22 @@ const hideQR = () => {
 };
 
 onMounted(async () => {
-  await checkState();
+  // await checkState();
 });
 
-const { proxy } = getCurrentInstance();
-watch(
-  () => proxy.$route.fullPath,
-  () => {
-    clearStatusPolling();
-    checkState();
-  }
-);
+// const { proxy } = getCurrentInstance();
+// watch(
+//   () => proxy.$route.fullPath,
+//   () => {
+//     clearStatusPolling();
+//     checkState();
+//   }
+// );
 
-onBeforeUnmount(() => {
-  clearStatusPolling();
-  logoutInstance();
-});
+// onBeforeUnmount(() => {
+//   clearStatusPolling();
+//   logoutInstance();
+// });
 
 const clearStatusPolling = () => {
   if (statusInterval) {
@@ -93,8 +93,8 @@ const checkState = async () => {
     const { data } = await whatsappInstancesClient.connectionState(props.pageTitle);
     if (data?.instance?.state === 'open') {
       connectionStatus.value = normalizeState(data?.instance);
-      hideQR();
-      clearStatusPolling();
+      // hideQR();
+      // clearStatusPolling();
     }
   } catch (e) {
     lastError.value =
@@ -198,43 +198,6 @@ const hasAppliedFiltersOrActiveFolders = computed(
           $t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${props.activeStatus}.TEXT`)
         }}
       </span>
-      <woot-button
-        v-if="
-          channelType === 'Channel::Api' && connectionStatus !== 'disconnected'
-        "
-        v-tooltip.bottom="$t('CHAT_LIST_HEADER.WHATSAPP_WEB.RESTART')"
-        size="tiny"
-        variant="smooth"
-        color-scheme="secondary"
-        icon="sync"
-        :is-loading="acting"
-        :disabled="checking"
-        @click="restartInstance"
-      />
-      <woot-button
-        v-if="
-          channelType === 'Channel::Api' && connectionStatus !== 'disconnected'
-        "
-        v-tooltip.bottom="$t('CHAT_LIST_HEADER.WHATSAPP_WEB.LOGOUT')"
-        size="tiny"
-        variant="smooth"
-        color-scheme="alert"
-        icon="power"
-        :is-loading="acting"
-        :disabled="checking"
-        @click="logoutInstance"
-      />
-      <woot-button
-        v-if="
-          channelType === 'Channel::Api' && connectionStatus === 'disconnected'
-        "
-        variant="smooth"
-        color-scheme="secondary"
-        size="tiny"
-        @click="showModal"
-      >
-        {{$t('CHAT_LIST_HEADER.WHATSAPP_WEB.CONNECT')}}
-      </woot-button>
     </div>
 
     <div class="flex items-center gap-1">
@@ -292,36 +255,5 @@ const hasAppliedFiltersOrActiveFolders = computed(
       />
     </div>
 
-    <woot-modal :show.sync="showQR" :on-close="hideQR">
-      <woot-modal-header>
-        <h3 class="text-lg font-semibold w-full text-center">{{$t("CHAT_LIST_HEADER.WHATSAPP_WEB.TITLE")}}</h3>
-      </woot-modal-header>
-
-      <div class="px-8 pb-8">
-        <!-- Contenedor cuadrado y centrado -->
-        <div
-          class="mx-auto aspect-square w-[min(80vw,420px)] max-h-[min(80vh,420px)] flex items-center justify-center"
-        >
-          <img
-            v-if="qrCode"
-            :src="qrCode"
-            alt="Código QR"
-            class="w-full h-full object-contain border p-3 rounded-lg shadow-sm bg-white dark:bg-slate-900"
-            @load="qrImageLoaded = true"
-            @error="qrImageLoaded = false"
-          />
-
-          <!-- Fallback mientras carga -->
-          <div
-            v-else
-            class="w-full h-full grid place-items-center border rounded-lg bg-slate-50 dark:bg-slate-800"
-          >
-            <span class="text-sm text-slate-500 dark:text-slate-300"
-              >{{$t("CHAT_LIST_HEADER.WHATSAPP_WEB.LOADING")}}</span
-            >
-          </div>
-        </div>
-      </div>
-    </woot-modal>
   </div>
 </template>
