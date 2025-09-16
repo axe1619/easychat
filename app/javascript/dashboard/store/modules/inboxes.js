@@ -269,6 +269,10 @@ export const actions = {
       throw new Error(error);
     }
   },
+  updateConvesationStates: async ({ commit }, params) => {
+    const { inbox_id, count_reload_conversation_state, conversation_states } = params
+    await InboxesAPI.syncConversationState(inbox_id, { conversation_states, count_reload_conversation_state })
+  }
 };
 
 export const mutations = {

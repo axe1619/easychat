@@ -187,7 +187,7 @@ export default {
         </div>
         <div class="mt-2">
           <woot-button type="button" @click="onUpdateConfigMessageRemarketing">
-            Actualizar
+            {{ $t('INBOX_MGMT.SETTINGS_POPUP.UPDATE') }}
           </woot-button>
         </div>
       </div>
