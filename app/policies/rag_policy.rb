@@ -1,9 +1,9 @@
 class RagPolicy < ApplicationPolicy
-  def index? = @account_user.present?
-  def show?  = @account_user.present?
-  def create?  = true
-  def update?  = true
-  def destroy? = true
+  def index?    = true
+  def show?     = true
+  def create?   = true
+  def update?   = true
+  def destroy?  = true
 
   class Scope < Scope
     def resolve

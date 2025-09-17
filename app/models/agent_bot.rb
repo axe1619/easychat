@@ -3,7 +3,7 @@
 # Table name: agent_bots
 #
 #  id           :bigint           not null, primary key
-#  agent_type   :integer          default("default")
+#  agent_type   :integer          default("general")
 #  bot_config   :jsonb
 #  bot_type     :integer          default("webhook")
 #  description  :string

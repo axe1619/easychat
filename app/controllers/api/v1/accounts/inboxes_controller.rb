@@ -67,6 +67,34 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
     render status: :ok, json: { message: I18n.t('messages.inbox_deletetion_response') }
   end
 
+  def sync_conversation_state_inboxes
+    begin
+      provided_state_ids = params[:conversation_states].map { |s| s[:id] }.uniq
+      current_state_ids  = @inbox.conversation_states.pluck(:id)
+      add_state_ids      = provided_state_ids - current_state_ids
+      remove_state_ids   = current_state_ids  - provided_state_ids
+      ActiveRecord::Base.transaction do
+        # inbox update
+        @inbox.update!(count_reload_conversation_state: params[:count_reload_conversation_state])
+        # add conversation_state_inboxes
+        if add_state_ids.any?
+          ConversationStateInbox.insert_all(
+            add_state_ids.map  { |id| { inbox_id: @inbox.id, conversation_state_id: id } }
+          )
+        end
+        # remove conversation_state_inboxes
+        if remove_state_ids.any?
+          ConversationStateInbox
+            .where(inbox_id: @inbox.id, conversation_state_id: remove_state_ids)
+            .delete_all
+        end
+      end
+      render json: { success: true }
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def fetch_inbox

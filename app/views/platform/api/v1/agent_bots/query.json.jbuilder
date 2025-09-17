@@ -5,3 +5,5 @@ json.outgoing_url @resource.name
 json.account_id @resource.account_id
 json.access_token @resource.access_token.token
 json.prompt @resource.prompt
+json.init_at @resource.init_at
+json.finish_at @resource.finish_at

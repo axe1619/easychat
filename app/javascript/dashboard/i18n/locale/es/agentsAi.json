@@ -66,7 +66,11 @@
             },
             "CALENDAR": {
                 "NAME": "Maneja tu calendario",
-                "DESCRIPTION": "Haz clic en el botón para autorizar el acceso a tu calendario. Esto permitirá que el agente pueda ver, editar y agregar eventos en tu nombre."
+                "DESCRIPTION": "Sincroniza tu cuenta y autoriza el acceso a tu calendario. Esto permitirá que el agente pueda ver, editar y agregar eventos en tu nombre.",
+                "BUTTON":{
+                    "ADD_GOOGLE_ACOUNT": "Agrega tu cuenta de Google",
+                    "DELETE":"Eliminar"
+                }
             },
             "CATALOG": {
                 "NAME": "Catálogo de productos",
@@ -124,6 +128,10 @@
                     "SUBMIT": "Actualizar",
                     "CANCEL": "Cancelar"
                 }
+            },
+            "SNAPSHOT": {
+              "NAME": "Agent Test",
+              "DESCRIPTION": "Test your agent's capabilities in a simulated conversation, providing a more realistic experience for your customers."
             }
         },
         "ALERT": {
@@ -157,6 +165,24 @@
             "RAG": {},
             "CALENDAR": {
                 "ADD_GOOGLE_ACOUNT": "Agrega tu cuenta de Google"
+            },
+            "SNAPSHOT": {
+              "TITLE": "Agente de IA",
+              "SUBTITLE": "Configura y prueba tu chatbot con parámetros personalizados.",
+              "USER_PROMPT_LABEL": "Prompt de usuario",
+              "USER_PROMPT_PLACEHOLDER": "Escriba la solicitud de interacción para iniciar la prueba…",
+              "INSTRUCTIONS_TITLE": "Configura el prompt del agente",
+              "BULLET_CONFIGURE": "Escribe el prompt base que guiará todas las respuestas del agente.",
+              "BULLET_TRY": "Incluye contexto del negocio, objetivos y público al que se dirige.",
+              "BULLET_MONITOR": "Define tono, idioma y límites (qué decir y qué no).",
+              "BULLET_TUNE": "Guarda los cambios para aplicar el nuevo prompt.",
+              "BUTTON_SET_CONFIG": "Guardar",
+              "BUTTON_SET_CONFIG_HINT": "Guarde este mensaje como la configuración predeterminada del agente",
+              "CHAT_TITLE": "Conversación",
+              "CHAT_PLACEHOLDER": "Escribe un mensaje y pulsa Enter…",
+              "CHAT_EMPTY": "Comience la prueba para ver los mensajes aquí.",
+              "SEND": "Enviar",
+              "CLOSE": "Cerrar"
             }
         }
     }

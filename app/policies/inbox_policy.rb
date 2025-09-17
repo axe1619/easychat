@@ -61,4 +61,8 @@ class InboxPolicy < ApplicationPolicy
   def avatar?
     @account_user.administrator?
   end
+
+  def sync_conversation_state_inboxes?
+    @account_user.administrator? || @account_user.agent?
+  end
 end

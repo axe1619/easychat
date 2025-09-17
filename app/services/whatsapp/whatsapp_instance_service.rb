@@ -95,6 +95,31 @@ class Whatsapp::WhatsappInstanceService
     send_request(uri, request)
   end
 
+  def self.put_request(path, payload = :__none__)
+  uri     = URI.join(BASE_URL, path)
+  request = Net::HTTP::Put.new(uri)
+  request['Accept'] = 'application/json'
+  request['apikey'] = API_KEY
+
+  if payload == :__none__
+    request.body = '' # Content-Length: 0
+  else
+    request['Content-Type'] = 'application/json'
+    request.body = payload.is_a?(String) ? payload : payload.to_json
+  end
+
+  send_request(uri, request)
+end
+
+def self.delete_request(path)
+  uri     = URI.join(BASE_URL, path)
+  request = Net::HTTP::Delete.new(uri)
+  request['Accept'] = '*/*'
+  request['apikey']       = API_KEY
+
+  send_request(uri, request)
+end
+
   def self.send_request(uri, request)
     use_ssl = uri.scheme == 'https'
     response = Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl) do |http|
@@ -114,6 +139,14 @@ class Whatsapp::WhatsappInstanceService
     raise Error.new("Respuesta no es JSON válido: #{e.message}", status: response.code.to_i, body: response.body)
   rescue SocketError, Errno::ECONNREFUSED, Errno::ETIMEDOUT => e
     raise Error.new("No se pudo conectar con #{uri}", body: e.message)
+  end
+
+  def self.restart(name)
+    post_request("/instance/restart/#{name}", {})
+  end
+
+  def self.logout(name)
+    delete_request("/instance/delete/#{name}")
   end
 
 end

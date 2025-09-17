@@ -1,0 +1,10 @@
+json.id resource.id
+json.platform resource.platform
+json.id_token resource.id_token
+json.access_token resource.access_token
+json.refresh_token resource.refresh_token
+json.account_id resource.account_id
+json.agent_bot_id resource.agent_bot_id
+json.email resource.email
+json.user_name resource.user_name
+json.picture resource.picture

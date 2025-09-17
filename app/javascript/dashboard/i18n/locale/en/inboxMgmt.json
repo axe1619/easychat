@@ -617,6 +617,16 @@
         "MIN_HOURS": "A minimum value of 1 is required"
       }
     },
+    "SORTER": {
+      "TITLE": "Sorter",
+      "DESCRIPTION": "This value allows you to analyze the conversation and classify it every Nº defined messages.",
+      "FORM": {
+        "LABEL_SELECT": "Sorters",
+        "LABEL_COUNT_MESSAGE": "Number of messages"
+      },
+      "REQUIRED": "Required",
+      "SIZE": "A value between {MIN} and {MAX} is required"
+    },
     "IMAP": {
       "TITLE": "IMAP",
       "SUBTITLE": "Set your IMAP details",

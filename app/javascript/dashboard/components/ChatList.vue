@@ -877,6 +877,8 @@ export default {
     <slot />
     <ChatListHeader
       :page-title="pageTitle"
+      :channel-name="pageTitle"
+      :channel-type="inbox.channel_type"
       :has-applied-filters="hasAppliedFilters"
       :has-active-folders="hasActiveFolders"
       :active-status="activeStatus"

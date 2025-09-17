@@ -597,6 +597,16 @@
         "MIN_HOURS": "Se requiere un valor mínimo de 1"
       }
     },
+    "SORTER": {
+      "TITLE": "Clasificador",
+      "DESCRIPTION": "Este valor permite analizar la conversación y clasificarla cada Nº mensajes definidos.",
+      "FORM": {
+        "LABEL_SELECT": "Clasificadores",
+        "LABEL_COUNT_MESSAGE": "Cantidad de mensajes"
+      },
+      "REQUIRED": "Requerido",
+      "SIZE": "Se requiere un valor entre {MIN} y {MAX}"
+    },
     "IMAP": {
       "TITLE": "IMAP",
       "SUBTITLE": "Configura los detalles de IMAP",
