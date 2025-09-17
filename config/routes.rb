@@ -33,6 +33,8 @@ Rails.application.routes.draw do
   end
 
   get '/api', to: 'api#index'
+  get '/api/google', to: 'public/api/v1/google/auth#google'
+  get '/api/oauth2callback', to: 'public/api/v1/google/auth#oauth2callback'
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       # ----------------------------------
