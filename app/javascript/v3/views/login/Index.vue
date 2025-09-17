@@ -10,6 +10,8 @@ import GoogleOAuthButton from '../../components/GoogleOauth/Button.vue';
 import FormInput from '../../components/Form/Input.vue';
 import { login } from '../../api/auth';
 import Spinner from 'shared/components/Spinner.vue';
+import { DOMAIN } from '../../../domain';
+
 const ERROR_MESSAGES = {
   'no-account-found': 'LOGIN.OAUTH.NO_ACCOUNT_FOUND',
   'business-account-only': 'LOGIN.OAUTH.BUSINESS_ACCOUNTS_ONLY',
@@ -68,6 +70,13 @@ export default {
     showSignupLink() {
       return parseBoolean(window.chatwootConfig.signupEnabled);
     },
+    titleDomain() {
+      let currentDomain = Object.keys(DOMAIN).find((name) => window.location.hostname.toLocaleLowerCase().includes(name.toLocaleLowerCase()))
+      if (currentDomain) {
+        return `Login ${DOMAIN[currentDomain].TITLE || DOMAIN.DEFAULT.TITLE}`;
+      }
+      return `Login ${DOMAIN.DEFAULT.TITLE}`;
+    }
   },
   created() {
     if (this.ssoAuthToken) {
@@ -154,9 +163,7 @@ export default {
       <h2
         class="mt-6 text-3xl font-medium text-center text-slate-900 dark:text-woot-50"
       >
-        {{
-          useInstallationName($t('LOGIN.TITLE'), globalConfig.installationName)
-        }}
+        {{titleDomain}}
       </h2>
       <p
         v-if="showSignupLink"

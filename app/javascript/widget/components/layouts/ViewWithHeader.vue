@@ -1,6 +1,5 @@
 <script>
 import Banner from '../Banner.vue';
-import Branding from 'shared/components/Branding.vue';
 import ChatHeader from '../ChatHeader.vue';
 import ChatHeaderExpanded from '../ChatHeaderExpanded.vue';
 import configMixin from '../../mixins/configMixin';
@@ -10,7 +9,6 @@ import { IFrameHelper } from 'widget/helpers/utils';
 export default {
   components: {
     Banner,
-    Branding,
     ChatHeader,
     ChatHeaderExpanded,
   },
@@ -135,8 +133,7 @@ export default {
       </div>
       <Banner />
       <router-view />
-
-      <Branding v-if="!isOnArticleViewer" :disable-branding="disableBranding" />
+      <div class="mt-4"></div>
     </div>
   </div>
 </template>
