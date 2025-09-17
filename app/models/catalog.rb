@@ -6,25 +6,25 @@
 #  categoria            :string
 #  codigo               :string           not null
 #  codigo_barras        :string
-#  descripcion          :string           not null
-#  descripcion_larga    :string
+#  descripcion          :text             not null
+#  descripcion_larga    :text
 #  descuento            :string
 #  estado               :string
 #  etiquetas            :string
 #  fecha_actualizacion  :string
 #  fecha_creacion       :string
-#  ficha_tecnica_url    :string
-#  galeria_imagenes     :string
+#  ficha_tecnica_url    :text
+#  galeria_imagenes     :text
 #  garantia             :string
-#  imagen_url           :string
+#  imagen_url           :text
 #  impuesto             :string
-#  manual_url           :string
+#  manual_url           :text
 #  marca                :string
 #  moneda               :string
-#  nombre               :string           not null
+#  nombre               :text             not null
 #  pais_origen          :string
-#  politicas_devolucion :string
-#  politicas_envio      :string
+#  politicas_devolucion :text
+#  politicas_envio      :text
 #  precio               :string
 #  precio_oferta        :string
 #  presentacion         :string
@@ -36,7 +36,7 @@
 #  subcategoria         :string
 #  unidad_medida        :string
 #  variantes            :string
-#  video_url            :string
+#  video_url            :text
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #  account_id           :bigint           not null
