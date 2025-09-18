@@ -79,5 +79,3 @@ yarn-debug.log*
 chatwoot-development.tar
 chatwoot-rails-development.tar
 chatwoot-webpack-development.tar
-
-.env
