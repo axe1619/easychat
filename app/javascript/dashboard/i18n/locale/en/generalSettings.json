@@ -171,6 +171,7 @@
   "COMMON": {
     "OR": "Or",
     "CLICK_HERE": "click here",
-    "LOADING": "Loading..."
+    "LOADING": "Loading...",
+    "SAVING": "Saving..."
   }
 }
