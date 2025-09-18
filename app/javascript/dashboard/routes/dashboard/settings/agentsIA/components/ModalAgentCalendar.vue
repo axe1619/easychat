@@ -2,6 +2,7 @@
 import Modal from '../../../../../components/Modal.vue';
 import Spinner from 'shared/components/Spinner.vue';
 import { mapGetters } from 'vuex';
+import {frontUrl} from '../services/apiAgent'
 
 export default {
   name: "ModalAngentCalendar",
@@ -60,13 +61,13 @@ export default {
   methods: {
     loginWithGoogle() {
       window.open(
-        `http://localhost:3000/api/google`,
+        `${frontUrl}/api/google`,
         'googleLoginPopup',
         'width=500,height=600'
       );
     },
     handleGoogleAuthMessage(event) {
-      if (event.origin !== 'http://localhost:3000') return
+      if (event.origin !== frontUrl) return
 
       const { access_token, refresh_token, id_token, user } = event.data
 
