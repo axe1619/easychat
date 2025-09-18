@@ -93,11 +93,12 @@ export const getTypeList = (type) => {
 const actions = {
   getSuggestionMessage: async ({ commit }, payload) => {
     const { conversationId, count_responses } = payload
-    const response = await agentCloud.getSuggestionMessage({ conversation_display_id: conversationId, count_responses });
-    if (!response.data.status)
-      return
-    const messsages = JSON.parse(response.data.data);
-    commit(types.SET_SUGGESTION_MESSAGE, messsages)
+    const response = await MessageApi.getPreviousMessages({ conversationId, after: 0, before: 20 })
+    const { data } = response;
+    const messages = data.payload.map(message => {
+      return message.content;
+    });
+    commit(types.SET_SUGGESTION_MESSAGE, messages)
   },
   clearSuggestionMessage: ({ commit }) => {
     try {
