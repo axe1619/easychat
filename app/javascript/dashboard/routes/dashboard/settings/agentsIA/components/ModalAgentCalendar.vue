@@ -70,6 +70,7 @@ export default {
       if (event.origin !== frontUrl) return
 
       const { access_token, refresh_token, id_token, user } = event.data
+      console.log({ access_token, refresh_token, id_token, user })
 
       if (!access_token) {
         console.warn('Mensaje recibido sin access_token');
