@@ -46,7 +46,7 @@ module Public
             client_id     = ENV['GOOGLE_CLIENT_ID']
             client_secret = ENV['GOOGLE_CLIENT_SECRET']
             redirect_uri  = ENV['GOOGLE_REDIRECT_URI']
-            origin        = request.base_url
+            origin        = ENV['FRONTEND_URL']
 
             if [client_id, client_secret, redirect_uri, origin].any?(&:blank?)
               return render plain: 'Faltan variables de entorno (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, API_EASY_CONTACT)', status: :internal_server_error
