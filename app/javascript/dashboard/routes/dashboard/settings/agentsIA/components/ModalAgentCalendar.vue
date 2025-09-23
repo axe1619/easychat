@@ -67,7 +67,8 @@ export default {
       );
     },
     handleGoogleAuthMessage(event) {
-      if (event.origin !== frontUrl) return
+      let origin = process.env.FRONTEND_URL.replace(/^https?:\/\//, '').replace(/^www\./, '')
+      if (!event.origin.includes(origin)) return
 
       const { access_token, refresh_token, id_token, user } = event.data
       console.log({ access_token, refresh_token, id_token, user })

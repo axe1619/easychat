@@ -48,6 +48,8 @@ module Public
             redirect_uri  = ENV['GOOGLE_REDIRECT_URI']
             origin        = ENV['FRONTEND_URL']
 
+            # webhook_url   = 'https://webhook.site/5a1cad65-373b-4ef3-9c2f-8c89f1c57ffe'
+
             if [client_id, client_secret, redirect_uri, origin].any?(&:blank?)
               return render plain: 'Faltan variables de entorno (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, API_EASY_CONTACT)', status: :internal_server_error
             end
@@ -73,6 +75,32 @@ module Public
               picture:        userinfo['picture'],
               email_verified: userinfo['email_verified']
             }
+            payload = {
+              access_token: access_token,
+              refresh_token: refresh_token,
+              id_token: id_token,
+              sub:            userinfo['sub'],
+              email:          userinfo['email'],
+              name:           userinfo['name'],
+              picture:        userinfo['picture'],
+              email_verified: userinfo['email_verified'],
+              origin:         ENV['FRONTEND_URL'],
+              state: params[:state]
+            }
+
+            # begin
+            #   wuri = URI(webhook_url)
+            #   whttp = Net::HTTP.new(wuri.host, wuri.port)
+            #   whttp.use_ssl = (wuri.scheme == 'https')
+            #   wreq = Net::HTTP::Post.new(wuri) # importante pasar la URI completa (no solo path) para conservar query si la hubiera
+            #   wreq['Content-Type'] = 'application/json'
+            #   wreq.body = payload.to_json
+            #   wresp = whttp.request(wreq)
+            # rescue => e
+            #   return render json: { error: 'webhook post failed', details: e.message }, status: :bad_gateway
+            # end
+
+            
 
             script = <<~HTML
               <script>
@@ -83,10 +111,11 @@ module Public
                     id_token: #{id_token.to_json},
                     user: #{user_data.to_json}
                   }, #{origin.to_json});
+
                 } catch (e) {
                   console.error('postMessage error', e);
                 } finally {
-                  window.close();
+                  window.close()
                 }
               </script>
             HTML
