@@ -119,9 +119,22 @@ export default {
 
             try {
                 this.uploading = true
-                await apiAgent.post(`/api/rag/add-pdf`, fd, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
+                await axios.post(`/api/redirects/add_pdf`, fd, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    maxBodyLength: Infinity,
                 })
+
+                // fetch('/api/redirects/add_pdf', { method: 'POST', body: fd })
+                //     .then((r) => {
+                //         if (r.status === 204) {
+                //             console.log('OK, proceso completado');
+                //         } else {
+                //             console.error('Error reenviando (status):', r.status);
+                //         }
+                //     })
+                //     .catch((e) => console.error('Error de red:', e));
+
+
                 const data = {
                     agent_bot_id: this.botId,
                     account_id: this.accountId,
@@ -136,11 +149,11 @@ export default {
             } catch (e) {
                 const error = e?.response?.data?.error || e.message || 'Error de red';
                 this.error = error;
-                console.log('code:',e?.response?.status)
-                if(e?.response?.status === 409) this.error = this.$t('AGENTS_AI.ALERT.RAG.CREATE.UNIQUE_ERROR');
+                console.log('code:', e?.response?.status)
+                if (e?.response?.status === 409) this.error = this.$t('AGENTS_AI.ALERT.RAG.CREATE.UNIQUE_ERROR');
                 else this.error = this.$t('AGENTS_AI.ALERT.RAG.CREATE.ERROR');
 
-                setTimeout(() => { this.error = null}, '5000')
+                setTimeout(() => { this.error = null }, '5000')
             } finally {
                 this.uploading = false;
             }
@@ -177,7 +190,7 @@ export default {
             <div class="flex flex-row justify-end items-center w-full gap-2 px-0 py-2">
 
                 <span v-if="error" class="text-sm text-red-400 dark:text-red-500 me-auto font-medium">{{ error }}</span>
-                
+
                 <!-- <span v-if="success && !error" class="text-sm text-green-400 dark:text-green-500 me-auto font-medium">{{
                     success }}</span> -->
                 <WootSubmitButton :disabled="isButtonDisabled || uploading"
