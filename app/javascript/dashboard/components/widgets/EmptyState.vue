@@ -3,6 +3,7 @@ export default {
   props: {
     title: { type: String, default: '' },
     message: { type: String, default: '' },
+    link: { type: Object, default: { url: "", message: "" } },
   },
 };
 </script>
@@ -20,6 +21,7 @@ export default {
       class="block text-center text-slate-500 dark:text-slate-400 my-4 mx-auto w-[90%]"
     >
       {{ message }}
+      <a :href="link.url">{{ link.message }}</a>
     </p>
     <slot />
   </div>

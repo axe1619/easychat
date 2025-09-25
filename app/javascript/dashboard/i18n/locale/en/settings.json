@@ -195,7 +195,8 @@
     "EMAIL_VERIFICATION_SENT": "Verification email has been sent. Please check your inbox.",
     "ACCOUNT_SUSPENDED": {
       "TITLE": "Account Suspended",
-      "MESSAGE": "Your account is suspended. Please reach out to the support team for more information."
+      "MESSAGE": "Your account is suspended. Contact our team at {phone} for more information.",
+      "LINK": "Click here"
     }
   },
   "COMPONENTS": {
