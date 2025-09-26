@@ -278,7 +278,9 @@ export default {
     },
     async analizeSuspendedAccount() {
       const { expires_at } = this.getAccount(this.accountId);
-      this.expires_at = this.expires_at ?? expires_at;
+      if (!expires_at)
+        return
+      this.expires_at = expires_at;
       try {
         if (new Date(this.expires_at) <= new Date()) {
           await this.$store.dispatch('accounts/update', { status: "suspended" });
