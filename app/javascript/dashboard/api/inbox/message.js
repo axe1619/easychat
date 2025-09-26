@@ -100,6 +100,14 @@ class MessageApi extends ApiClient {
     return axios.get(`${this.url}/${conversationId}/messages`, { params });
   }
 
+  getSummary({ conversationId, after, before }) {
+    const params = { before };
+    if (after && Number(after) !== Number(before)) {
+      params.after = after;
+    }
+    return axios.get(`${this.url}/${conversationId}/messages/summary`, { params });
+  }
+
   translateMessage(conversationId, messageId, targetLanguage) {
     return axios.post(
       `${this.url}/${conversationId}/messages/${messageId}/translate`,

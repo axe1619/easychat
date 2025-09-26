@@ -33,6 +33,8 @@ import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { REPLY_POLICY } from 'shared/constants/links';
 import wootConstants from 'dashboard/constants/globals';
 import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
+import AIInsightsAccordion from './conversation/AIInsightsAccordion.vue';
+import MessageApi from "../../../api/inbox/message";
 
 export default {
   components: {
@@ -40,7 +42,8 @@ export default {
     ReplyBox,
     Banner,
     ConversationLabelSuggestion,
-    ConversationMessageSuggestion
+    ConversationMessageSuggestion,
+    AIInsightsAccordion,
   },
   mixins: [inboxMixin, aiMixin],
   props: {
@@ -91,7 +94,8 @@ export default {
       isProgrammaticScroll: false,
       messageSentSinceOpened: false,
       labelSuggestions: [],
-      openSuggestion: false
+      openSuggestion: false,
+      summary: '',
     };
   },
 
@@ -260,6 +264,7 @@ export default {
     this.addScrollListener();
     this.fetchAllAttachmentsFromCurrentChat();
     this.fetchSuggestions();
+    this.getSummary();
   },
 
   beforeDestroy() {
@@ -417,7 +422,6 @@ export default {
 
     handleScroll(e) {
       if (this.isProgrammaticScroll) {
-        // Reset the flag
         this.isProgrammaticScroll = false;
         this.hasUserScrolled = false;
       } else {
@@ -444,7 +448,14 @@ export default {
       });
     },
     clickSuggestion(value) {
-      this.openSuggestion = value
+      this.openSuggestion = value;
+    },
+    async getSummary() {
+      const conversationId = this.currentChat.id;
+      await MessageApi.getSummary({ conversationId, after: 0, before: 20 }).then(({ data }) => {
+        // alert(data.summary);
+        this.summary = data.summary
+      });
     }
   },
 };
@@ -525,11 +536,27 @@ export default {
           :conversation-id="currentChat.id"
         />
       </ul>
-      <ConversationMessageSuggestion
-            :open="openSuggestion"
-            :conversationId="currentChat.id"
-            :chat="currentChat"
-            ref="conversationMessageSuggestion"
+      <AIInsightsAccordion
+        :open="openSuggestion"
+        :aiInsightsItems="[
+          {
+            name: 'tag_suggestions',
+            title: 'Sugerencias de etiquetas',
+            contentComponent: 'ConversationMessageSuggestion',
+            contentProps: {
+              open: openSuggestion,
+              conversationId: currentChat.id,
+              chat: currentChat,
+            },
+            uiKey: 'is_ai_tag_suggestions_open',
+          },
+          {
+            name: 'conversation_summary',
+            title: 'Resumen de la conversacion',
+            content: summary,
+            uiKey: 'is_ai_conversation_summary_open',
+          },
+        ]"
       />
     </div>
     <div

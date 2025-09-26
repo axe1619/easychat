@@ -154,7 +154,7 @@ export default {
       @closeKeyShortcutModal="closeKeyShortcutModal"
       @showAddLabelPopup="showAddLabelPopup"
     />
-    <section class="flex flex-1 h-full min-h-0 px-0 overflow-hidden">
+    <section class="flex flex-1 min-h-0 px-0 overflow-hidden">
       <router-view />
       <CommandBar />
       <AccountSelector

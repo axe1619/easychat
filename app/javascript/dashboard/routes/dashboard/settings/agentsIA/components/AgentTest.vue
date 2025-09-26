@@ -1,4 +1,6 @@
 <script>
+import { act } from 'react';
+import agentBots from '../../../../../store/modules/agentBots';
 import TinyEditor from '../widgets/TinyEditor.vue';
 
 const SCRIPT_NAME = 'snap-script';
@@ -11,6 +13,7 @@ export default {
     return {
       avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
       userPrompt: '',
+      agentId: '',
       originalPrompt: '',
       isRunning: false,
       scriptContent: '',
@@ -19,7 +22,7 @@ export default {
       isUpdatingAgent: false,
       editorKey: 0,
       hasStarted: false,
-      cleanupDone: false,
+      cleanUp: false,
     };
   },
 
@@ -49,6 +52,12 @@ export default {
     try {
       if (this.botId) {
         await this.$store.dispatch('agentBots/show', this.botId);
+        // console.log('on remove 1');
+        // this.onRemove();
+        await this.$nextTick();
+        // await this.onStart(
+        //   this.$store.getters['agentBots/getBot']?.(this.botId)?.id
+        // );
       }
     } catch (e) {
       console.log('agentBots/show error:', e);
@@ -56,6 +65,7 @@ export default {
 
     this._beforeUnload = () => {
       try {
+        console.log('on remove 10');
         this.onRemove();
       } catch (e) {}
     };
@@ -67,54 +77,100 @@ export default {
   watch: {
     botId: {
       immediate: false,
-      async handler(newId) {
-        if (!newId) return;
-        try {
-          await this.$store.dispatch('agentBots/show', newId);
-        } catch (e) {
-          console.error('agentBots/show (watch) error:', e);
+      async handler(newId, oldId) {
+        if (!newId) {
+          console.log('on remove 9');
+          this.onRemove();
+          return;
+        }
+        if (newId !== oldId) {
+          try {
+            await this.$store.dispatch('agentBots/show', newId);
+
+            // console.log('on remove 8');
+            // this.onRemove();
+            await this.$nextTick();
+            // await this.onStart(
+            //   this.$store.getters['agentBots/getBot']?.(newId)?.id
+            // );
+          } catch (e) {
+            console.error('agentBots/show (watch) error:', e);
+            console.log('on remove 7');
+            this.onRemove();
+          }
         }
       },
     },
     agentBot: {
       immediate: true,
-      async handler(newBot) {
-        if (!newBot) return;
-        this.userPrompt = newBot?.prompt || '';
-        this.originalPrompt = newBot?.prompt || '';
-        this.editorKey++;
+      async handler(newBot, oldBot) {
+        console.log('newBot:', newBot);
+        console.log('is not empty:', !!newBot);
+        console.log('oldBot:', oldBot);
+        console.log('is not empty:', !!oldBot);
+        if (
+          newBot?.id !== oldBot?.id &&
+          oldBot &&
+          Object.keys(oldBot).length > 0
+        ) {
+          console.log('agentBot old');
+          console.log('on remove 6');
+          this.onRemove();
+          return;
+        }
+
+        console.log('cleanUp:', this.cleanUp);
+        if (!this.cleanUp) {
+          console.log('newBot');
+          this.agentId = newBot.id || '';
+          this.userPrompt = newBot?.prompt || '';
+          this.originalPrompt = newBot?.prompt || '';
+          this.editorKey++;
+          // this.showAgain();
+        }
         await this.$nextTick();
-        this.onStart(newBot.id);
       },
     },
   },
-
   beforeRouteLeave(to, from, next) {
     try {
+      console.log('on remove 5');
       this.onRemove();
     } catch (e) {
       console.error('onRemove error:', e);
     }
     next();
   },
-  beforeRouteUpdate(to, from, next) {
-    try {
-      this.onRemove();
-    } catch (e) {
-      console.error('onRemove error:', e);
-    }
-    next();
-  },
+  // beforeRouteUpdate(to, from, next) {
+  //   try {
+  //     console.log('on remove 4');
+  //     this.onRemove();
+  //   } catch (e) {
+  //     console.error('onRemove error:', e);
+  //   }
+  //   next();
+  // },
   beforeDestroy() {
     window.removeEventListener('beforeunload', this._beforeUnload);
     try {
+      console.log('on remove 3');
       this.onRemove();
     } catch (e) {
       console.error('onRemove error:', e);
     }
   },
+  async activated() {
+    this.cleanUp = false;
+    console.log('cleanUp from activated:', this.cleanUp);
+    console.log('onStart');
+    console.log('botId:', this.botId);
+    await this.onStart(
+      this.$store.getters['agentBots/getBot']?.(this.botId)?.id
+    );
+  },
   deactivated() {
     try {
+      console.log('on remove 2');
       this.onRemove();
     } catch (e) {
       console.error('onRemove error:', e);
@@ -122,6 +178,19 @@ export default {
   },
 
   methods: {
+    resetAgentState() {
+      console.log('resetAgentState');
+      this.agentId = '';
+      this.editorKey++;
+      this.hasStarted = false;
+      this.isRunning = false;
+      this.injectError = null;
+      // Opcional si quieres limpiar todo:
+      // this.scriptContent = '';
+      // this.website = null;
+      // this.cleanupDone = false;
+    },
+
     normalizeContent(val) {
       return (val || '')
         .replace(/&nbsp;/g, ' ')
@@ -166,6 +235,7 @@ export default {
             inboxId: this.website.id,
             botId: agentBotId,
           });
+          this.showAgain();
           this.injectWidgetScript(this.scriptContent);
           this.hasStarted = true;
         } else {
@@ -201,9 +271,6 @@ export default {
     },
 
     onRemove() {
-      if (this.cleanupDone) return;
-      this.cleanupDone = true;
-
       try {
         this.removeScript();
       } catch (e) {
@@ -215,27 +282,55 @@ export default {
       } catch (e) {
         console.error('deleteInbox error:', e);
       }
+
+      console.log('resetAgentState 5');
+      this.cleanUp = true;
+      this.resetAgentState();
     },
 
     removeScript() {
       document
-        .querySelectorAll(`script[name="${SCRIPT_NAME}"]`)
-        .forEach(el => el.remove());
-      document
-        .querySelectorAll(
-          'iframe[src*="easycontact.top"], iframe[src*="localhost:3000"], iframe[id^="woot-"], iframe[name^="woot-"]'
-        )
-        .forEach(el => el.remove());
-      document
-        .querySelectorAll('[class*="woot-widget-holder"]')
-        .forEach(el => el.remove());
+        .querySelectorAll( 'iframe[src*="easycontact.top"], iframe[src*="localhost:3000"], iframe[id^="woot-"], iframe[name^="woot-"]' ) .forEach(el => el.remove()); document .querySelectorAll('[class*="woot-widget-holder"]') .forEach(el => el.remove()); document .querySelectorAll('[class*="woot--bubble-holder"]') .forEach(el => el.remove());
+      document.querySelectorAll('[class*="woot-widget-holder"]').forEach(el => {
+        el.innerHTML = ''; // borra contenido interno
+        el.removeAttribute('style');
+        el.className = '';
+      });
       document
         .querySelectorAll('[class*="woot--bubble-holder"]')
-        .forEach(el => el.remove());
+        .forEach(el => {
+          el.innerHTML = '';
+          el.removeAttribute('style');
+          el.className = '';
+        });
+    },
+
+    // por si necesitas revertirlo:
+    showAgain() {
+      const selectors = [
+        '[class*="woot-widget-holder"]',
+        '[class*="woot--bubble-holder"]',
+        'iframe[src*="easycontact.top"]',
+        'iframe[src*="localhost:3000"]',
+        'iframe[id^="woot-"]',
+        'iframe[name^="woot-"]',
+      ].join(', ');
+
+      const style = document.getElementById('woot-hide-style');
+      if (style) {
+        style.textContent = `
+      ${selectors} {
+        display: initial !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+    `;
+      }
     },
 
     async injectWidgetScript(rawScript) {
-      this.removeScript();
+      // this.removeScript();
       if (!rawScript) return;
 
       const decoded = rawScript
@@ -341,7 +436,9 @@ export default {
               <h3 class="text-sm font-bold mb-2">
                 {{ $t('AGENTS_AI.MODALS.SANDBOX.INSTRUCTIONS_TITLE') }}
               </h3>
-              <ul class="list-disc pl-5 text-slate-700 dark:text-slate-200 space-y-1 text-sm leading-relaxed">
+              <ul
+                class="list-disc pl-5 text-slate-700 dark:text-slate-200 space-y-1 text-sm leading-relaxed"
+              >
                 <li>{{ $t('AGENTS_AI.MODALS.SANDBOX.BULLET_CONFIGURE') }}</li>
                 <li>{{ $t('AGENTS_AI.MODALS.SANDBOX.BULLET_TRY') }}</li>
                 <li>{{ $t('AGENTS_AI.MODALS.SANDBOX.BULLET_MONITOR') }}</li>

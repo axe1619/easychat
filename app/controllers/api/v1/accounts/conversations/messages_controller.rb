@@ -45,6 +45,19 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
     render json: { content: translated_content }
   end
 
+  def summary
+    msgs = message_finder.perform
+    raw_texts = msgs.last(20).map { |m| m.content.to_s.strip }.reject(&:blank?)
+    return render json: { summary: '' } if raw_texts.empty?
+
+    summary_text = ChatGptSummarizer.new.summarize(raw_texts)
+    render json: { summary: summary_text }
+  rescue ChatGptSummarizer::MissingOpenAIKey => e
+    render json: { error: 'Missing OPENAI_API_KEY. Configure ENV or Rails credentials.' }, status: :unprocessable_entity
+  rescue StandardError => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   private
 
   def message

@@ -70,6 +70,13 @@ class SuperAdmin::ResponseSourcesController < SuperAdmin::EnterpriseBaseControll
     end
   end
 
+  def process_summary
+    # Toma los últimos 20 mensajes crudos (texto) desde params y los resume
+    raw_messages = (params[:previous_messages] || []).last(20).map { |m| m['message'] }.compact
+    summary = ChatGptSummarizer.new.summarize(raw_messages)
+    render json: { summary: summary }
+  end
+
   def set_response_source
     @response_source = requested_resource
   end

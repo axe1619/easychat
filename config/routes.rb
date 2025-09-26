@@ -101,6 +101,9 @@ Rails.application.routes.draw do
                   post :translate
                   post :retry
                 end
+                collection do
+                  get :summary
+                end
               end
               resources :assignments, only: [:create]
               resources :labels, only: [:create, :index]
