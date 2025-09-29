@@ -6,7 +6,7 @@
 #  access_token  :text             not null
 #  email         :string
 #  id_token      :text             not null
-#  picture       :string
+#  picture       :text
 #  platform      :string           not null
 #  refresh_token :text             not null
 #  user_name     :string

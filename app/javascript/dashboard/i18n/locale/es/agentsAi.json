@@ -129,9 +129,9 @@
                     "CANCEL": "Cancelar"
                 }
             },
-            "SNAPSHOT": {
-              "NAME": "Agent Test",
-              "DESCRIPTION": "Test your agent's capabilities in a simulated conversation, providing a more realistic experience for your customers."
+            "SANDBOX": {
+              "NAME": "Agente de Prueba",
+              "DESCRIPTION": "Pon a prueba las capacidades de tu agente en una conversación simulada, ofreciendo una experiencia más realista para tus clientes."
             }
         },
         "ALERT": {
@@ -166,10 +166,10 @@
             "CALENDAR": {
                 "ADD_GOOGLE_ACOUNT": "Agrega tu cuenta de Google"
             },
-            "SNAPSHOT": {
+            "SANDBOX": {
               "TITLE": "Agente de IA",
-              "SUBTITLE": "Configura y prueba tu chatbot con parámetros personalizados.",
-              "USER_PROMPT_LABEL": "Prompt de usuario",
+              "SUBTITLE": "Configura y prueba tu chatbot de IA.",
+              "USER_PROMPT_LABEL": "Prompt del usuario",
               "USER_PROMPT_PLACEHOLDER": "Escriba la solicitud de interacción para iniciar la prueba…",
               "INSTRUCTIONS_TITLE": "Configura el prompt del agente",
               "BULLET_CONFIGURE": "Escribe el prompt base que guiará todas las respuestas del agente.",

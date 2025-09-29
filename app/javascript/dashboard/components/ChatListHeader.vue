@@ -181,7 +181,6 @@ watch(
   }
 );
 
-// ✅ Al cambiar el canal, reinicia todo el flujo
 watch(
   () => props.channelName,
   () => {
@@ -202,7 +201,6 @@ const hasAppliedFiltersOrActiveFolders = computed(
   () => props.hasAppliedFilters || props.hasActiveFolders
 );
 
-// ✅ Computed para el template
 const isConnected = computed(() => connectionStatus.value === 'connected');
 </script>
 
@@ -231,7 +229,6 @@ const isConnected = computed(() => connectionStatus.value === 'connected');
         }}
       </span>
 
-      <!-- ✅ Mostrar Restart/Logout SOLO cuando esté connected/open -->
       <woot-button
         v-if="channelType === 'Channel::Api' && isConnected"
         v-tooltip.bottom="$t('CHAT_LIST_HEADER.WHATSAPP_WEB.RESTART')"

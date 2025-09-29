@@ -69,7 +69,7 @@ export default {
               query: { agent: this.agentBot?.id },
             });
           },
-          name: this.$t('AGENTS_AI.CARDS.SNAPSHOT.NAME'),
+          name: this.$t('AGENTS_AI.CARDS.SANDBOX.NAME'),
           image: '/assets/images/dashboard/agents-ai/agent-test.png'
         }
       ];

@@ -97,7 +97,7 @@ export default {
 
       try {
         this.isRagDeleting = true;
-        await apiAgent.delete(`/api/rag/delete-collection/${name}`);
+        await axios.delete(`/api/redirects/delete-collection/${name}`);
         await this.$store.dispatch('rags/delete', id);
         useAlert(this.$t('AGENTS_AI.ALERT.RAG.DELETE.SUCCESS'));
       } catch (e) {
