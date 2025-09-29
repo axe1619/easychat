@@ -1,10 +1,11 @@
 class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   include Api::V1::InboxesHelper
-  before_action :fetch_inbox, except: [:index, :create]
+  before_action :fetch_inbox, except: [:index, :create, :conversation_state_inboxes]
   before_action :fetch_agent_bot, only: [:set_agent_bot]
   before_action :validate_limit, only: [:create]
   # we are already handling the authorization in fetch inbox
   before_action :check_authorization, except: [:show]
+  skip_before_action :authenticate_user!, only: [:conversation_state_inboxes]
 
   def index
     @inboxes = policy_scope(Current.account.inboxes.order_by_name.includes(:channel, { avatar_attachment: [:blob] }))
@@ -65,6 +66,11 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   def destroy
     ::DeleteObjectJob.perform_later(@inbox, Current.user, request.ip) if @inbox.present?
     render status: :ok, json: { message: I18n.t('messages.inbox_deletetion_response') }
+  end
+
+  def conversation_state_inboxes
+    inbox = Current.account.inboxes.find(params[:id])
+    @conversation_states = inbox.conversation_states
   end
 
   def sync_conversation_state_inboxes
