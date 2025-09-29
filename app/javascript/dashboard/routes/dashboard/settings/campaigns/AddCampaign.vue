@@ -41,7 +41,10 @@ export default {
       senderList: [],
       listDesign,
       design: listDesign.DEFAULT,
-      template: undefined
+      template: undefined,
+      loading: {
+        campaign: false
+      }
     };
   },
 
@@ -130,6 +133,9 @@ export default {
       if (!selectedInbox) return false
       const enabledTypes = [INBOX_TYPES.WHATSAPP]
       return enabledTypes.includes(selectedInbox.channel_type)
+    },
+    isLoadingCampaign() {
+      return this.uiFlags.isCreating || this.loading.campaign;
     }
   },
   watch: {
@@ -193,6 +199,7 @@ export default {
     async addCampaign() {
       if (!await this.validateForm())
         return
+      this.loading.campaign = true
       try {
         const campaignDetails = this.getCampaignDetails();
         await this.$store.dispatch('campaigns/create', campaignDetails);
@@ -209,6 +216,7 @@ export default {
           error?.response?.message || this.$t('CAMPAIGN.ADD.API.ERROR_MESSAGE');
         useAlert(errorMessage);
       }
+      this.loading.campaign = false
     },
     async validateForm() {
       let subFormValidate
@@ -471,7 +479,7 @@ export default {
       </div>
 
       <div class="flex flex-row justify-end w-full gap-2 px-0 py-2">
-        <woot-button :is-loading="uiFlags.isCreating">
+        <woot-button :is-loading="isLoadingCampaign">
           {{ $t('CAMPAIGN.ADD.CREATE_BUTTON_TEXT') }}
         </woot-button>
         <woot-button variant="clear" @click.prevent="onClose">

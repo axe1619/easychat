@@ -2,42 +2,43 @@
 #
 # Table name: conversations
 #
-#  id                        :integer          not null, primary key
-#  active_agent_bot          :boolean          default(TRUE), not null
-#  additional_attributes     :jsonb
-#  agent_last_seen_at        :datetime
-#  assignee_last_seen_at     :datetime
-#  cached_label_list         :text
-#  contact_last_seen_at      :datetime
-#  custom_attributes         :jsonb
-#  enabled_remarketing       :boolean          default(FALSE), not null
-#  first_reply_created_at    :datetime
-#  identifier                :string
-#  justification             :text
-#  last_activity_at          :datetime         not null
-#  last_activity_incoming_at :datetime
-#  last_activity_outgoing_at :datetime
-#  last_sentiment_analysis   :datetime
-#  priority                  :integer
-#  score                     :float
-#  snoozed_until             :datetime
-#  status                    :integer          default("open"), not null
-#  uuid                      :uuid             not null
-#  waiting_since             :datetime
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  account_id                :integer          not null
-#  assignee_id               :integer
-#  campaign_id               :bigint
-#  contact_id                :bigint
-#  contact_inbox_id          :bigint
-#  conversation_sentiment_id :bigint
-#  conversations_state_id    :integer
-#  display_id                :integer          not null
-#  inbox_id                  :integer          not null
-#  kanban_states_id          :integer
-#  sla_policy_id             :bigint
-#  team_id                   :bigint
+#  id                               :integer          not null, primary key
+#  active_agent_bot                 :boolean          default(TRUE), not null
+#  additional_attributes            :jsonb
+#  agent_last_seen_at               :datetime
+#  assignee_last_seen_at            :datetime
+#  cached_label_list                :text
+#  contact_last_seen_at             :datetime
+#  custom_attributes                :jsonb
+#  enabled_remarketing              :boolean          default(FALSE), not null
+#  first_reply_created_at           :datetime
+#  identifier                       :string
+#  justification                    :text
+#  last_activity_at                 :datetime         not null
+#  last_activity_incoming_at        :datetime
+#  last_activity_outgoing_at        :datetime
+#  last_conversation_state_analysis :datetime
+#  last_sentiment_analysis          :datetime
+#  priority                         :integer
+#  score                            :float
+#  snoozed_until                    :datetime
+#  status                           :integer          default("open"), not null
+#  uuid                             :uuid             not null
+#  waiting_since                    :datetime
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
+#  account_id                       :integer          not null
+#  assignee_id                      :integer
+#  campaign_id                      :bigint
+#  contact_id                       :bigint
+#  contact_inbox_id                 :bigint
+#  conversation_sentiment_id        :bigint
+#  conversations_state_id           :integer
+#  display_id                       :integer          not null
+#  inbox_id                         :integer          not null
+#  kanban_states_id                 :integer
+#  sla_policy_id                    :bigint
+#  team_id                          :bigint
 #
 # Indexes
 #
