@@ -5,7 +5,7 @@ import ModalAgentAdd from './components/ModalAgentAdd.vue';
 
 export default {
   name: 'AgentsIa',
-  components:{ Spinner, ModalAgentAdd },
+  components: { Spinner, ModalAgentAdd },
   data() {
     return {
       avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
@@ -42,17 +42,19 @@ export default {
     <woot-modal :show.sync="showAddAgent" :on-close="hideAddAgent">
       <ModalAgentAdd :on-close="hideAddAgent" />
     </woot-modal>
+    <!-- MODALS  -->
 
-    <p class="mb-4 text-base font-normal line-clamp-5 sm:line-clamp-none max-w-3xl tracking-[-0.1px]">{{
-      $t('AGENTS_AI.HEADER_INDEX.DESCRIPTION') }}</p>
+    <div class="px-4 text-base">
+      <p class="text-[12px]">{{ $t('AGENTS_AI.HEADER_INDEX.DESCRIPTION') }}</p>
+    </div>
 
-    <div class="flex">
+    <div class="px-4">
       <div v-if="isFetching" class="w-full flex justify-center items-center m-4">
         <Spinner />
       </div>
-      <div v-for="a in agentList" :key="a.id"
-        class="w-60 m-2 bg-white dark:bg-slate-900 cursor-pointer flex flex-col justify-end transition-all duration-200 ease-in px-0 items-center border border-solid border-slate-25 dark:border-slate-800 hover:border-woot-500 dark:hover:border-woot-500 hover:shadow-md rounded">
-        <router-link :to="'capabilities?agent=' + a.id" class="w-full h-full p-3 flex flex-col justify-between">
+      <div v-else class="grid max-w-3xl grid-cols-2 mx-0 mt-6 sm:grid-cols-3 lg:grid-cols-4">
+        <router-link v-for="a in agentList" :key="a.id" :to="'capabilities?agent=' + a.id"
+          class="w-full h-full p-3 flex flex-col justify-between">
           <div class="w-full h-32 p-2 flex justify-center items-center">
             <img :src="a.avatar_url || avatarDefault" :alt="a.name" class="h-full object-cover" />
           </div>

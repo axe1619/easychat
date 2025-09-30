@@ -7,8 +7,6 @@ import { required } from '@vuelidate/validators';
 import WootSubmitButton from '../../../../../components/buttons/FormSubmitButton.vue';
 import Modal from '../../../../../components/Modal.vue';
 import TinyEditor from '../widgets/TinyEditor.vue';
-import { baseUrl } from '../services/apiAgent';
-
 
 export default {
   name: "ModalAgentAdd",
@@ -50,8 +48,8 @@ export default {
       finishAt: '',
       show: true,
       agentTypes: [
-        { value: 0, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.0'), url:`${baseUrl}/api/agent/maria` },
-        { value: 1, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.1'), url:`${baseUrl}/api/agent/sales` }
+        { value: 0, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.0'), url:`${process.env.AGENTIC_EASY_CONTACT}/api/agent/maria` },
+        { value: 1, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.1'), url:`${process.env.AGENTIC_EASY_CONTACT}/api/agent/sales` }
       ]
     };
   },
