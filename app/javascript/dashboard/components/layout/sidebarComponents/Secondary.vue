@@ -49,7 +49,16 @@ export default {
   },
   data() {
     return {
-      expires_at: undefined
+      expires_at: undefined,
+      timer: null,
+      now: new Date(),
+      accountExpired: false
+    }
+  },
+  watch: {
+    accountExpired(expire) {
+      if(!expire) return
+      this.analizeSuspendedAccount()
     }
   },
   computed: {
@@ -228,15 +237,18 @@ export default {
       };
     },
     formattedRemainingTime() {
+      if(this.accountExpired)
+        return this.$t('GENERAL.ACCOUNT.EXPIRE.MESSAGE')
       if (!this.expires_at)
         return this.$t('GENERAL.ACCOUNT.EXPIRE.DATE', { day: "-", hour: "-", minute: "-" })
-      const now = new Date()
       const expires = new Date(this.expires_at)
-      if (expires <= now)
-        return this.$t('GENERAL.ACCOUNT.EXPIRE.MESSAGE')
-      const day = differenceInDays(expires, now)
-      const hour = differenceInHours(expires, now) % 24
-      const minute = differenceInMinutes(expires, now) % 60
+      if (expires <= this.now) {
+        this.accountExpired = true
+        return
+      }
+      const day = differenceInDays(expires, this.now)
+      const hour = differenceInHours(expires, this.now) % 24
+      const minute = differenceInMinutes(expires, this.now) % 60
       return this.$t('GENERAL.ACCOUNT.EXPIRE.DATE', { day, hour, minute })
     }
   },
@@ -250,13 +262,44 @@ export default {
     showNewLink(featureFlag) {
       return this.isFeatureEnabledonAccount(this.accountId, featureFlag);
     },
-    initializeAccount() {
+    initTimer() {
+      let minute = 1000 * 60
+      if (this.timer)
+        return
+      this.timer = setInterval(() => {
+        this.now = new Date()
+      }, minute)
+    },
+    cleanTimer() {
+      if (!this.timer)
+        return
+      clearInterval(this.timer)
+      this.timer = null
+    },
+    async analizeSuspendedAccount() {
       const { expires_at } = this.getAccount(this.accountId);
-      this.expires_at = expires_at
+      if (!expires_at)
+        return
+      this.expires_at = expires_at;
+      try {
+        if (new Date(this.expires_at) <= new Date()) {
+          await this.$store.dispatch('accounts/update', { status: "suspended" });
+          window.location.reload();
+        }
+      } catch (error) {
+        console.warn({ error })
+      }
+    },
+    initializeAccount() {
+      this.analizeSuspendedAccount()
     }
   },
   mounted() {
     this.initializeAccount()
+    this.initTimer()
+  },
+  beforeDestroy() { 
+    this.cleanTimer()
   }
 };
 </script>

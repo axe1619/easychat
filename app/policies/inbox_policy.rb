@@ -65,4 +65,9 @@ class InboxPolicy < ApplicationPolicy
   def sync_conversation_state_inboxes?
     @account_user.administrator? || @account_user.agent?
   end
+
+  def conversation_state_inboxes?
+    true
+  end
+
 end
