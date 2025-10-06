@@ -45,7 +45,7 @@ export default {
     <!-- MODALS  -->
 
     <div class="px-4 text-base">
-      <p class="text-[12px]">{{ $t('AGENTS_AI.HEADER_INDEX.DESCRIPTION') }}</p>
+      <p >{{ $t('AGENTS_AI.HEADER_INDEX.DESCRIPTION') }}</p>
     </div>
 
     <div class="px-4">
