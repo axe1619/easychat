@@ -35,9 +35,6 @@ export default {
       }
     };
   },
-  validations: {
-    whatsAppInboxAPIKey: { required },
-  },
   validations() {
     return {
       countMessageSorter: {
@@ -48,7 +45,10 @@ export default {
       },
       selectedSorters: {
         required,
-      }
+      },
+      whatsAppInboxAPIKey: {
+        required: this.isAWhatsAppChannel
+      },
     }
   },
   computed: {
