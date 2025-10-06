@@ -296,6 +296,7 @@ class Message < ApplicationRecord
 
   def execute_after_create_commit_callbacks
     # rails issue with order of active record callbacks being executed https://github.com/rails/rails/issues/20911
+    set_conversation_state
     reopen_conversation
     notify_via_mail
     set_conversation_activity
@@ -428,6 +429,61 @@ class Message < ApplicationRecord
 
   def validate_attachments_limit(_attachment)
     errors.add(:attachments, message: 'exceeded maximum allowed') if attachments.size >= NUMBER_OF_PERMITTED_ATTACHMENTS
+  end
+
+  def set_conversation_state
+    count_inbox_message_analyze = conversation.inbox.count_reload_conversation_state
+    return unless count_inbox_message_analyze
+    analyze_conversation = false
+    begin
+      query = Message.unscoped.where(
+        account_id: conversation.account_id,
+        inbox_id: conversation.inbox_id,
+        conversation_id: conversation.id
+      )
+      if conversation.last_conversation_state_analysis.present?
+        query = query.where("created_at > ?", conversation.last_conversation_state_analysis)
+      end
+      analyze_conversation = query
+      .offset(count_inbox_message_analyze - 1)
+      .select(:id)
+      .limit(1)
+      return unless analyze_conversation.exists?
+      # fetch IA
+      state_assigned_by_agent_ia = http_get_analize_conversation(
+        conversation.account_id,
+        conversation.inbox_id,
+        conversation.display_id
+      )
+      return if state_assigned_by_agent_ia.nil?
+      conversation_state = ConversationState.find_by(id: state_assigned_by_agent_ia["id"])
+      return if conversation_state.nil?
+      conversation.update!(
+        conversations_state_id: conversation_state.id,
+        last_conversation_state_analysis: Time.current
+      )
+    rescue => e
+      Rails.logger.info "WARNING: ModelMessageSetConversationState: #{e.message}"
+    end
+  end
+
+  def http_get_analize_conversation(account_id ,inbox_id , display_id)
+    url_get_analize = ENV.fetch('CLOUD_RUN_ANALIZE_CONVERSATION', '')
+    params    = { account_id: account_id, display_id: display_id, inbox_id: inbox_id }
+    uri       = URI(url_get_analize)
+    uri.query = URI.encode_www_form(params)
+    begin
+      response  = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+        http.request(Net::HTTP::Get.new(uri))
+      end
+      response_data = JSON.parse(response.body)
+      if !response_data['status'] 
+        return nil
+      end
+      return JSON.parse(response_data["data"])
+    rescue StandardError => e
+      return nil
+    end
   end
 
   def set_conversation_activity
