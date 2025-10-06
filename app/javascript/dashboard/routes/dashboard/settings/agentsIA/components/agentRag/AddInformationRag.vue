@@ -5,7 +5,6 @@ import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import WootSubmitButton from '../../../../../../components/buttons/FormSubmitButton.vue';
 import Spinner from 'shared/components/Spinner.vue';
-import apiAgent from '../../services/apiAgent';
 
 export default {
     components: { WootSubmitButton, Spinner },
@@ -49,7 +48,8 @@ export default {
             fileId: '',
             fileDescription: '',
             uploading: false,
-            error: null
+            error: null,
+            progress: null
         };
     },
     setup() {
@@ -102,38 +102,49 @@ export default {
         },
         async submitFile() {
             const collectionName = `${this.accountId}-${this.botId}-${this.fileId}`;
-            console.log('Id:', collectionName);
-            console.log('Descripcion:', this.fileDescription);
-            if (this.file) {
-                console.log('Datos del archivo:', {
-                    nombre: this.file.name,
-                    tamaño: this.file.size,
-                    tipo: this.file.type,
-                    fecha: this.file.lastModifiedDate,
-                })
-            }
+            // if (this.file) {
+            //     console.log('Datos del archivo:', {
+            //         nombre: this.file.name,
+            //         tamaño: this.file.size,
+            //         tipo: this.file.type,
+            //         fecha: this.file.lastModifiedDate,
+            //     })
+            // }
+            const uploadId = crypto.randomUUID(); // cualquier id único por subida
+            const es = new EventSource(`${process.env.AGENTIC_EASY_CONTACT}/api/rag/progress/${uploadId}`);
+
+            es.addEventListener('progress', (ev) => {
+                const { chunks, uploaded } = JSON.parse(ev.data);
+                this.progress = `Subiendo datos del archivo: ${uploaded} / ${chunks}`
+            });
+
+            es.addEventListener('done', () => {
+                console.log('Procesamiento terminado');
+                this.progress = null
+                es.close();
+            });
+
+            es.addEventListener('error', (e) => {
+                console.warn('SSE error', e);
+                this.progress = null
+                es.close();
+            });
 
             const fd = new FormData()
             fd.append('collectionName', collectionName)
+            fd.append('uploadId', uploadId)
             fd.append('file', this.file, this.file.name)
 
             try {
                 this.uploading = true
-                await axios.post(`/api/redirects/add_pdf`, fd, {
+                this.progress = `Procesando archivo`
+                const res = await axios.post(`${process.env.AGENTIC_EASY_CONTACT}/api/rag/add-pdf`, fd, {
                     headers: { 'Content-Type': 'multipart/form-data' },
-                    maxBodyLength: Infinity,
-                })
+                    maxBodyLength: Infinity
+                },
+                )
 
-                // fetch('/api/redirects/add_pdf', { method: 'POST', body: fd })
-                //     .then((r) => {
-                //         if (r.status === 204) {
-                //             console.log('OK, proceso completado');
-                //         } else {
-                //             console.error('Error reenviando (status):', r.status);
-                //         }
-                //     })
-                //     .catch((e) => console.error('Error de red:', e));
-
+                console.log(res)
 
                 const data = {
                     agent_bot_id: this.botId,
@@ -146,14 +157,16 @@ export default {
                 useAlert(this.$t('AGENTS_AI.ALERT.RAG.CREATE.SUCCESS'));
                 this.toggleAddNewFile();
                 console.log('RAG creado:', created);
-            } catch (e) {
-                const error = e?.response?.data?.error || e.message || 'Error de red';
-                this.error = error;
-                console.log('code:', e?.response?.status)
-                if (e?.response?.status === 409) this.error = this.$t('AGENTS_AI.ALERT.RAG.CREATE.UNIQUE_ERROR');
-                else this.error = this.$t('AGENTS_AI.ALERT.RAG.CREATE.ERROR');
+            } catch (err) {
+                console.log(err)
+                const error = err?.response?.data?.error || err.message || 'Error de red';
+                if (err?.response?.status === 409) this.error = this.$t('AGENTS_AI.ALERT.RAG.CREATE.UNIQUE_ERROR');
+                else {
+                    this.error = error;
+                    useAlert(this.$t('AGENTS_AI.ALERT.RAG.CREATE.ERROR'))
+                }
 
-                setTimeout(() => { this.error = null }, '5000')
+                setTimeout(() => { this.error = null }, '8000')
             } finally {
                 this.uploading = false;
             }
@@ -177,7 +190,7 @@ export default {
                     " :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_ID')" @blur="v$.fileId.$touch" />
 
             <woot-input v-model="fileDescription" :label="$t('AGENTS_AI.CARDS.RAG.FORM.LABEL_DESCRIPTION')" type="text"
-                :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
+                accept="application/pdf" :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
                 @blur="v$.fileDescription.$touch" />
 
             <div class="flex flex-col">
@@ -190,12 +203,13 @@ export default {
             <div class="flex flex-row justify-end items-center w-full gap-2 px-0 py-2">
 
                 <span v-if="error" class="text-sm text-red-400 dark:text-red-500 me-auto font-medium">{{ error }}</span>
+                <span v-if="progress !== !error" class="text-sm text-blue-500 me-auto font-medium">{{ progress }}</span>
 
                 <!-- <span v-if="success && !error" class="text-sm text-green-400 dark:text-green-500 me-auto font-medium">{{
                     success }}</span> -->
                 <WootSubmitButton :disabled="isButtonDisabled || uploading"
                     :button-text="$t('AGENTS_AI.CARDS.RAG.FORM.SUBMIT')" :loading="uploading" />
-                <button class="button clear" @click.prevent="toggleAddNewFile">
+                <button class="button clear" @click.prevent="toggleAddNewFile" :disabled="uploading">
                     {{ $t('AGENTS_AI.CARDS.RAG.FORM.CANCEL') }}
                 </button>
             </div>

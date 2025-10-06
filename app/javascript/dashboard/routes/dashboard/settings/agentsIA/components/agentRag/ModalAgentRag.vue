@@ -5,7 +5,6 @@ import AddInformationRag from './AddInformationRag.vue';
 import { mapGetters } from 'vuex';
 import Spinner from 'shared/components/Spinner.vue';
 import { useAlert } from 'dashboard/composables';
-import apiAgent from '../../services/apiAgent';
 
 export default {
   components: { WootSubmitButton, Modal, AddInformationRag, Spinner },
@@ -92,18 +91,21 @@ export default {
     async deleteRag() {
       const id = this.idDeleteRag;
       const name = `${this.accountId}-${this.botId}-${this.deleteNameRag}`;
-      console.log('ID:', id);
-      console.log('NAME:', name);
 
       try {
         this.isRagDeleting = true;
-        await axios.delete(`/api/redirects/delete-collection/${name}`);
+        await axios.delete(`${process.env.AGENTIC_EASY_CONTACT}/api/rag/delete-collection/${name}`);
         await this.$store.dispatch('rags/delete', id);
         useAlert(this.$t('AGENTS_AI.ALERT.RAG.DELETE.SUCCESS'));
-      } catch (e) {
-        console.log(e)
-        console.log('code:', e?.response?.status)
-        useAlert(this.$t('AGENTS_AI.ALERT.RAG.DELETE.ERROR'));
+      } catch (err) {
+        console.log(err)
+        console.log('code:', err?.response?.status)
+        if(err?.response?.status === 404){
+          await this.$store.dispatch('rags/delete', id);
+          useAlert(this.$t('AGENTS_AI.ALERT.RAG.DELETE.SUCCESS'));
+        }else{
+          useAlert(this.$t('AGENTS_AI.ALERT.RAG.DELETE.ERROR'));
+        }
       } finally {
         this.isRagDeleting = false;
       }
