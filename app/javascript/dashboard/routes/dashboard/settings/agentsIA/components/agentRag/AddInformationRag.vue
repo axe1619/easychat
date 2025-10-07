@@ -102,14 +102,7 @@ export default {
         },
         async submitFile() {
             const collectionName = `${this.accountId}-${this.botId}-${this.fileId}`;
-            // if (this.file) {
-            //     console.log('Datos del archivo:', {
-            //         nombre: this.file.name,
-            //         tamaño: this.file.size,
-            //         tipo: this.file.type,
-            //         fecha: this.file.lastModifiedDate,
-            //     })
-            // }
+
             const uploadId = crypto.randomUUID(); // cualquier id único por subida
             const es = new EventSource(`${process.env.AGENTIC_EASY_CONTACT}/api/rag/progress/${uploadId}`);
 
@@ -165,10 +158,10 @@ export default {
                     this.error = error;
                     useAlert(this.$t('AGENTS_AI.ALERT.RAG.CREATE.ERROR'))
                 }
-
                 setTimeout(() => { this.error = null }, '8000')
             } finally {
-                this.uploading = false;
+                this.uploading = false
+                this.progress = null
             }
         }
     },
