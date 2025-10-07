@@ -45,10 +45,13 @@ export default {
       idDeleteRag: null,
       valueDescription: '',
       deleteNameRag: '',
-      isRagDeleting: false
+      isRagDeleting: false,
+      dbCollections: []
     };
   },
-  mounted() {
+  async mounted() {
+    const { data } = await axios.get(`${process.env.AGENTIC_EASY_CONTACT}/api/rag/${this.accountId}-${this.botId}-`)
+    this.dbCollections = data.files
     this.$store.dispatch('rags/get', { agent_bot_id: this.botId });
   },
   methods: {
@@ -100,10 +103,10 @@ export default {
       } catch (err) {
         console.log(err)
         console.log('code:', err?.response?.status)
-        if(err?.response?.status === 404){
+        if (err?.response?.status === 404) {
           await this.$store.dispatch('rags/delete', id);
           useAlert(this.$t('AGENTS_AI.ALERT.RAG.DELETE.SUCCESS'));
-        }else{
+        } else {
           useAlert(this.$t('AGENTS_AI.ALERT.RAG.DELETE.ERROR'));
         }
       } finally {
@@ -121,16 +124,28 @@ export default {
   <Modal :show.sync="show" :on-close="onClose">
 
     <!-- <div class="flex">
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="dismiss"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="arrow-redo"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="clipboard"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="arrow-clockwise"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="list"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="mail"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="person"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="snooze"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="info"/>
-      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="book-clock"/>
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="dismiss" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="arrow-redo" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="clipboard" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="arrow-clockwise" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="list" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="mail" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="person" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="snooze" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="info" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="delete" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="checkmark" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="edit" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="sync" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="power" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="save" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="filter" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="person" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="arrow-redo" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="chevron-down" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="snooze" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="book-clock" />
+      <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="warning" />
     </div> -->
 
     <AddInformationRag v-if="addNewFile" :toggle-add-new-file="toggleAddNewFile" :account-id="accountId"
@@ -195,8 +210,11 @@ export default {
                 </div>
 
                 <div v-else class="flex justify-evenly items-center">
-                  <woot-button size="tiny" variant="smooth" color-scheme="primary" icon="edit"
-                    @click="activeEditDescription(item.id, item.description)" />
+                  <woot-button v-if="dbCollections.includes(item.collection_name)" size="tiny" variant="smooth"
+                    color-scheme="primary" icon="edit" @click="activeEditDescription(item.id, item.description)" />
+                    <span v-else class="text-black-900 bg-yellow-300/80 rounded-[5px] p-[6px]" >
+                      <fluent-icon icon="warning" size="12"/>
+                    </span>
                   <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="delete"
                     @click="activeDeleteRag(item.id, item.collection_name)" />
                 </div>
