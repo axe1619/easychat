@@ -83,6 +83,7 @@
                     "DESCRIPTION_LINK": "sample template",
                     "DESCRIPTION_B": " to add your products with the necessary data. Please note that the first three columns are required fields.",
                     "UPLOAD": {
+                        "PROGRESS":"Saved items",
                         "SUCCESS": "Your catalog has been updated successfully.",
                         "ERROR": "There was an error loading the catalog",
                         "FILE_ERROR": "Only CSV files are allowed",
