@@ -94,4 +94,13 @@ unless Rails.env.production?
   Seeders::MessageSeeder.create_sample_csat_collect_message conversation
 
   CannedResponse.create!(account: account, short_code: 'start', content: 'Hello welcome to chatwoot.')
+  
+  # default sentiments conversations
+  ConversationSentiment.create!([
+    { name: "Muy satisfecho", icon:"😀"},
+    { name: "Satisfecho", icon:"😀" },
+    { name: "Neutral", icon:"🙂"},
+    { name: "Insatisfecho", icon:"😐"},
+    { name: "Muy insatisfecho", icon:"🙁"},
+  ])
 end

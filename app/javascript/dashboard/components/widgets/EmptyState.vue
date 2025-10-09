@@ -3,7 +3,7 @@ export default {
   props: {
     title: { type: String, default: '' },
     message: { type: String, default: '' },
-    link: { type: Object, default: { url: "", message: "" } },
+    link: { type: Object, default: () => ({ url: "", message: "" }) },
   },
 };
 </script>
