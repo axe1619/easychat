@@ -15,6 +15,10 @@ json.campaign_type resource.campaign_type
 if resource.campaign_type == 'one_off'
   json.scheduled_at resource.scheduled_at.to_i
   json.audience resource.audience
+  json.reach resource.reach
+  json.duration resource.duration
+  json.message_success Message.campaign(resource.id.to_s,[:delivered, :read]).count
+  json.message_pending Message.campaign(resource.id.to_s,[:sent]).count
 end
 json.trigger_rules resource.trigger_rules
 json.trigger_only_during_business_hours resource.trigger_only_during_business_hours

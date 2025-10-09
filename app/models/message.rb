@@ -238,6 +238,12 @@ class Message < ApplicationRecord
     save!
   end
 
+  def self.campaign(campaign_id,status)
+    status =  Array(status).map(&:to_s)
+    where("messages.additional_attributes ->> 'campaign_id' = ?", campaign_id.to_s).
+    where(status: status)
+  end
+
   private
 
   def build_kanban_state(kanban)
