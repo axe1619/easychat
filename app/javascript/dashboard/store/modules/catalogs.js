@@ -15,6 +15,7 @@ export const state = {
     isDeleting: false,
     isBulkCreating: false,
     isBulkDeleting: false,
+    bulkProgress: 0
   },
 };
 
@@ -94,6 +95,7 @@ export const actions = {
         const item = items[i];
         try {
           const { data } = await CatalogsAPI.create(item);
+          commit(types.SET_CATALOG_UI_FLAG, { bulkProgress: i+1 });
           commit(types.ADD_CATALOG, data);
           results.ok.push(data);
         } catch (error) {
@@ -107,6 +109,7 @@ export const actions = {
       return results;
     } finally {
       commit(types.SET_CATALOG_UI_FLAG, { isBulkCreating: false });
+      commit(types.SET_CATALOG_UI_FLAG, { bulkProgress: 0 });
     }
   },
 

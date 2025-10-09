@@ -17,7 +17,7 @@ class Api::V1::Accounts::CatalogsController < Api::V1::Accounts::BaseController
 
     scope = Catalog.where(account_id: account_id)
     scope = scope.where(agent_bot_id: params[:agent_bot_id]) if params[:agent_bot_id].present?
-    @catalogs = scope.order(id: :desc)
+    @catalogs = scope.order(id: :asc)
   end
 
   # GET /api/v1/accounts/:account_id/catalogs/:id

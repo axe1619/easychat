@@ -83,6 +83,7 @@
                     "DESCRIPTION_LINK": "plantilla de ejemplo",
                     "DESCRIPTION_B": " para agregar tus productos con los datos necesarios. Ten en cuenta que las tres primeras columnas son campos obligatorios.",
                     "UPLOAD": {
+                        "PROGRESS":"Items guardados",
                         "SUCCESS": "El catálogo se cargó correctamente",
                         "ERROR": "Hubo un error al cargar el catálogo",
                         "FILE_ERROR": "Solo se permiten archivos CSV",

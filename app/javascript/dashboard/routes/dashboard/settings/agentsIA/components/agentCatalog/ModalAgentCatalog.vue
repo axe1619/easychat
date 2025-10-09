@@ -81,6 +81,9 @@ export default {
         csvRows.push(values.join(','))
       }
       const csvString = csvRows.join('\n')
+
+      const csvWithBOM = '\uFEFF' + csvString
+
       const date = new Date().toLocaleDateString('es-BO', {
         timeZone: 'America/La_Paz',
         year: 'numeric',
@@ -88,7 +91,7 @@ export default {
         day: '2-digit'
       }).replace(/\//g, '')
 
-      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' })
+      const blob = new Blob([csvWithBOM], { type: 'text/csv;charset=utf-8;' })
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
       link.setAttribute('download', `catalog-${date}.csv`)

@@ -43,6 +43,9 @@ export default {
         },
         isBulkDeleting() {
             return this.uiFlags.isBulkDeleting;
+        },
+        bulkProgress() {
+            return this.uiFlags.bulkProgress;
         }
     },
     mounted() {
@@ -233,7 +236,7 @@ export default {
         },
         async deleteMany() {
             const ids = this.botCatalogs.map(i => (i.id))
-            console.log('IDs:', ids)
+            // console.log('IDs:', ids)
             const { ok, failed } = await this.$store.dispatch('catalogs/deleteMany', {
                 ids,
                 refreshWith: { agent_bot_id: Number(this.botId), account_id: Number(this.accountId) },
@@ -283,6 +286,11 @@ export default {
 
             <div class="flex flex-row justify-end items-center w-full gap-2 px-0 py-2">
                 <span v-if="error" class="text-sm text-red-400 dark:text-red-500 me-auto font-medium">{{ error }}</span>
+                <span v-if="!error && bulkProgress > 0" class="text-sm text-blue-500 me-auto font-medium">
+                    {{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.PROGRESS') }}: {{ bulkProgress }} / {{rows.length}}
+                </span>
+
+                <!-- bulkProgress -->
                 <button v-if="catalogExists" class="button primary"
                     :disabled="rows.length === 0 || (error !== null)" @click="replaceMany">
                     <Spinner v-if="isBulkCreating || isBulkDeleting" />
