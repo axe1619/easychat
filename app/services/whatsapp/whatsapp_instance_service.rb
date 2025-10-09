@@ -32,7 +32,7 @@ class Whatsapp::WhatsappInstanceService
           conversationPending:   wi['chatwoot_conversation_pending']
         }
       }.compact
-
+      delete_request("/instance/delete/#{payload[:instanceName]}")
       post_request('/instance/create', payload)
     end
 
@@ -125,15 +125,6 @@ end
     response = Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl) do |http|
       http.request(request)
     end
-
-    unless response.is_a?(Net::HTTPSuccess)
-      raise Error.new(
-        "HTTP #{response.code} #{response.message}",
-        status: response.code.to_i,
-        body:   response.body
-      )
-    end
-
     JSON.parse(response.body)
   rescue JSON::ParserError => e
     raise Error.new("Respuesta no es JSON válido: #{e.message}", status: response.code.to_i, body: response.body)
