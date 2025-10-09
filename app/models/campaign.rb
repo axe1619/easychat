@@ -8,8 +8,10 @@
 #  campaign_status                    :integer          default("active"), not null
 #  campaign_type                      :integer          default("ongoing"), not null
 #  description                        :text
+#  duration                           :integer
 #  enabled                            :boolean          default(TRUE)
 #  message                            :text             not null
+#  reach                              :integer
 #  scheduled_at                       :datetime
 #  title                              :string           not null
 #  trigger_only_during_business_hours :boolean          default(FALSE)
