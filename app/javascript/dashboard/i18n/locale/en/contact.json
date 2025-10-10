@@ -233,6 +233,10 @@
     "FILTER_CONTACTS_DELETE": "Delete filter",
     "FILTER_CONTACTS_EDIT": "Edit segment",
     "LIST": {
+      "MESSAGE": {
+        "LOADING": "Loading messages...",
+        "NO_MESSAGES": "There are no available messages"
+      },
       "LOADING_MESSAGE": "Loading contacts...",
       "404": "No contacts matches your search 🔍",
       "NO_CONTACTS": "There are no available contacts",
@@ -248,6 +252,7 @@
         "COMPANY": "Company",
         "EMAIL_ADDRESS": "Email Address"
       },
+      "VIEW_MESSAGE": "View message",
       "VIEW_DETAILS": "View details"
     }
   },

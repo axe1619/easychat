@@ -21,7 +21,25 @@ class Api::V1::Accounts::CampaignsController < Api::V1::Accounts::BaseController
     head :ok
   end
 
+  def messages
+    status = params[:status]
+    status = [:delivered, :read] if status.blank? || status.to_s == "success"
+    status = [:sent] if status.blank? || status.to_s == "pending"
+    @messages = get_message_campaign(@campaign.id, status)
+  end
+
   private
+
+  def get_message_campaign(campaignId,status)
+    Message.campaign(campaignId, status)
+    .joins(conversation: :contact)
+    .select([
+      'messages.*',
+      'contacts.id AS contact_id',
+      'contacts.name AS contact_name',
+      'contacts.phone_number AS contact_phone_number'
+    ].join(', '))
+  end
 
   def campaign
     @campaign ||= Current.account.campaigns.find_by(display_id: params[:id])
