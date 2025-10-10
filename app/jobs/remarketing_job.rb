@@ -20,9 +20,9 @@ class RemarketingJob < ApplicationJob
             .where(last_activity_outgoing_at: 24.hours.ago..date_time_wait_last_message)
             
     query.find_each(batch_size: BATCH_CONVERSATION) do |conversation|
-      if conversation.exceeded_remarketing_attempts(inbox.cout_max_remarketing_message-1)
-        # deactivate remarketing, the limit has been reached, let the last one pass
-        conversation.update!(enabled_remarketing: false)
+      if conversation.exceeded_remarketing_attempts(inbox.cout_max_remarketing_message)
+        conversation.update!(enabled_remarketing: false, last_remarketing_closed: Time.now)
+        return
       end
       # 50 request/seconds
       AgentBots::WebhookJob
