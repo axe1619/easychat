@@ -100,7 +100,8 @@
       "BUTTONS": {
         "ADD": "Añadir",
         "EDIT": "Editar",
-        "DELETE": "Eliminar"
+        "DELETE": "Eliminar",
+        "DETAIL": "Detalle"
       },
       "STATUS": {
         "ENABLED": "Activado",
@@ -115,7 +116,29 @@
     "ONE_OFF": {
       "HEADER": "Campañas únicas",
       "404": "No hay campañas en curso creadas",
-      "INBOXES_NOT_FOUND": "Por favor, crea una bandeja de entrada sms y empieza a añadir campañas"
+      "INBOXES_NOT_FOUND": "Por favor, crea una bandeja de entrada sms y empieza a añadir campañas",
+      "STATES": {
+        "SCOPE": {
+          "TEXT": "Alcance",
+          "VALUE": "Alcance: {scope}"
+        },
+        "TIME": {
+          "TEXT": "Tiempo",
+          "VALUE": "Tiempo: {time}"
+        },
+        "SUCCESS": {
+          "TEXT": "Exitoso",
+          "VALUE": "Exitoso: {amount}"
+        },
+        "PENDING": {
+          "TEXT": "Pendiente",
+          "VALUE": "Pendiente: {amount}"
+        },
+        "FAILED": {
+          "TEXT": "Fallido",
+          "VALUE": "Fallido: {amount}"
+        }
+      }
     },
     "ONGOING": {
       "HEADER": "Campañas en curso",

@@ -3,6 +3,7 @@ import UserAvatarWithName from 'dashboard/components/widgets/UserAvatarWithName.
 import InboxName from 'dashboard/components/widgets/InboxName.vue';
 import messageFormatterMixin from 'shared/mixins/messageFormatterMixin';
 import { messageStamp } from 'shared/helpers/timeHelper';
+import { intervalToDuration } from 'date-fns';
 
 export default {
   components: {
@@ -41,9 +42,37 @@ export default {
         ? 'secondary'
         : 'success';
     },
+    campaignReach() {
+      return this.campaign.reach || 0
+    },
+    campaignDuration() {
+      if (!this.campaign.duration)
+        return "-m, -s"
+      const duration = intervalToDuration({ start: 0, end: this.campaign.duration * 1000 })
+      return `${duration.minutes}m, ${duration.seconds}s`
+    },
+    campaignMessageSuccess() {
+      return this.campaign.message_success || 0
+    },
+    campaigMessagePending(){
+      return this.campaign.message_pending || 0
+    },
+    campaignMessageFailed() {
+      const { reach, message_success, message_pending } = this.campaign
+      if (!reach || !message_success || !message_pending) {
+        return 0
+      }
+      return Number(reach - (message_success + message_pending))
+    }
   },
   methods: {
     messageStamp,
+    toNavigateCampaignDetail() {
+      this.$router.push({
+        name: 'one_off_detail',
+        params: { campaignId: this.campaign.id }
+      })
+    }
   },
 };
 </script>
@@ -76,6 +105,16 @@ export default {
           {{ $t('CAMPAIGN.LIST.BUTTONS.EDIT') }}
         </woot-button>
         <woot-button
+          v-if="!isOngoingType"
+          variant="link"
+          icon="eye-show"
+          color-scheme="secondary"
+          size="small"
+          @click="toNavigateCampaignDetail"
+        >
+          {{ $t('CAMPAIGN.LIST.BUTTONS.DETAIL') }}
+        </woot-button>
+        <woot-button
           variant="link"
           icon="dismiss-circle"
           size="small"
@@ -87,31 +126,68 @@ export default {
       </div>
     </div>
 
-    <div class="flex flex-row items-center mt-5 space-x-3">
-      <woot-label
-        small
-        :title="campaignStatus"
-        :color-scheme="colorScheme"
-        class="mr-3 text-xs"
-      />
-      <InboxName :inbox="campaign.inbox" class="mb-1 ltr:ml-0 rtl:mr-0" />
-      <UserAvatarWithName
-        v-if="campaign.sender"
-        :user="campaign.sender"
-        class="mb-1"
-      />
-      <div
-        v-if="campaign.trigger_rules.url"
-        class="w-1/4 mb-1 text-xs text-woot-600 text-truncate"
-      >
-        {{ campaign.trigger_rules.url }}
-      </div>
-      <div
-        v-if="campaign.scheduled_at"
-        class="mb-1 text-xs text-slate-700 dark:text-slate-500"
-      >
-        {{ messageStamp(new Date(campaign.scheduled_at), 'LLL d, h:mm a') }}
-      </div>
+    <div class="flex flex-row items-center mt-5 space-x-3 justify-between">
+     <div class="flex flex-row items-center space-x-3">
+       <woot-label
+         small
+         :title="campaignStatus"
+         :color-scheme="colorScheme"
+         class="mr-3 text-xs"
+       />
+       <InboxName :inbox="campaign.inbox" class="mb-1 ltr:ml-0 rtl:mr-0" />
+       <UserAvatarWithName
+         v-if="campaign.sender"
+         :user="campaign.sender"
+         class="mb-1"
+       />
+       <div
+         v-if="campaign.trigger_rules.url"
+         class="w-1/4 mb-1 text-xs text-woot-600 text-truncate"
+       >
+         {{ campaign.trigger_rules.url }}
+       </div>
+       <div
+         v-if="campaign.scheduled_at"
+         class="mb-1 text-xs text-slate-700 dark:text-slate-500"
+       >
+         {{ messageStamp(new Date(campaign.scheduled_at), 'LLL d, h:mm a') }}
+       </div>
+     </div>
+     <div class="flex flex-row items-center space-x-3">
+        <woot-label
+          v-if="!isOngoingType"
+          :title="$t('CAMPAIGN.ONE_OFF.STATES.TIME.VALUE', { time: campaignDuration })"
+          color-scheme="secondary"
+          class="mr-3 tag"
+        />
+        <woot-label
+          :title="$t('CAMPAIGN.ONE_OFF.STATES.SCOPE.VALUE', { scope: campaignReach })"
+          color-scheme="primary"
+          class="mr-3 tag"
+        />
+        <woot-label
+          :title="$t('CAMPAIGN.ONE_OFF.STATES.PENDING.VALUE', { amount: campaigMessagePending })"
+          color-scheme="warning"
+          class="mr-3 tag"
+        />
+        <woot-label
+          v-if="!isOngoingType"
+          :title="$t('CAMPAIGN.ONE_OFF.STATES.SUCCESS.VALUE', { amount: campaignMessageSuccess })"
+          color-scheme="success"
+          class="mr-3 tag"
+        />
+        <woot-label
+          v-if="!isOngoingType"
+          :title="$t('CAMPAIGN.ONE_OFF.STATES.FAILED.VALUE', { amount: campaignMessageFailed })"
+          color-scheme="alert"
+          class="mr-3 tag"
+        />
+     </div>
     </div>
   </div>
 </template>
+<style lang="scss" scoped>
+  .tag{
+    font-size: 10px;
+  }
+</style>
