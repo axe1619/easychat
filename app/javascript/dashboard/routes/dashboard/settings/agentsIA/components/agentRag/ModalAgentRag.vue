@@ -165,9 +165,9 @@ export default {
         <table class="divide-y divide-slate-75 dark:divide-slate-700">
           <thead class="divide-y divide-slate-50 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
             <tr>
-              <th class="text-center">ID</th>
-              <th class="text-center">FECHA</th>
-              <th class="text-center">DESCRIPCION</th>
+              <!-- <th class="text-center">ID</th>
+              <th class="text-center">FECHA</th> -->
+              <th class="text-center">ARCHIVO</th>
               <th class="text-center">ACCION</th>
             </tr>
           </thead>
@@ -179,12 +179,13 @@ export default {
                 </div>
               </td>
             </tr>
-            <tr v-else v-for="item in agentRags" :key="item.id">
-              <td class="py-4 text-center">{{ item.collection_name }}</td>
-              <td class="py-4 text-center">{{ formatDate(item.created_at) }}</td>
-              <td class="py-4 text-center">
-
-                <input v-if="item.id === idDescription" v-model="valueDescription" type="text"
+            <tr v-else v-for="item in agentRags" :key="item.id" class="">
+              <!-- <td class="py-4 text-center">{{ item.collection_name }}</td>
+              <td class="py-4 text-center">{{ formatDate(item.created_at) }}</td> -->
+              <td class="py-2">
+                <p class="text-center font-bold">{{item.collection_name}} - {{ formatDate(item.created_at) }}</p>
+                <p class="font-semibold">INSTRUCCIONES DE USO:</p>
+                <textarea v-if="item.id === idDescription" v-model="valueDescription"
                   class="!m-0 !text-sm !py-1 !h-auto"
                   :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')" />
                 <span v-else> {{ item.description }}</span>
