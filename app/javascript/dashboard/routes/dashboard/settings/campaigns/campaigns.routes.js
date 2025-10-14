@@ -1,4 +1,5 @@
 import { frontendURL } from '../../../../helper/URLHelper';
+import DetailCampaign from './DetailCampaign.vue';
 const SettingsContent = () => import('../Wrapper.vue');
 const Index = () => import('./Index.vue');
 
@@ -41,6 +42,25 @@ export default {
             permissions: ['administrator'],
           },
           component: Index,
+        },
+      ],
+    },
+    {
+      path: frontendURL('accounts/:accountId/campaigns'),
+      component: SettingsContent,
+      props: {
+        headerTitle: 'CAMPAIGN.ONE_OFF.HEADER',
+        icon: 'sound-source',
+        showBackButton: true
+      },
+      children: [
+        {
+          path: 'one_off/:campaignId',
+          name: 'one_off_detail',
+          meta: {
+            permissions: ['administrator'],
+          },
+          component: DetailCampaign,
         },
       ],
     },

@@ -30,16 +30,25 @@ class Whatsapp::OneoffWhatsappCampaignService
     attachments = load_file_blob(file_blob) if header_exists?(template_campaign)
     file_url = generate_file_url(file_blob) if header_exists?(template_campaign)
     return if user.nil? || inbox.nil?
+    start_time_campaign = Time.now
     contacts.each do |contact|
       next if contact.phone_number.blank?
       conversation = get_last_conversation(contact, inbox)
-      Messages::MessageBuilder.new(user, conversation, {
+      message = Messages::MessageBuilder.new(user, conversation, {
         content: interpolate_message(contact, template_campaign["template_params"]["processed_params"], campaign.message),
         message_type: 'outgoing',
-        template_params: generate_template(contact, file_url, template_campaign),
+        additional_attributes: {
+          template_params: generate_template(contact, file_url, template_campaign),
+          campaign_id: campaign.id,
+        },
         attachments: attachments
       }).perform
     end
+    end_time_campaign = Time.now
+    campaign.update_columns(
+      reach: contacts.distinct.count,
+      duration: (end_time_campaign - start_time_campaign).to_i
+    )
   end
 
   def load_file_blob(file_blob)

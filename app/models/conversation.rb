@@ -18,6 +18,7 @@
 #  last_activity_incoming_at        :datetime
 #  last_activity_outgoing_at        :datetime
 #  last_conversation_state_analysis :datetime
+#  last_remarketing_closed          :datetime
 #  last_sentiment_analysis          :datetime
 #  priority                         :integer
 #  score                            :float
@@ -218,8 +219,11 @@ class Conversation < ApplicationRecord
   end
   
   def exceeded_remarketing_attempts(limit)
-    last_messages = messages.reorder(created_at: :desc).limit(limit).pluck(:message_sub_type)
-    last_messages.size == limit && last_messages.all?{ |s| s.to_sym == :remarketing }
+    return false if limit <= 0
+    query = messages.where(message_sub_type: :remarketing)
+    query = query.where('created_at > ?', last_remarketing_closed) if last_remarketing_closed.present?
+    query = query.reorder(nil)
+    query.offset(limit - 1).limit(1).exists?
   end
 
   private

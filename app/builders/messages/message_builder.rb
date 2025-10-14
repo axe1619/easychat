@@ -151,7 +151,8 @@ class Messages::MessageBuilder
       message_sub_type: @params[:message_sub_type] || :none,
       in_reply_to: @in_reply_to,
       echo_id: @params[:echo_id],
-      source_id: @params[:source_id]
+      source_id: @params[:source_id],
+      additional_attributes: @params[:additional_attributes] || {},
     }.merge(external_created_at).merge(automation_rule_id).merge(campaign_id).merge(template_params)
   end
 end

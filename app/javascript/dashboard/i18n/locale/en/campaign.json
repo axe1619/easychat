@@ -100,7 +100,8 @@
       "BUTTONS": {
         "ADD": "Add",
         "EDIT": "Edit",
-        "DELETE": "Delete"
+        "DELETE": "Delete",
+        "DETAIL": "Detail"
       },
       "STATUS": {
         "ENABLED": "Enabled",
@@ -115,7 +116,29 @@
     "ONE_OFF": {
       "HEADER": "One off campaigns",
       "404": "There are no one off campaigns created",
-      "INBOXES_NOT_FOUND": "Please create an sms inbox and start adding campaigns"
+      "INBOXES_NOT_FOUND": "Please create an sms inbox and start adding campaigns",
+      "STATES": {
+        "SCOPE": {
+          "TEXT": "Scope",
+          "VALUE": "Scope: {scope}"
+        },
+        "TIME": {
+          "TEXT": "Time",
+          "VALUE": "Time: {time}"
+        },
+        "SUCCESS": {
+          "TEXT": "Success",
+          "VALUE": "Success: {amount}"
+        },
+        "PENDING": {
+          "TEXT": "Pending",
+          "VALUE": "Pending: {amount}"
+        },
+        "FAILED": {
+          "TEXT": "Failed",
+          "VALUE": "Failed: {amount}"
+        }
+      }
     },
     "ONGOING": {
       "HEADER": "Ongoing campaigns",
