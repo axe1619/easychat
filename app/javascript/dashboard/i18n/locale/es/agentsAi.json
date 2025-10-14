@@ -49,16 +49,16 @@
             "IN_DEPLOY": "En desarrollo",
             "RAG": {
                 "NAME": "Fuente de conocimiento",
-                "DESCRIPTION": "Agrega, consulta, edita o borra información adicional sobre tu negocio que el agente de IA usara en sus respuestas.",
+                "DESCRIPTION": "Agrega, edita y elimina archivos de la fuente de conocimiento del agente de inteligencia artificial, con una instrucción precisa de la forma en la que quieres que el agente use esta información.",
                 "ADD": "Agregar nueva información...",
                 "FORM": {
                     "NAME": "Agrega información al agente de IA",
-                    "DESCRIPTION": "Agrega un documento PDF con información sobre tu negocio. Estos documentos servirán para entrenar al agente y ayudarlo a responder de forma más precisa y enfocada según la información que tú le proporciones.",
-                    "LABEL_ID": "Identificador de información",
+                    "DESCRIPTION": "Agrega un documento PDF con información sobre tu negocio. Ingresa un nombre único como identificador de tu archivo e instrucciones precisas de la forma como necesitas que el agente use la información del archivo. Ten en cuenta que el agente solo usara la información escrita del archivo, por lo cual verifica que tu archivo no este protegido y se pueda extraer el contenido escrito.",
+                    "LABEL_ID": "Nombre identificador del archivo",
                     "PLACEHOLDER_ID": "Introduzca un nombre único como identificador",
                     "ERROR_ID": "El identificador es requerido",
-                    "LABEL_DESCRIPTION": "Descripción de la información",
-                    "PLACEHOLDER_DESCRIPTION": "Ingrese una breve descripción de la información",
+                    "LABEL_DESCRIPTION": "Instrucciones de uso del archivo",
+                    "PLACEHOLDER_DESCRIPTION": "Ejemplo: ‘Usa este archivo cuando te pregunten sobre …’",
                     "LABEL_FILE": "Selecciona un documento",
                     "SUBMIT": "Agregar",
                     "CANCEL": "Cancelar"

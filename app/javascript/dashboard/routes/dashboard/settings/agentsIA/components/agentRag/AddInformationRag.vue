@@ -63,7 +63,8 @@ export default {
             required
         },
         fileDescription: {
-            default: ''
+            default: '',
+            required
         },
     },
     mounted() {
@@ -182,8 +183,9 @@ export default {
                     : ''
                     " :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_ID')" @blur="v$.fileId.$touch" />
 
-            <woot-input v-model="fileDescription" :label="$t('AGENTS_AI.CARDS.RAG.FORM.LABEL_DESCRIPTION')" type="text"
-                accept="application/pdf" :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
+            <label for="file-instruction">{{$t('AGENTS_AI.CARDS.RAG.FORM.LABEL_DESCRIPTION')}}</label>
+            <textarea v-model="fileDescription" id="file-instruction"
+                :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
                 @blur="v$.fileDescription.$touch" />
 
             <div class="flex flex-col">

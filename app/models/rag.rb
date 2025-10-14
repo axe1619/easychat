@@ -5,7 +5,7 @@
 #  id              :bigint           not null, primary key
 #  collection_name :string
 #  date            :string
-#  description     :string
+#  description     :text
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  account_id      :integer

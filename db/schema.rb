@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_10_10_205006) do
+ActiveRecord::Schema[7.0].define(version: 2025_10_14_150721) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -941,7 +941,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_10_205006) do
     t.integer "agent_bot_id"
     t.string "date"
     t.string "collection_name"
-    t.string "description"
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "account_id"
