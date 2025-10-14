@@ -4,6 +4,7 @@ json.array! @messages do |message|
   json.account_id message.account_id
   json.inbox_id message.inbox_id
   json.conversation_id message.conversation_id
+  json.conversation_display_id message.conversation_display_id
   json.message_type message.message_type
   json.created_at message.created_at
   json.updated_at message.updated_at
