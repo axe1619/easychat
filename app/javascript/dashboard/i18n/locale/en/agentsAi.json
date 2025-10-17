@@ -49,16 +49,17 @@
             "IN_DEPLOY": "In development",
             "RAG": {
                 "NAME": "Source of knowledge",
-                "DESCRIPTION": "Add, view, edit, or delete additional information about your business that the AI agent will use in its responses.",
+                "DESCRIPTION": "Add, edit, and delete files from the AI ​​agent's knowledge source, with precise instructions on how you want the agent to use this information.",
                 "ADD": "Add new information...",
                 "FORM": {
                     "NAME": "Add information to the AI agent",
-                    "DESCRIPTION": "Add PDF files with information about your business. These documents will help train the agent so its responses are better focused on the topics you provide.",
-                    "LABEL_ID": "Information identifier",
+                    "DESCRIPTION": "Add a PDF document with information about your business. Enter a unique name as your file identifier and precise instructions on how you want the agent to use the information in the file. Keep in mind that the agent will only use the written information in the file, so make sure your file is not protected and the written content can be extracted.",
+                    "LABEL_ID": "File identifier name",
                     "PLACEHOLDER_ID": "Enter a unique name as an identifier",
-                    "ERROR_ID": "The identifier is required",
-                    "LABEL_DESCRIPTION": "Information description",
-                    "PLACEHOLDER_DESCRIPTION": "Enter a brief description of the information",
+                    "ERROR_ID": "The identifier name is required",
+                    "LABEL_DESCRIPTION": "File usage instructions",
+                    "PLACEHOLDER_DESCRIPTION": "Example: ‘Use this file when asked about…’",
+                    "ERROR_DESCRIPTION": "Instructions for use are necessary",
                     "LABEL_FILE": "Select a document",
                     "SUBMIT": "Add",
                     "CANCEL": "Cancel"

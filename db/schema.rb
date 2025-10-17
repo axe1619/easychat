@@ -942,7 +942,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_16_021259) do
     t.integer "agent_bot_id"
     t.string "date"
     t.string "collection_name"
-    t.string "description"
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "account_id"

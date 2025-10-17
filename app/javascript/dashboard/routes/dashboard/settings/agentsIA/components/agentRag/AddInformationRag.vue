@@ -36,6 +36,7 @@ export default {
             return (
                 this.v$.file.$invalid ||
                 this.v$.fileId.$invalid
+                // this.v$.fileDescription.$invalid
             );
         },
         isUpdating() {
@@ -47,6 +48,7 @@ export default {
             file: null,
             fileId: '',
             fileDescription: '',
+            errorFileDescription: false,
             uploading: false,
             error: null,
             progress: null
@@ -63,7 +65,7 @@ export default {
             required
         },
         fileDescription: {
-            default: ''
+            required
         },
     },
     mounted() {
@@ -102,6 +104,11 @@ export default {
         },
         async submitFile() {
             const collectionName = `${this.accountId}-${this.botId}-${this.fileId}`;
+
+            if(this.fileDescription.trim() === ''){
+                this.errorFileDescription = true
+                return
+            }
 
             const uploadId = crypto.randomUUID(); // cualquier id único por subida
             const es = new EventSource(`${process.env.AGENTIC_EASY_CONTACT}/api/rag/progress/${uploadId}`);
@@ -162,6 +169,7 @@ export default {
             } finally {
                 this.uploading = false
                 this.progress = null
+                this.errorFileDescription = false
             }
         }
     },
@@ -182,9 +190,13 @@ export default {
                     : ''
                     " :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_ID')" @blur="v$.fileId.$touch" />
 
-            <woot-input v-model="fileDescription" :label="$t('AGENTS_AI.CARDS.RAG.FORM.LABEL_DESCRIPTION')" type="text"
-                accept="application/pdf" :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
-                @blur="v$.fileDescription.$touch" />
+            <label for="file-instruction">{{$t('AGENTS_AI.CARDS.RAG.FORM.LABEL_DESCRIPTION')}}</label>
+            <textarea v-model="fileDescription" id="file-instruction"
+                :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
+            />
+            <span v-if="errorFileDescription" class="text-sm font-semibold text-[#F2555A] mb-2">
+                {{$t('AGENTS_AI.CARDS.RAG.FORM.ERROR_DESCRIPTION')}}
+            </span>
 
             <div class="flex flex-col">
                 <label>
