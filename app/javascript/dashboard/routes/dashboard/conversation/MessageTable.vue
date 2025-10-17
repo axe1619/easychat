@@ -43,7 +43,7 @@ export default {
           renderBodyCell: ({ row }) => (
             <woot-button
               variant="clear"
-              onClick={() => this.viewMessage(row.conversation_id, row.id)}
+              onClick={() => this.viewMessage(row.conversation_display_id, row.id)}
             >
               <div class="row--user-block">
                 <div class="user-block">
@@ -74,8 +74,8 @@ export default {
     },
   },
   methods: {
-    viewMessage(conversationId, messageId) {
-      this.$router.push({ path: frontendURL(`accounts/${this.accountId}/conversations/${conversationId}?messageId=${messageId}`) })
+    viewMessage(conversation_display_id, messageId) {
+      this.$router.push({ path: frontendURL(`accounts/${this.accountId}/conversations/${conversation_display_id}?messageId=${messageId}`) })
     }
   }
 };

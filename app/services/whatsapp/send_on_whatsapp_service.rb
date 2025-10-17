@@ -38,7 +38,7 @@ class Whatsapp::SendOnWhatsappService < Base::SendOnChannelService
         template_params['name'],
         template_params['namespace'],
         template_params['language'],
-        template_params['processed_params']&.map { |key, value| { type: 'text', text: value, parameter_name: key } },
+        processed_params(template_params['processed_params']),
         template_params['header']
       ]
     end
@@ -60,6 +60,18 @@ class Whatsapp::SendOnWhatsappService < Base::SendOnChannelService
     end
     [nil, nil, nil, nil]
   end
+
+  def processed_params(params)
+    params.map { |key, value| 
+      case value
+      when Hash
+        {  type: 'text', text: value["content"], parameter_name: key }
+      else
+        {  type: 'text', text: value, parameter_name: key }
+      end
+    }
+  end
+
   # rubocop:enable Metrics/CyclomaticComplexity
 
   def template_match_object(template)

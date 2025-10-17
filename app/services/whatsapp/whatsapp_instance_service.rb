@@ -33,7 +33,23 @@ class Whatsapp::WhatsappInstanceService
         }
       }.compact
       delete_request("/instance/delete/#{payload[:instanceName]}")
-      post_request('/instance/create', payload)
+      response = post_request('/instance/create', payload)
+      payload_setting_account =  {
+        enabled: true,
+        accountId: wi['chatwoot_account_id'].to_s,
+        token: wi['chatwoot_token'],
+        url: "https://easycontact.top",
+        signMsg: false,
+        sign_delimiter: "\n",
+        reopenConversation: true,
+        conversationPending: true,
+        import_contacts: false,
+        import_messages: false,
+        days_limit_import_messages: 0,
+        auto_create: true
+      }
+      post_request("/chatwoot/set/#{payload[:instanceName]}", payload_setting_account)
+      response
     end
 
   def self.connect(name)
