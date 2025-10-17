@@ -56,9 +56,10 @@
                     "DESCRIPTION": "Add a PDF document with information about your business. Enter a unique name as your file identifier and precise instructions on how you want the agent to use the information in the file. Keep in mind that the agent will only use the written information in the file, so make sure your file is not protected and the written content can be extracted.",
                     "LABEL_ID": "File identifier name",
                     "PLACEHOLDER_ID": "Enter a unique name as an identifier",
-                    "ERROR_ID": "The identifier is required",
+                    "ERROR_ID": "The identifier name is required",
                     "LABEL_DESCRIPTION": "File usage instructions",
                     "PLACEHOLDER_DESCRIPTION": "Example: ‘Use this file when asked about…’",
+                    "ERROR_DESCRIPTION": "Instructions for use are necessary",
                     "LABEL_FILE": "Select a document",
                     "SUBMIT": "Add",
                     "CANCEL": "Cancel"

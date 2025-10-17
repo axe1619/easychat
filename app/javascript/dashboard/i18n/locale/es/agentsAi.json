@@ -56,9 +56,10 @@
                     "DESCRIPTION": "Agrega un documento PDF con información sobre tu negocio. Ingresa un nombre único como identificador de tu archivo e instrucciones precisas de la forma como necesitas que el agente use la información del archivo. Ten en cuenta que el agente solo usara la información escrita del archivo, por lo cual verifica que tu archivo no este protegido y se pueda extraer el contenido escrito.",
                     "LABEL_ID": "Nombre identificador del archivo",
                     "PLACEHOLDER_ID": "Introduzca un nombre único como identificador",
-                    "ERROR_ID": "El identificador es requerido",
+                    "ERROR_ID": "El nombre identificador es requerido",
                     "LABEL_DESCRIPTION": "Instrucciones de uso del archivo",
                     "PLACEHOLDER_DESCRIPTION": "Ejemplo: ‘Usa este archivo cuando te pregunten sobre …’",
+                    "ERROR_DESCRIPTION": "Las instrucciones de uso son necesarias",
                     "LABEL_FILE": "Selecciona un documento",
                     "SUBMIT": "Agregar",
                     "CANCEL": "Cancelar"
