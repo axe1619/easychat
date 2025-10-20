@@ -3,6 +3,11 @@
         "HEADER": "Sorter conversation",
         "HEADER_BTN_TXT": "Add sorter",
         "LOADING": "Fetching sorters",
+        "NOTIFICATION": {
+            "ENABLED": "Enable notification",
+            "SEND": "Send",
+            "NOTIFIED": "Notified"
+        },
         "LIST": {
             "404": "There are no sorters available in this account.",
             "TITLE": "Manage sorters",

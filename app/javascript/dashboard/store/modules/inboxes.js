@@ -115,6 +115,10 @@ export const getters = {
       item => item.channel_type !== INBOX_TYPES.EMAIL
     );
   },
+  getNotificationInboxes($state) {
+    const enabledTypes = [INBOX_TYPES.WHATSAPP];
+    return $state.records.filter(item => enabledTypes.includes(item.channel_type));
+  },
   getEnabledInboxes($state) {
     const enabledTypes = [INBOX_TYPES.WHATSAPP, INBOX_TYPES.SMS];
     return $state.records.filter(item =>
