@@ -4,5 +4,6 @@ json.payload do
     json.name state.name
     json.description state.description
     json.color state.color
+    json.notification state.notification
   end
 end
