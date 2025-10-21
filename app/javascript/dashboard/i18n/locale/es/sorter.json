@@ -1,8 +1,13 @@
 {
-    "SORTER":{
-        "HEADER":"Clasificador de conversación",
+    "SORTER": {
+        "HEADER": "Clasificador de conversación",
         "HEADER_BTN_TXT": "Añadir clasificador",
         "LOADING": "Obteniendo clasificadores",
+        "NOTIFICATION": {
+            "ENABLED": "Habilitar notificacion",
+            "SEND": "Envio",
+            "NOTIFIED": "Notificados"
+        },
         "LIST": {
             "404": "No hay clasificadores disponibles en esta cuenta.",
             "TITLE": "Administrar clasificadores",

@@ -81,7 +81,7 @@ class Message < ApplicationRecord
   attr_accessor :echo_id
 
   enum message_type: { incoming: 0, outgoing: 1, activity: 2, template: 3 }
-  enum message_sub_type: { none: 0, remarketing: 1 }, _prefix: :subtype
+  enum message_sub_type: { none: 0, remarketing: 1, notification: 2 }, _prefix: :subtype
   enum content_type: {
     text: 0,
     input_text: 1,
@@ -439,7 +439,7 @@ class Message < ApplicationRecord
 
   def set_conversation_state
     count_inbox_message_analyze = conversation.inbox.count_reload_conversation_state
-    return unless count_inbox_message_analyze
+    return if !count_inbox_message_analyze || skip_analysis_conversation?
     analyze_conversation = false
     begin
       query = Message.unscoped.where(
@@ -468,9 +468,18 @@ class Message < ApplicationRecord
         conversations_state_id: conversation_state.id,
         last_conversation_state_analysis: Time.current
       )
+      trigger_notifications(conversation, conversation_state) if conversation_state[:notification].any?
     rescue => e
       Rails.logger.info "WARNING: ModelMessageSetConversationState: #{e.message}"
     end
+  end
+
+  def skip_analysis_conversation?
+    subtype_notification?
+  end
+
+  def trigger_notifications(conversation, conversation_state)
+    Notification::WhatsappNotificationJob.perform_later(conversation, conversation_state)
   end
 
   def http_get_analize_conversation(account_id ,inbox_id , display_id)

@@ -31,6 +31,6 @@ class Api::V1::Accounts::ConversationStatesController < Api::V1::Accounts::BaseC
   end
 
   def permitted_params
-    params.require(:conversation_state).permit(:name, :description, :color)
+    params.require(:conversation_state).permit(:name, :description, :color, notification: {})
   end
 end

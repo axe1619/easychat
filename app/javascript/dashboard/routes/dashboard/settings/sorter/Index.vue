@@ -1,6 +1,7 @@
 <script setup>
 import { useStoreGetters, useStore } from 'dashboard/composables/store';
 import { useI18n } from 'dashboard/composables/useI18n';
+import { useAlert } from 'dashboard/composables';
 import { computed, ref, onBeforeMount } from 'vue';
 import SettingsLayout from '../SettingsLayout.vue';
 import BaseSettingsHeader from '../components/BaseSettingsHeader.vue';
