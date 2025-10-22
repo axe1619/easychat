@@ -220,10 +220,17 @@ class Conversation < ApplicationRecord
   
   def exceeded_remarketing_attempts(limit)
     return false if limit <= 0
-    query = messages.where(message_sub_type: :remarketing)
-    query = query.where('created_at > ?', last_remarketing_closed) if last_remarketing_closed.present?
-    query = query.reorder(nil)
-    query.offset(limit - 1).limit(1).exists?
+    remarketing_messages = messages.where(message_sub_type: :remarketing)
+    start_remarketing = if last_remarketing_closed.present?
+      remarketing_messages.where('created_at > ?', last_remarketing_closed).pick(:created_at)
+    else
+      remarketing_messages.pick(:created_at)
+    end
+    # if there are no remarketing messages, the limit cannot be exceeded
+    return false unless start_remarketing.present?
+    # if the client responded after the start_remarketing, it stops
+    return true if last_activity_incoming_at.present? && last_activity_incoming_at > start_remarketing
+    remarketing_messages.where('created_at >= ?', start_remarketing).offset(limit - 1).limit(1).exists?
   end
 
   private
