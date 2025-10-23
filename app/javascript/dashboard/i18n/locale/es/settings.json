@@ -195,7 +195,7 @@
     "EMAIL_VERIFICATION_SENT": "El correo electrónico de verificación ha sido enviado. Por favor, comprueba tu bandeja de entrada.",
     "ACCOUNT_SUSPENDED": {
       "TITLE": "Cuenta suspendida",
-      "MESSAGE": "Tu cuenta está suspendida. Comuníquese con nuestro equipo al numero {phone} para obtener mayor informacion",
+      "MESSAGE": "Tu cuenta está suspendida. Comuníquese con nuestro equipo para obtener mayor informacion",
       "LINK": "Click aqui"
     }
   },

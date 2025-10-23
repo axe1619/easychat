@@ -2,10 +2,10 @@
 import { getInboxClassByType } from 'dashboard/helper/inbox';
 
 const CONVERSATION_STATUS = {
-  open: { color: "#b1e3b3" },
-  resolved: { color: "#ebcd81" },
-  pending: { color: "#d2e9ff" },
-  snoozed: { color: "#e99a9a" }
+  open: { color: "#6ead71" },
+  resolved: { color: "#d5a62e" },
+  pending: { color: "#5883de" },
+  snoozed: { color: "#c55f5f" }
 }
 
 export default {
