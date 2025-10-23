@@ -3,7 +3,9 @@ class Api::V1::Accounts::CampaignsController < Api::V1::Accounts::BaseController
   before_action :check_authorization
 
   def index
-    @campaigns = Current.account.campaigns.order(created_at: :desc)
+    scope = Current.account.campaigns.order(created_at: :desc)
+    scope = scope.where('created_at < ?', params[:created_at]) if params[:created_at].present?
+    @campaigns = scope.limit(5)
   end
 
   def show; end
