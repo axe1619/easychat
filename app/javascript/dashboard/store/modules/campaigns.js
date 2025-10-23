@@ -27,11 +27,17 @@ export const getters = {
 };
 
 export const actions = {
-  get: async function getCampaigns({ commit }) {
+  get: async function getCampaigns({ commit }, payload = {}) {
+    const { params } = payload
     commit(types.SET_CAMPAIGN_UI_FLAG, { isFetching: true });
     try {
-      const response = await CampaignsAPI.get();
-      commit(types.SET_CAMPAIGNS, response.data);
+      if (params) {
+        const response = await CampaignsAPI.getQueryParams(params)
+        commit(types.ADD_CAMPAIGNS, response.data);
+      } else {
+        const response = await CampaignsAPI.get();
+        commit(types.SET_CAMPAIGNS, response.data);
+      }
     } catch (error) {
       // Ignore error
     } finally {
@@ -82,7 +88,10 @@ export const mutations = {
       ...data,
     };
   },
-
+  [types.ADD_CAMPAIGNS](_state, data) {
+    if (!Array.isArray(data)) return
+    _state.records.push(...data);
+  },
   [types.ADD_CAMPAIGN]: MutationHelpers.create,
   [types.SET_CAMPAIGNS]: MutationHelpers.set,
   [types.EDIT_CAMPAIGN]: MutationHelpers.update,
