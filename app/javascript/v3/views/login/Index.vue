@@ -195,6 +195,7 @@ export default {
             :label="$t('LOGIN.EMAIL.LABEL')"
             :placeholder="$t('LOGIN.EMAIL.PLACEHOLDER')"
             :has-error="v$.credentials.email.$error"
+            :error-message="$t('REGISTER.EMAIL.ERROR')"
             @input="v$.credentials.email.$touch"
           />
           <FormInput

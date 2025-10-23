@@ -11,7 +11,6 @@ import SubmitButton from '../../../../../components/Button/SubmitButton.vue';
 import { isValidPassword } from 'shared/helpers/Validators';
 import GoogleOAuthButton from '../../../../../components/GoogleOauth/Button.vue';
 import { register } from '../../../../../api/auth';
-var CompanyEmailValidator = require('company-email-validator');
 
 export default {
   components: {
@@ -80,13 +79,10 @@ export default {
     },
     passwordErrorText() {
       const { password } = this.v$.credentials;
-      if (!password.$error) {
-        return '';
-      }
-      if (!password.minLength) {
+      if (password.minLength.$invalid) {
         return this.$t('REGISTER.PASSWORD.ERROR');
       }
-      if (!password.isValidPassword) {
+      if (password.isValidPassword.$invalid) {
         return this.$t('REGISTER.PASSWORD.IS_INVALID_PASSWORD');
       }
       return '';

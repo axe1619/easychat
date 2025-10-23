@@ -40,6 +40,7 @@ export default {
           field: 'contact_name',
           key: 'contact_name',
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.NAME'),
+          align: "left",
           renderBodyCell: ({ row }) => (
             <woot-button
               variant="clear"
@@ -63,11 +64,13 @@ export default {
         {
           field: 'contact_phone_number',
           key: 'contact_phone_number',
+          align: "left",
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.PHONE_NUMBER'),
         },
         {
           field: 'created_at',
           key: 'created_at',
+          align: "left",
           title: this.$t('CONTACTS_PAGE.LIST.TABLE_HEADER.CREATED_AT'),
         },
       ];
