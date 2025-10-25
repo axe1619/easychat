@@ -56,6 +56,7 @@ class Api::V1::ProfilesController < Api::BaseController
     params.require(:profile).permit(
       :email,
       :name,
+      # :phone_number,
       :display_name,
       :avatar,
       :message_signature,

@@ -134,6 +134,7 @@ const confirmDeletion = () => {
       </BaseSettingsHeader>
     </template>
     <template #body>
+    <h1>Prueba</h1>
       <table class="divide-y divide-slate-75 dark:divide-slate-700">
         <tbody
           class="divide-y divide-slate-50 dark:divide-slate-800 text-slate-700 dark:text-slate-300"
@@ -208,6 +209,7 @@ const confirmDeletion = () => {
         v-if="showEditPopup"
         :id="currentAgent.id"
         :name="currentAgent.name"
+        :phoneNumber="currentAgent.phone_number"
         :type="currentAgent.role"
         :email="currentAgent.email"
         :availability="currentAgent.availability_status"
