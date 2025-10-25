@@ -155,9 +155,21 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   end
 
   def contact
-    return if params[:contact_id].blank?
+    @contact =  if params[:contact_id].present?
+                  Current.account.contacts.find(params[:contact_id])
+                else
+                  find_or_create_contact
+                end
+  end
 
-    @contact = Current.account.contacts.find(params[:contact_id])
+  def find_or_create_contact
+    # add + phone only if not have
+    phone = params[:source_id].to_s
+    phone = "+#{phone}" unless phone.start_with?('+')
+    Current.account.contacts.find_or_create_by!(phone_number: phone) do |contact|
+      contact.name         = params[:name] || phone
+      contact.phone_number = phone
+    end
   end
 
   def contact_inbox

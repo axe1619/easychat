@@ -8,9 +8,15 @@ class ConversationBuilder
   private
 
   def look_up_exising_conversation
-    return unless @contact_inbox.inbox.lock_to_single_conversation?
-
-    @contact_inbox.conversations.last
+    @contact_inbox.with_lock do
+      @conversation = if @contact_inbox.inbox.lock_to_single_conversation?
+                        @contact_inbox.conversations.last
+                      else
+                        @contact_inbox.conversations
+                                      .where.not(status: :resolved).last
+                      end
+    end
+    @conversation
   end
 
   def create_new_conversation

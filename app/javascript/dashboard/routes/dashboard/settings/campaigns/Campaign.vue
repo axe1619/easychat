@@ -21,6 +21,7 @@ export default {
       showEditPopup: false,
       selectedCampaign: {},
       showDeleteConfirmationPopup: false,
+      lastCampaign: undefined
     };
   },
   computed: {
@@ -35,6 +36,10 @@ export default {
         !this.uiFlags.isFetching && this.campaigns.length === 0;
       return hasEmptyResults;
     },
+    showBtnLoadMore() {
+      if (this.campaigns.length == 0) return false
+      return this.campaigns[this.campaigns.length - 1] != this.lastCampaign
+    }
   },
   methods: {
     openEditPopup(campaign) {
@@ -64,6 +69,10 @@ export default {
         useAlert(this.$t('CAMPAIGN.DELETE.API.ERROR_MESSAGE'));
       }
     },
+    loadMoreCampaign() {
+      this.lastCampaign = this.campaigns[this.campaigns.length - 1]
+      this.$store.dispatch('campaigns/get', { params: { created_at: this.lastCampaign.created_at } });
+    }
   },
 };
 </script>
@@ -78,6 +87,17 @@ export default {
       @edit="openEditPopup"
       @delete="openDeletePopup"
     />
+    <div class="flex justify-center">
+      <woot-button
+        v-if="showBtnLoadMore"
+        color-scheme="hollow"
+        size="small"
+        icon="loading"
+        @click="loadMoreCampaign"
+      >
+        {{ $t('CAMPAIGN.LOAD_MORE') }}
+      </woot-button>
+    </div>
     <woot-modal :show.sync="showEditPopup" :on-close="hideEditPopup">
       <EditCampaign
         :selected-campaign="selectedCampaign"

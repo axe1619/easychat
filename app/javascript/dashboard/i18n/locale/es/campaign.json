@@ -6,6 +6,7 @@
       "ONE_OFF": "Crear una campaña apagada",
       "ONGOING": "Crear una campaña en curso"
     },
+    "LOAD_MORE": "cargar mas",
     "ADD": {
       "TITLE": "Crear campaña",
       "DESC": "Los mensajes proactivos permiten al cliente enviar mensajes a sus contactos, lo que generaría más conversaciones.",

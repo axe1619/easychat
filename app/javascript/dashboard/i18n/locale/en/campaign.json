@@ -6,6 +6,7 @@
       "ONE_OFF": "Create a one off campaign",
       "ONGOING": "Create a ongoing campaign"
     },
+    "LOAD_MORE": "load more",
     "ADD": {
       "TITLE": "Create a campaign",
       "DESC": "Proactive messages allow the customer to send outbound messages to their contacts which would trigger more conversations.",
