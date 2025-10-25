@@ -12,6 +12,7 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
     builder = AgentBuilder.new(
       email: new_agent_params['email'],
       name: new_agent_params['name'],
+      phone_number: new_agent_params['phone_number'],
       role: new_agent_params['role'],
       availability: new_agent_params['availability'],
       auto_offline: new_agent_params['auto_offline'],
@@ -23,7 +24,7 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   end
 
   def update
-    @agent.update!(agent_params.slice(:name).compact)
+    @agent.update!(agent_params.slice(:name, :phone_number).compact)
     @agent.current_account_user.update!(agent_params.slice(:role, :availability, :auto_offline).compact)
   end
 
@@ -68,11 +69,11 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   end
 
   def agent_params
-    params.require(:agent).permit(:name, :email, :name, :role, :availability, :auto_offline)
+    params.require(:agent).permit(:name, :email, :name, :phone_number, :role, :availability, :auto_offline)
   end
 
   def new_agent_params
-    params.require(:agent).permit(:email, :name, :role, :availability, :auto_offline)
+    params.require(:agent).permit(:email, :name, :phone_number, :role, :availability, :auto_offline)
   end
 
   def agents

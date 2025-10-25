@@ -7,6 +7,8 @@ import WootSubmitButton from '../../../../components/buttons/FormSubmitButton.vu
 import Modal from '../../../../components/Modal.vue';
 import Auth from '../../../../api/auth';
 import wootConstants from 'dashboard/constants/globals';
+import { isPhoneNumberValid } from 'shared/helpers/Validators';
+import parsePhoneNumber from 'libphonenumber-js';
 
 const { AVAILABILITY_STATUS_KEYS } = wootConstants;
 
@@ -23,6 +25,10 @@ export default {
     name: {
       type: String,
       required: true,
+    },
+    phoneNumber: {
+      type: String,
+      default: ''
     },
     email: {
       type: String,
@@ -57,6 +63,8 @@ export default {
         },
       ],
       agentName: this.name,
+      phoneNumberLocal: this.phoneNumber || '',
+      activeDialCode: '',
       agentAvailability: this.availability,
       agentType: this.type,
       agentCredentials: {
@@ -76,6 +84,12 @@ export default {
     agentAvailability: {
       required,
     },
+    phoneNumberLocal: {
+      required,
+    },
+    setPhoneNumber: {
+      required
+    }
   },
   computed: {
     pageTitle() {
@@ -94,13 +108,135 @@ export default {
         })
       );
     },
+    parsePhoneNumber() {
+      return parsePhoneNumber(this.phoneNumberLocal);
+    },
+    isPhoneNumberNotValid() {
+      if (this.phoneNumberLocal !== '') {
+        return (
+          !isPhoneNumberValid(this.phoneNumberLocal, this.activeDialCode) ||
+          (this.phoneNumberLocal !== '' ? this.activeDialCode === '' : false)
+        );
+      }
+      return false;
+    },
+    phoneNumberError() {
+      if (this.activeDialCode === '') {
+        return this.$t('CONTACT_FORM.FORM.PHONE_NUMBER.DIAL_CODE_ERROR');
+      }
+      if (!isPhoneNumberValid(this.phoneNumberLocal, this.activeDialCode)) {
+        return this.$t('CONTACT_FORM.FORM.PHONE_NUMBER.ERROR');
+      }
+      return '';
+    },
+    setPhoneNumber() {
+      if (this.parsePhoneNumber && this.parsePhoneNumber.countryCallingCode) {
+        return this.phoneNumberLocal;
+      }
+      if (this.phoneNumberLocal === '' && this.activeDialCode !== '') {
+        return '';
+      }
+      return this.activeDialCode
+        ? `${this.activeDialCode}${this.phoneNumberLocal}`
+        : '';
+    },
   },
+  mounted() {
+    // this.$nextTick(() => {
+    //   this.forceInputSync();
+    // });
+
+    this.$nextTick(() => {
+      this.simulateUserEdit();
+    });
+    this.setDialCode()
+  },
+
   methods: {
+    forceInputSync() {
+      console.log('<-- forceInputSync -->')
+      if (!this.phoneNumberLocal) return;
+      const original = this.phoneNumberLocal;
+      const trimmed = original.slice(0, -1);
+      this.phoneNumberLocal = trimmed;
+      this.$nextTick(() => {
+        this.phoneNumberLocal = original;
+      });
+    },
+    simulateUserEdit() {
+      const original = this.phoneNumberLocal;
+      if (!original) return;
+
+      // backspace virtual
+      const trimmed = original.slice(0, -1);
+      this.phoneNumberLocal = trimmed;
+
+      // forzamos también el callback @input como si el hijo lo emitiera
+      if (this.$refs.phoneInput) {
+        // asumiendo que @input manda (value, code), tú puedes simularlo:
+        this.onPhoneNumberInputChange(trimmed, this.activeDialCode);
+      }
+
+      // restaurar
+      this.$nextTick(() => {
+        this.phoneNumberLocal = original;
+        if (this.$refs.phoneInput) {
+          this.onPhoneNumberInputChange(original, this.activeDialCode);
+        }
+      });
+    },
+    safeParse(v) {
+      try { return v ? parsePhoneNumber(v) : null; }
+      catch { return null; }
+    },
+    setDialCode() {
+      if (
+        this.phoneNumberLocal !== '' &&
+        this.parsePhoneNumber &&
+        this.parsePhoneNumber.countryCallingCode
+      ) {
+        const dialCode = this.parsePhoneNumber.countryCallingCode;
+        this.activeDialCode = `+${dialCode}`;
+
+      }
+    },
+    onPhoneNumberInputChange(value, code) {
+      this.activeDialCode = code;
+    },
+    setPhoneCode(code) {
+      if (this.phoneNumberLocal !== '' && this.parsePhoneNumber) {
+        const dialCode = this.parsePhoneNumber.countryCallingCode;
+        if (dialCode === code) {
+          return;
+        }
+        this.activeDialCode = `+${dialCode}`;
+        const newPhoneNumber = this.phoneNumberLocal.replace(`+${dialCode}`, `${code}`);
+        this.phoneNumberLocal = newPhoneNumber;
+        // this.$nextTick(() => {
+        //   this.$forceUpdate();
+        // });
+      } else {
+        this.activeDialCode = code;
+      }
+    },
     async editAgent() {
+      if(this.phoneNumberLocal !== ''){
+        this.phoneNumberLocal = this.phoneNumberLocal.replace(this.activeDialCode, '')
+      }
       try {
+        console.log({
+          id: this.id,
+          name: this.agentName,
+          phone_number: this.activeDialCode + this.phoneNumberLocal,
+          activeDialCode: this.activeDialCode,
+          role: this.agentType,
+          availability: this.agentAvailability,
+        })
+
         await this.$store.dispatch('agents/update', {
           id: this.id,
           name: this.agentName,
+          phone_number: this.activeDialCode + this.phoneNumberLocal,
           role: this.agentType,
           availability: this.agentAvailability,
         });
@@ -132,12 +268,23 @@ export default {
         <div class="w-full">
           <label :class="{ error: v$.agentName.$error }">
             {{ $t('AGENT_MGMT.EDIT.FORM.NAME.LABEL') }}
-            <input
-              v-model.trim="agentName"
-              type="text"
-              :placeholder="$t('AGENT_MGMT.EDIT.FORM.NAME.PLACEHOLDER')"
-              @input="v$.agentName.$touch"
-            />
+            <input v-model.trim="agentName" type="text" :placeholder="$t('AGENT_MGMT.EDIT.FORM.NAME.PLACEHOLDER')"
+              @input="v$.agentName.$touch" />
+          </label>
+        </div>
+
+        <div class="w-full">
+          <label :class="{
+            error: isPhoneNumberNotValid,
+          }">
+            {{ $t('AGENT_MGMT.ADD.FORM.PHONE_NUMBER.LABEL') }}
+            <!-- :error="isPhoneNumberNotValid" -->
+            <woot-phone-input ref="phoneInput" v-model="phoneNumberLocal" 
+              :placeholder="$t('AGENT_MGMT.ADD.FORM.PHONE_NUMBER.PLACEHOLDER')" @input="onPhoneNumberInputChange"
+              @blur="v$.phoneNumberLocal.$touch" @setCode="setPhoneCode" />
+            <!-- <span v-if="isPhoneNumberNotValid" class="message">
+              {{ phoneNumberError }}
+            </span> -->
           </label>
         </div>
 
@@ -159,11 +306,7 @@ export default {
           <label :class="{ error: v$.agentAvailability.$error }">
             {{ $t('PROFILE_SETTINGS.FORM.AVAILABILITY.LABEL') }}
             <select v-model="agentAvailability">
-              <option
-                v-for="role in availabilityStatuses"
-                :key="role.value"
-                :value="role.value"
-              >
+              <option v-for="role in availabilityStatuses" :key="role.value" :value="role.value">
                 {{ role.label }}
               </option>
             </select>
@@ -174,25 +317,16 @@ export default {
         </div>
         <div class="flex flex-row justify-end w-full gap-2 px-0 py-2">
           <div class="w-[50%]">
-            <WootSubmitButton
-              :disabled="
-                v$.agentType.$invalid ||
-                v$.agentName.$invalid ||
-                uiFlags.isUpdating
-              "
-              :button-text="$t('AGENT_MGMT.EDIT.FORM.SUBMIT')"
-              :loading="uiFlags.isUpdating"
-            />
+            <WootSubmitButton :disabled="v$.agentType.$invalid ||
+              v$.agentName.$invalid ||
+              uiFlags.isUpdating
+              " :button-text="$t('AGENT_MGMT.EDIT.FORM.SUBMIT')" :loading="uiFlags.isUpdating" />
             <button class="button clear" @click.prevent="onClose">
               {{ $t('AGENT_MGMT.EDIT.CANCEL_BUTTON_TEXT') }}
             </button>
           </div>
           <div class="w-[50%] text-right">
-            <woot-button
-              icon="lock-closed"
-              variant="clear"
-              @click.prevent="resetPassword"
-            >
+            <woot-button icon="lock-closed" variant="clear" @click.prevent="resetPassword">
               {{ $t('AGENT_MGMT.EDIT.PASSWORD_RESET.ADMIN_RESET_BUTTON') }}
             </woot-button>
           </div>

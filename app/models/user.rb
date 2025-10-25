@@ -17,6 +17,7 @@
 #  last_sign_in_ip        :string
 #  message_signature      :text
 #  name                   :string           not null
+#  phone_number           :string
 #  provider               :string           default("email"), not null
 #  pubsub_token           :string
 #  remember_created_at    :datetime
@@ -133,6 +134,7 @@ class User < ApplicationRecord
     {
       id: id,
       name: name,
+      # phone_number: phone_number, #? <- Agregue este campo 
       available_name: available_name,
       avatar_url: avatar_url,
       type: 'user',
@@ -145,6 +147,7 @@ class User < ApplicationRecord
     {
       id: id,
       name: name,
+      # phone_number: phone_number, #? <- Agregue este campo 
       email: email,
       type: 'user'
     }
