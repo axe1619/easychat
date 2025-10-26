@@ -60,6 +60,7 @@ export const actions = {
     }
   },
   update: async ({ commit }, { id, ...agentParams }) => {
+    console.log('store.modules.agentParams:',agentParams)
     commit(types.default.SET_AGENT_UPDATING_STATUS, true);
     try {
       const response = await AgentAPI.update(id, agentParams);
