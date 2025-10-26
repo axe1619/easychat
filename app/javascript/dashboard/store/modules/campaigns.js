@@ -92,7 +92,9 @@ export const mutations = {
     if (!Array.isArray(data)) return
     _state.records.push(...data);
   },
-  [types.ADD_CAMPAIGN]: MutationHelpers.create,
+  [types.ADD_CAMPAIGN](_state, data) {
+    _state.records.unshift(data);
+  },
   [types.SET_CAMPAIGNS]: MutationHelpers.set,
   [types.EDIT_CAMPAIGN]: MutationHelpers.update,
   [types.DELETE_CAMPAIGN]: MutationHelpers.destroy,
