@@ -10,11 +10,13 @@ import { URLPattern } from 'urlpattern-polyfill';
 import { CAMPAIGNS_EVENTS } from '../../../../helper/AnalyticsHelper/events';
 import { INBOX_TYPES } from 'shared/mixins/inboxMixin';
 import WhatsappTemplates from '../../conversation/contact/WhatsappTemplates.vue';
+import WhatsappWebList from '../../conversation/contact/WhatsappWebList.vue';
 export default {
   components: {
     WootDateTimePicker,
     WootMessageEditor,
-    WhatsappTemplates
+    WhatsappTemplates,
+    WhatsappWebList
   },
   mixins: [campaignMixin],
   setup() {
@@ -23,6 +25,7 @@ export default {
   data() {
     const listDesign = {
       DEFAULT: "DEFAULT",
+      WHATSAPP_WEB: "WHATSAPP_WEB",
       WHATSAPP: "WHATSAPP"
     };
     return {
@@ -42,6 +45,9 @@ export default {
       listDesign,
       design: listDesign.DEFAULT,
       template: undefined,
+      whatsappWeb: {
+        list: []
+      },
       loading: {
         campaign: false
       }
@@ -131,7 +137,7 @@ export default {
     isEnabledSelectedSender() {
       let selectedInbox = this.inboxes.find((inbox) => inbox.id == this.selectedInbox)
       if (!selectedInbox) return false
-      const enabledTypes = [INBOX_TYPES.WHATSAPP]
+      const enabledTypes = [INBOX_TYPES.WHATSAPP,INBOX_TYPES.API]
       return enabledTypes.includes(selectedInbox.channel_type)
     },
     isLoadingCampaign() {
@@ -219,10 +225,13 @@ export default {
       this.loading.campaign = false
     },
     async validateForm() {
-      let subFormValidate
+      let subFormValidate = true
       switch (this.design) {
         case this.listDesign.WHATSAPP:
           subFormValidate = await this.validateTemplateWhatsapp()
+          break
+        case this.listDesign.WHATSAPP_WEB:
+          subFormValidate = await this.validateWhatsappWeb()
           break
         default:
           break
@@ -235,6 +244,13 @@ export default {
       if (!whatsappCmp.validateTemplate()) return false;
       this.template = await whatsappCmp.getTemplateMessage();
       this.message = this.template.message;
+      return true;
+    },
+    async validateWhatsappWeb(){
+      const whatsappWebCmp = this.$refs.whatsappWeb;
+      if (!whatsappWebCmp.validate()) return false;
+      this.whatsappWeb.list = await whatsappWebCmp.list;
+      this.message = this.whatsappWeb.list[0];
       return true;
     },
     async loadSenderList() {
@@ -254,9 +270,7 @@ export default {
     },
     getAdditionalAttributes(inboxId) {
       let selectedInbox = this.inboxes.find((inbox) => inbox.id == inboxId)
-      if (!selectedInbox || !this.template) {
-        return {}
-      }
+      if (!selectedInbox) return {}
       if (selectedInbox.channel_type == INBOX_TYPES.WHATSAPP) {
         const { templateParams } = this.template
         let template = {
@@ -272,19 +286,21 @@ export default {
         }
         return template
       }
+      if (selectedInbox.channel_type == INBOX_TYPES.API) {
+        return {
+          messages: this.whatsappWeb.list
+        }
+      }
       return {}
     },
     adaptDesignForm() {
       let selectedInbox = this.inboxes.find((inbox) => inbox.id == this.selectedInbox)
-      if (!selectedInbox) {
-        this.design = this.listDesign.DEFAULT
-        return
-      }
-      if (selectedInbox.channel_type == INBOX_TYPES.WHATSAPP) {
+      this.design = this.listDesign.DEFAULT
+      if (!selectedInbox) return
+      if (selectedInbox.channel_type == INBOX_TYPES.WHATSAPP) 
         this.design = this.listDesign.WHATSAPP
-        return
-      }
-       this.design = this.listDesign.DEFAULT
+      if (selectedInbox.channel_type == INBOX_TYPES.API) 
+        this.design = this.listDesign.WHATSAPP_WEB
     },
     setSender(list){
       if (!Array.isArray(list) || list.length == 0) {
@@ -338,6 +354,10 @@ export default {
             :inbox-id="selectedInbox"
             :showButtonAction="false"
           />
+        </template>
+        <template v-else-if="design==listDesign.WHATSAPP_WEB">
+          <label>{{$t('WHATSAPP_WEB.TITLE')}}</label>
+          <WhatsappWebList ref="whatsappWeb" />
         </template>
         <template v-else>
           <div v-if="isOngoingType" class="editor-wrap">

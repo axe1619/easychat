@@ -4,6 +4,7 @@ import { useAlert } from 'dashboard/composables';
 import campaignMixin from 'shared/mixins/campaignMixin';
 import CampaignsTable from './CampaignsTable.vue';
 import EditCampaign from './EditCampaign.vue';
+import { watch } from 'vue';
 export default {
   components: {
     CampaignsTable,
@@ -21,8 +22,13 @@ export default {
       showEditPopup: false,
       selectedCampaign: {},
       showDeleteConfirmationPopup: false,
-      lastCampaign: undefined
+      lastCampaign: undefined,
     };
+  },
+  watch: {
+    campaignType() {
+      this.lastCampaign = undefined
+    }
   },
   computed: {
     ...mapGetters({
@@ -71,7 +77,7 @@ export default {
     },
     loadMoreCampaign() {
       this.lastCampaign = this.campaigns[this.campaigns.length - 1]
-      this.$store.dispatch('campaigns/get', { params: { created_at: this.lastCampaign.created_at } });
+      this.$store.dispatch('campaigns/get', { params: { created_at: this.lastCampaign.created_at, campaign_type: this.campaignType } });
     }
   },
 };

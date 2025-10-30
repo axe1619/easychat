@@ -120,7 +120,7 @@ export const getters = {
     return $state.records.filter(item => enabledTypes.includes(item.channel_type));
   },
   getEnabledInboxes($state) {
-    const enabledTypes = [INBOX_TYPES.WHATSAPP, INBOX_TYPES.SMS];
+    const enabledTypes = [INBOX_TYPES.WHATSAPP, INBOX_TYPES.SMS,INBOX_TYPES.API];
     return $state.records.filter(item =>
       enabledTypes.includes(item.channel_type) ||
       (item.channel_type == INBOX_TYPES.TWILIO && item.medium === 'sms')
