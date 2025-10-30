@@ -59,7 +59,8 @@ class Campaign < ApplicationRecord
     service_class = {
       'Twilio SMS' => Twilio::OneoffSmsCampaignService,
       'Sms' => Sms::OneoffSmsCampaignService,
-      'Whatsapp' => Whatsapp::OneoffWhatsappCampaignService
+      'Whatsapp' => Whatsapp::OneoffWhatsappCampaignService,
+      'API' => Whatsapp::OneoffWhatsappWebCampaignService
     }
     service_class[inbox.inbox_type]&.new(campaign: self).perform   
   end
@@ -73,14 +74,14 @@ class Campaign < ApplicationRecord
   def validate_campaign_inbox
     return unless inbox
 
-    errors.add :inbox, 'Unsupported Inbox type' unless ['Website', 'Twilio SMS', 'Sms','Whatsapp'].include? inbox.inbox_type
+    errors.add :inbox, 'Unsupported Inbox type' unless ['Website', 'Twilio SMS', 'Sms','Whatsapp','API'].include? inbox.inbox_type
   end
 
   # TO-DO we clean up with better validations when campaigns evolve into more inboxes
   def ensure_correct_campaign_attributes
     return if inbox.blank?
 
-    if ['Twilio SMS', 'Sms','Whatsapp'].include?(inbox.inbox_type)
+    if ['Twilio SMS', 'Sms','Whatsapp','API'].include?(inbox.inbox_type)
       self.campaign_type = 'one_off'
       self.scheduled_at ||= Time.now.utc
     else
