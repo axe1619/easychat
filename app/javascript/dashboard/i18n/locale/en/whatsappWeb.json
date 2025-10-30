@@ -1,0 +1,14 @@
+{
+    "WHATSAPP_WEB": {
+        "TITLE": "List of messages",
+        "VALIDATION": {
+            "MESSAGE": {
+                "MIN_LENGTH": "This field must have at least 5 characters"
+            },
+            "LIST": {
+                "MIN_LENGTH": "This field should be at least 1 item long",
+                "REQUIRED": "Value is required"
+            }
+        }
+    }
+}

@@ -29,6 +29,7 @@ import settings from './settings.json';
 import signup from './signup.json';
 import teamsSettings from './teamsSettings.json';
 import whatsappTemplates from './whatsappTemplates.json';
+import whatsappWeb from './whatsappWeb.json';
 import sorter from './sorter.json';
 import agentsAi from './agentsAi.json';
 import board from './board.json';
@@ -65,6 +66,7 @@ export default {
   ...signup,
   ...teamsSettings,
   ...whatsappTemplates,
+  ...whatsappWeb,
   ...sorter,
   ...agentsAi,
   ...board
