@@ -31,6 +31,7 @@
 #  updated_at                      :datetime         not null
 #  account_id                      :integer          not null
 #  channel_id                      :integer          not null
+#  notification_inbox_id           :integer
 #  portal_id                       :bigint
 #
 # Indexes
@@ -59,6 +60,7 @@ class Inbox < ApplicationRecord
   validates :out_of_office_message, length: { maximum: Limits::OUT_OF_OFFICE_MESSAGE_MAX_LENGTH }
   validates :greeting_message, length: { maximum: Limits::GREETING_MESSAGE_MAX_LENGTH }
   validate :ensure_valid_max_assignment_limit
+  validates :notification_inbox_id, numericality: { only_integer: true, allow_nil: true }
 
   belongs_to :account
   belongs_to :portal, optional: true
