@@ -539,7 +539,15 @@
       "WHATSAPP_SECTION_UPDATE_BUTTON": "Update",
       "WHATSAPP_WEBHOOK_TITLE": "Webhook Verification Token",
       "WHATSAPP_WEBHOOK_SUBHEADER": "This token is used to verify the authenticity of the webhook endpoint.",
-      "UPDATE_PRE_CHAT_FORM_SETTINGS": "Update Pre Chat Form Settings"
+      "UPDATE_PRE_CHAT_FORM_SETTINGS": "Update Pre Chat Form Settings",
+      "AGENT_NOTIFICATION":"Notification via WhatsApp",
+      "AGENT_NOTIFICATION_SUB_TEXT":"Update notification settings",
+      "AGENT_NOTIFICATION_CHECK":"Activate push notification",
+      "AGENT_NOTIFICATION_CHECK_SUB_TEXT":"Enable or disable WhatsApp conversation notifications for agents assigned to WhatsApp conversations",
+      "AGENT_NOTIFICATION_SELECT_LABEL":"Select a inbox",
+      "AGENT_NOTIFICATION_SELECT_OPTION": "Choose one",
+      "AGENT_NOTIFICATION_SELECT_OPTION_ERROR":"No WhatsApp web channels were found",
+      "AGENT_NOTIFICATION_UPDATE_ERROR":"No WhatsApp web channel was selected"
     },
     "HELP_CENTER": {
       "LABEL": "Help Center",

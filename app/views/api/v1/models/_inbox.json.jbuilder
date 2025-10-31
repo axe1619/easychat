@@ -25,6 +25,7 @@ json.sender_name_type resource.sender_name_type
 json.business_name resource.business_name
 json.conversation_states resource.conversation_states
 json.count_reload_conversation_state resource.count_reload_conversation_state
+json.notification_inbox_id resource.notification_inbox_id
 if resource.portal.present?
   json.help_center do
     json.name resource.portal.name

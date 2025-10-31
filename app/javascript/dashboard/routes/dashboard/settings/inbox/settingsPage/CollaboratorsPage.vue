@@ -26,12 +26,16 @@ export default {
       selectedAgents: [],
       isAgentListUpdating: false,
       enableAutoAssignment: false,
+      enableNotificationWhatsApp: false,
       maxAssignmentLimit: null,
+      selectedInboxId: '',
+      selectInboxes: []
     };
   },
   computed: {
     ...mapGetters({
       agentList: 'agents/getAgents',
+      inboxesList: 'inboxes/getInboxes',
     }),
     maxAssignmentLimitErrors() {
       if (this.v$.maxAssignmentLimit.$error) {
@@ -49,8 +53,17 @@ export default {
   },
   mounted() {
     this.setDefaults();
+    this.selectInboxes = this.inboxesList.filter(i => ((i.channel_type === 'Channel::Api') && (i.id !== this.inbox.id)))
+    this.selectedInboxId = this.inbox.notification_inbox_id || ''
+    this.enableNotificationWhatsApp = this.inbox.notification_inbox_id !== null
   },
   methods: {
+    getInboxesList() {
+      console.log(this.inboxesList)
+    },
+    getInfoInbox() {
+      console.log('INBOX', this.inbox)
+    },
     setDefaults() {
       this.enableAutoAssignment = this.inbox.enable_auto_assignment;
       this.maxAssignmentLimit =
@@ -72,6 +85,9 @@ export default {
     },
     handleEnableAutoAssignment() {
       this.updateInbox();
+    },
+    handleEnableNotificationWhatsapp() {
+      this.updateNotification();
     },
     async updateAgents() {
       const agentList = this.selectedAgents.map(el => el.id);
@@ -103,6 +119,28 @@ export default {
         useAlert(this.$t('INBOX_MGMT.EDIT.API.SUCCESS_MESSAGE'));
       }
     },
+    async updateNotification() {
+      try {
+        if(this.selectedInboxId === ''){
+          useAlert(this.$t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION_UPDATE_ERROR'));
+          return
+        }
+        const list = this.$store.getters['inboxes/getInboxes']
+        const inbox = list.find(e => e.id === this.selectedInboxId)
+        // console.log('CHECK: ', this.enableNotificationWhatsApp)
+        // console.log('INBOX:', inbox)
+
+
+        if(this.enableNotificationWhatsApp){
+          await this.$store.dispatch('inboxes/updateInbox', {id: this.inbox.id, notification_inbox_id: inbox.id});
+        }else{
+          await this.$store.dispatch('inboxes/updateInbox', {id: this.inbox.id, notification_inbox_id: null});
+        }
+        useAlert(this.$t('INBOX_MGMT.EDIT.API.SUCCESS_MESSAGE'));
+      } catch (error) {
+        useAlert(this.$t('INBOX_MGMT.EDIT.API.ERROR_MESSAGE'));
+      }
+    },
   },
   validations: {
     selectedAgents: {
@@ -119,45 +157,23 @@ export default {
 
 <template>
   <div>
-    <SettingsSection
-      :title="$t('INBOX_MGMT.SETTINGS_POPUP.INBOX_AGENTS')"
-      :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.INBOX_AGENTS_SUB_TEXT')"
-    >
-      <multiselect
-        v-model="selectedAgents"
-        :options="agentList"
-        track-by="id"
-        label="name"
-        multiple
-        :close-on-select="false"
-        :clear-on-select="false"
-        hide-selected
-        placeholder="Pick some"
-        selected-label
+    <SettingsSection :title="$t('INBOX_MGMT.SETTINGS_POPUP.INBOX_AGENTS')"
+      :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.INBOX_AGENTS_SUB_TEXT')">
+      <multiselect v-model="selectedAgents" :options="agentList" track-by="id" label="name" multiple
+        :close-on-select="false" :clear-on-select="false" hide-selected placeholder="Pick some" selected-label
         :select-label="$t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
-        :deselect-label="$t('FORMS.MULTISELECT.ENTER_TO_REMOVE')"
-        @select="v$.selectedAgents.$touch"
-      />
+        :deselect-label="$t('FORMS.MULTISELECT.ENTER_TO_REMOVE')" @select="v$.selectedAgents.$touch" />
 
-      <woot-submit-button
-        :button-text="$t('INBOX_MGMT.SETTINGS_POPUP.UPDATE')"
-        :loading="isAgentListUpdating"
-        @click="updateAgents"
-      />
+      <woot-submit-button :button-text="$t('INBOX_MGMT.SETTINGS_POPUP.UPDATE')" :loading="isAgentListUpdating"
+        @click="updateAgents" />
     </SettingsSection>
 
-    <SettingsSection
-      :title="$t('INBOX_MGMT.SETTINGS_POPUP.AGENT_ASSIGNMENT')"
-      :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.AGENT_ASSIGNMENT_SUB_TEXT')"
-    >
+    <SettingsSection :title="$t('INBOX_MGMT.SETTINGS_POPUP.AGENT_ASSIGNMENT')"
+      :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.AGENT_ASSIGNMENT_SUB_TEXT')">
       <label class="w-3/4 settings-item">
         <div class="flex items-center gap-2">
-          <input
-            id="enableAutoAssignment"
-            v-model="enableAutoAssignment"
-            type="checkbox"
-            @change="handleEnableAutoAssignment"
-          />
+          <input id="enableAutoAssignment" v-model="enableAutoAssignment" type="checkbox"
+            @change="handleEnableAutoAssignment" />
           <label for="enableAutoAssignment">
             {{ $t('INBOX_MGMT.SETTINGS_POPUP.AUTO_ASSIGNMENT') }}
           </label>
@@ -168,30 +184,53 @@ export default {
         </p>
       </label>
 
-      <div
-        v-if="enableAutoAssignment && isEnterprise"
-        class="max-assignment-container"
-      >
-        <woot-input
-          v-model.trim="maxAssignmentLimit"
-          type="number"
-          :class="{ error: v$.maxAssignmentLimit.$error }"
-          :error="maxAssignmentLimitErrors"
-          :label="$t('INBOX_MGMT.AUTO_ASSIGNMENT.MAX_ASSIGNMENT_LIMIT')"
-          @blur="v$.maxAssignmentLimit.$touch"
-        />
+      <div v-if="enableAutoAssignment && isEnterprise" class="max-assignment-container">
+        <woot-input v-model.trim="maxAssignmentLimit" type="number" :class="{ error: v$.maxAssignmentLimit.$error }"
+          :error="maxAssignmentLimitErrors" :label="$t('INBOX_MGMT.AUTO_ASSIGNMENT.MAX_ASSIGNMENT_LIMIT')"
+          @blur="v$.maxAssignmentLimit.$touch" />
 
         <p class="pb-1 text-sm not-italic text-slate-600 dark:text-slate-400">
           {{ $t('INBOX_MGMT.AUTO_ASSIGNMENT.MAX_ASSIGNMENT_LIMIT_SUB_TEXT') }}
         </p>
 
-        <woot-submit-button
-          :button-text="$t('INBOX_MGMT.SETTINGS_POPUP.UPDATE')"
-          :disabled="v$.maxAssignmentLimit.$invalid"
-          @click="updateInbox"
-        />
+        <woot-submit-button :button-text="$t('INBOX_MGMT.SETTINGS_POPUP.UPDATE')"
+          :disabled="v$.maxAssignmentLimit.$invalid" @click="updateInbox" />
       </div>
     </SettingsSection>
+
+
+    <SettingsSection :title="$t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION')"
+      :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION_SUB_TEXT')">
+
+      <label class="w-3/4 settings-item">
+        <div class="flex items-center gap-2">
+          <!-- @change="handleEnableAutoAssignment" -->
+          <input id="enableNotificationWhatsApp" v-model="enableNotificationWhatsApp" type="checkbox"/>
+          <label for="enableNotificationWhatsApp">
+            {{ $t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION_CHECK') }}
+          </label>
+        </div>
+
+        <p class="pb-1 text-sm not-italic text-slate-600 dark:text-slate-400">
+          {{ $t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION_CHECK_SUB_TEXT') }}
+        </p>
+      </label>
+
+      <div v-if="enableNotificationWhatsApp" class="mb-4">
+        <label for="inbox">{{ $t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION_SELECT_LABEL') }}</label>
+        <select v-model="selectedInboxId" id="inbox" class="mb-0" :disabled="!selectInboxes.length" >
+          <option value="" class="text-slate-400" disabled>{{ $t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION_SELECT_OPTION') }}</option>
+          <option v-for="i in selectInboxes" :key="i.id" :value="i.id" v-if="selectInboxes.length">
+            {{ i.name }}
+          </option>
+        </select>
+        <span v-if="!selectInboxes.length" class="text-red-400" >{{ $t('INBOX_MGMT.SETTINGS_POPUP.AGENT_NOTIFICATION_SELECT_OPTION_ERROR') }}</span>
+      </div>
+      <woot-submit-button :button-text="$t('INBOX_MGMT.SETTINGS_POPUP.UPDATE')" @click="updateNotification" />
+      <!-- <button class="bg-slate-400 rouded" @click="getInfoInbox">GET INFO</button> -->
+    </SettingsSection>
+
+
   </div>
 </template>
 
