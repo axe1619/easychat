@@ -7,6 +7,8 @@ class Api::V1::Accounts::CampaignsController < Api::V1::Accounts::BaseController
     scope = scope.where('created_at < ?', params[:created_at]) if params[:created_at].present?
     scope = scope.where(campaign_type: params[:campaign_type]) if params[:campaign_type].present?
     @campaigns = scope.limit(5)
+    campaign_ids = @campaigns.pluck(:id).map(&:to_s)
+    @message_counts = Message.count_by_campaign_and_status(campaign_ids)
   end
 
   def show; end

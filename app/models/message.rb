@@ -238,6 +238,13 @@ class Message < ApplicationRecord
     save!
   end
 
+  def self.count_by_campaign_and_status(campaign_ids)
+    unscoped
+    .where("messages.additional_attributes ->> 'campaign_id' IN (?)", campaign_ids.map(&:to_s))
+    .group("messages.additional_attributes ->> 'campaign_id'", :status)
+    .count
+  end
+
   def self.campaign(campaign_id,status)
     status =  Array(status).map(&:to_s)
     where("messages.additional_attributes ->> 'campaign_id' = ?", campaign_id.to_s).

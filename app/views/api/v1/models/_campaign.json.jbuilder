@@ -17,8 +17,11 @@ if resource.campaign_type == 'one_off'
   json.audience resource.audience
   json.reach resource.reach
   json.duration resource.duration
-  json.message_success Message.campaign(resource.id.to_s,[:delivered, :read]).count
-  json.message_pending Message.campaign(resource.id.to_s,[:sent]).count
+  json.message_success ( 
+    @message_counts[[resource.id.to_s, 'delivered']].to_i + 
+    @message_counts[[resource.id.to_s, 'read']].to_i
+  )
+  json.message_pending @message_counts[[resource.id.to_s, 'sent']].to_i
 end
 json.trigger_rules resource.trigger_rules
 json.trigger_only_during_business_hours resource.trigger_only_during_business_hours
