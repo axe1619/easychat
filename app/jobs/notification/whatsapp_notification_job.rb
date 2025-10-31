@@ -57,9 +57,13 @@ class Notification::WhatsappNotificationJob < ApplicationJob
 
   def template_message(conversation, state)
     <<~MSG
-      *Channel*      : #{conversation.inbox.name} (#{conversation.inbox.channel_type.sub("Channel::", "")})
-      *Notification* : #{state.name}
-      *Link*         : https://easycontact.top/app/accounts/#{conversation.account_id}/conversations/#{conversation.display_id}
+      *Canal*              : #{conversation.inbox.name} (#{conversation.inbox.channel_type.sub("Channel::", "")})
+      *Notificacion*       : #{state.name}
+      *Enlace*             : https://easycontact.top/app/accounts/#{conversation.account_id}/conversations/#{conversation.display_id}
+      *Datos del contacto*:
+      *Nombre*  : #{conversation.contact.name}
+      *Correo*  : #{conversation.contact.email}
+      *Telefono*: #{conversation.contact.phone_number}
     MSG
   end
 
