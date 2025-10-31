@@ -58,11 +58,13 @@ export default {
       return this.campaign.message_pending || 0
     },
     campaignMessageFailed() {
-      const { reach, message_success, message_pending } = this.campaign
-      if (!reach || !message_success || !message_pending) {
+      const reach = Number(this.campaign.reach)
+      const success = Number(this.campaign.message_success)
+      const pending = Number(this.campaign.message_pending)
+      if (!Number.isFinite(reach) || !Number.isFinite(success) || !Number.isFinite(pending)) {
         return 0
       }
-      return Number(reach - (message_success + message_pending))
+      return Number(reach - (success + pending))
     }
   },
   methods: {

@@ -238,6 +238,13 @@ class Message < ApplicationRecord
     save!
   end
 
+  def self.count_by_campaign_and_status(campaign_ids)
+    unscoped
+    .where("messages.additional_attributes ->> 'campaign_id' IN (?)", campaign_ids.map(&:to_s))
+    .group("messages.additional_attributes ->> 'campaign_id'", :status)
+    .count
+  end
+
   def self.campaign(campaign_id,status)
     status =  Array(status).map(&:to_s)
     where("messages.additional_attributes ->> 'campaign_id' = ?", campaign_id.to_s).
@@ -464,11 +471,11 @@ class Message < ApplicationRecord
       return if state_assigned_by_agent_ia.nil?
       conversation_state = ConversationState.find_by(id: state_assigned_by_agent_ia["id"])
       return if conversation_state.nil?
+      trigger_notifications(conversation, conversation_state) if conversation_state[:notification].any? && conversation.last_conversation_state_analysis.blank?
       conversation.update!(
         conversations_state_id: conversation_state.id,
         last_conversation_state_analysis: Time.current
       )
-      trigger_notifications(conversation, conversation_state) if conversation_state[:notification].any?
     rescue => e
       Rails.logger.info "WARNING: ModelMessageSetConversationState: #{e.message}"
     end
