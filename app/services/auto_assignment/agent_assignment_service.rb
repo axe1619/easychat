@@ -19,7 +19,13 @@ class AutoAssignment::AgentAssignmentService
       Rails.logger.info "DATOS DEL AGENTE ASIGNADO: #{agent.inspect}"
       Rails.logger.info "DATOS DEL INBOX: #{inbox.inspect}"
 
+      
+      # conversation_db = Conversation.find(conversation.id)
+      conversation.reload
+      
+      agent_name = agent.name
       inbox_id = inbox&.notification_inbox_id
+      conversation_id = conversation&.display_id
       to_phone = agent&.phone_number.to_s.strip
       to_phone = "+#{to_phone}" unless to_phone.blank? || to_phone.start_with?('+')
       base = ENV.fetch('FRONTEND_URL', '')
@@ -32,7 +38,7 @@ class AutoAssignment::AgentAssignmentService
         Notification::PushNotificationAgentJob.perform_later(
           inbox_id: inbox_id, # Inbox de WhatsApp
           to_phone: to_phone, # Numero de destino (ej: +59171234567)
-          text: "Se te asigno una nueva conversación, puedes verla aquí: \n #{base}/app/accounts/#{conversation.account_id}/dashboard",
+          text: "Hola #{agent_name}. Se te asigno una nueva conversación, puedes verla aquí:\n#{base}/app/accounts/#{conversation.account_id}/conversations/#{conversation_id}",
           sender_user_id: conversation.account_id # Id de usuario (opcional)
         )
         Rails.logger.info("[WhatsApp] Se envio la notificacion por mensaje: inbox_id=#{inbox_id.inspect}, phone=#{to_phone.inspect}")
