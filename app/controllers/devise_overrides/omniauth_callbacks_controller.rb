@@ -29,7 +29,10 @@ class DeviseOverrides::OmniauthCallbacksController < DeviseTokenAuth::OmniauthCa
     create_account_for_user
     token = @resource.send(:set_reset_password_token)
     frontend_url = ENV.fetch('FRONTEND_URL', nil)
-    redirect_to "#{frontend_url}/app/auth/password/edit?config=default&reset_password_token=#{token}"
+    redirect_to(
+      "#{frontend_url}/app/auth/password/edit?config=default&reset_password_token=#{token}",
+      allow_other_host: true
+    )
   end
 
   def login_page_url(error: nil, email: nil, sso_auth_token: nil)
@@ -58,7 +61,8 @@ class DeviseOverrides::OmniauthCallbacksController < DeviseTokenAuth::OmniauthCa
 
   def validate_business_account?
     # return true if the user is a business account, false if it is a gmail account
-    auth_hash['info']['email'].exclude?('@gmail.com')
+    # auth_hash['info']['email'].exclude?('@gmail.com')
+    true
   end
 
   def create_account_for_user
