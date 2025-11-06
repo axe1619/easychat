@@ -1,5 +1,6 @@
 module EmailHelper
   def extract_domain_without_tld(email)
+    return "Default Company" if email.include?('@gmail.com')
     domain = email.split('@').last
     domain.split('.').first
   end

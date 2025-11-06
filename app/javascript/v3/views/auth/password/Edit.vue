@@ -5,7 +5,9 @@ import { useAlert } from 'dashboard/composables';
 import FormInput from '../../../components/Form/Input.vue';
 import SubmitButton from '../../../components/Button/SubmitButton.vue';
 import { DEFAULT_REDIRECT_URL } from 'dashboard/constants/globals';
+import { isValidPassword } from 'shared/helpers/Validators';
 import { setNewPassword } from '../../../api/auth';
+import { computed } from 'vue';
 
 export default {
   components: {
@@ -40,14 +42,28 @@ export default {
       window.location = DEFAULT_REDIRECT_URL;
     }
   },
+  computed: {
+    passwordErrorText() {
+      const { password } = this.v$.credentials;
+      if (password.minLength.$invalid) {
+        return this.$t('REGISTER.PASSWORD.ERROR');
+      }
+      if (password.isValidPassword.$invalid) {
+        return this.$t('REGISTER.PASSWORD.IS_INVALID_PASSWORD');
+      }
+      return '';
+    },
+  },
   validations: {
     credentials: {
       password: {
         required,
+        isValidPassword,
         minLength: minLength(6),
       },
       confirmPassword: {
         required,
+        isValidPassword,
         minLength: minLength(6),
         isEqPassword(value) {
           if (value !== this.credentials.password) {
@@ -106,7 +122,7 @@ export default {
           name="password"
           type="password"
           :has-error="v$.credentials.password.$error"
-          :error-message="$t('SET_NEW_PASSWORD.PASSWORD.ERROR')"
+          :error-message="passwordErrorText"
           :placeholder="$t('SET_NEW_PASSWORD.PASSWORD.PLACEHOLDER')"
           @blur="v$.credentials.password.$touch"
         />

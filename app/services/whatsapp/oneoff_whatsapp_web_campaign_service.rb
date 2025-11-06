@@ -31,14 +31,20 @@ class Whatsapp::OneoffWhatsappWebCampaignService
     start_time_campaign = Time.now
     reach_campaign = 0
     return if user.blank? || inbox.blank?
+    delay = 0
+    delay_queue = 0
     contacts.find_in_batches(batch_size: BATCH) do |batch|
       batch.each_with_index do |contact, index|
         analyze_queue  = (index % 20 == 0)
         message = option_messages.next  # round robin
+        delay = rand(8..20)
         if analyze_queue && queue_congested?("medium", MAX_LATENCY_JOB)
           Whatsapp::Dispatch::WhatsappWebService.perform_now(user, contact, inbox, campaign, message)
+          sleep(delay)
+          delay_queue = [delay_queue - delay, 0].max
         else
-          Whatsapp::Dispatch::WhatsappWebService.perform_later(user, contact, inbox, campaign, message)
+          delay_queue += delay
+          Whatsapp::Dispatch::WhatsappWebService.set(wait: delay_queue.seconds).perform_later(user, contact, inbox, campaign, message)
         end
       end
       reach_campaign += batch.size
