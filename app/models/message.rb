@@ -309,6 +309,7 @@ class Message < ApplicationRecord
 
   def execute_after_create_commit_callbacks
     # rails issue with order of active record callbacks being executed https://github.com/rails/rails/issues/20911
+    disabled_agent_bot
     set_conversation_state
     reopen_conversation
     notify_via_mail
@@ -479,6 +480,15 @@ class Message < ApplicationRecord
     rescue => e
       Rails.logger.info "WARNING: ModelMessageSetConversationState: #{e.message}"
     end
+  end
+
+  def disabled_agent_bot
+    return unless conversation&.active_agent_bot &&
+                  account.disable_bot_on_agent_reply &&
+                  outgoing? &&
+                  sender_type == 'User'
+    conversation.update_columns(active_agent_bot: false)
+    conversation.active_agent_bot = false   
   end
 
   def skip_analysis_conversation?

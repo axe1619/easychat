@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_10_28_210451) do
+ActiveRecord::Schema[7.0].define(version: 2025_11_04_192117) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -55,6 +55,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_10_28_210451) do
     t.jsonb "custom_attributes", default: {}
     t.integer "status", default: 0
     t.datetime "expires_at"
+    t.boolean "disable_bot_on_agent_reply", default: false, null: false
     t.index ["status"], name: "index_accounts_on_status"
   end
 
