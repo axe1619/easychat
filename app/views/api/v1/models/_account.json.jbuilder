@@ -14,6 +14,7 @@ if resource.custom_attributes.present?
     json.onboarding_step resource.custom_attributes['onboarding_step'] if resource.custom_attributes['onboarding_step'].present?
   end
 end
+json.disable_bot_on_agent_reply @account.disable_bot_on_agent_reply
 json.domain @account.domain
 json.features @account.enabled_features
 json.id @account.id
