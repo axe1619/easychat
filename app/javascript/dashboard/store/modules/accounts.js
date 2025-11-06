@@ -68,8 +68,8 @@ export const actions = {
     commit(types.default.SET_ACCOUNT_UI_FLAG, { isUpdating: true });
     try {
       const response = await AccountAPI.update('', updateObj);
-      const { logo, id, status } = response.data
-      commit(types.default.EDIT_ACCOUNT_ID, { id, logo, status });
+      const { logo, id, status, disable_bot_on_agent_reply } = response.data
+      commit(types.default.EDIT_ACCOUNT_ID, { id, logo, status, disable_bot_on_agent_reply });
       commit(types.default.SET_ACCOUNT_UI_FLAG, { isUpdating: false });
     } catch (error) {
       commit(types.default.SET_ACCOUNT_UI_FLAG, { isUpdating: false });

@@ -34,6 +34,9 @@
         "PLACEHOLDER": "The domain where you will receive the emails",
         "ERROR": ""
       },
+      "DISABLE_AGENT_BOT_REPLY": {
+        "LABEL": "Deactivate AI agent when an agent responds"
+      },
       "SUPPORT_EMAIL": {
         "LABEL": "Support Email",
         "PLACEHOLDER": "Your company's support email",
