@@ -55,6 +55,8 @@ export default {
     },
     conversationFilters() {
       let filters = {
+        status: "all",
+        assignee_type: "all",
         group: this.group,
         page: (this.currentFiltersPage + 1),
         sortBy: this.sortByMessage
