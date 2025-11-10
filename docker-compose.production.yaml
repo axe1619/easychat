@@ -77,7 +77,7 @@ services:
 
   webpack:
     <<: *base
-    image: chatwoot-webpack:development
+    image: jodete3430381/easycontact-webpack:development
     profiles:
       - task
     volumes:
