@@ -103,4 +103,5 @@ unless Rails.env.production?
     { name: "Insatisfecho", icon:"😐"},
     { name: "Muy insatisfecho", icon:"🙁"},
   ])
+  SuperAdmin.create(name: 'Admin', email: 'admin@easycontact.com', password: 'Admin123!', confirmed_at: Time.now)
 end
