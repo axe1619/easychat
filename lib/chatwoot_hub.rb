@@ -55,45 +55,54 @@ class ChatwootHub
   end
 
   def self.sync_with_hub
-    begin
-      info = instance_config
-      info = info.merge(instance_metrics) unless ENV['DISABLE_TELEMETRY']
-      response = RestClient.post(PING_URL, info.to_json, { content_type: :json, accept: :json })
-      parsed_response = JSON.parse(response)
-    rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-      Rails.logger.error "Exception: #{e.message}"
-    rescue StandardError => e
-      ChatwootExceptionTracker.new(e).capture_exception
-    end
-    parsed_response
+    # begin
+    #   info = instance_config
+    #   info = info.merge(instance_metrics) unless ENV['DISABLE_TELEMETRY']
+    #   response = RestClient.post(PING_URL, info.to_json, { content_type: :json, accept: :json })
+    #   parsed_response = JSON.parse(response)
+    # rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
+    #   Rails.logger.error "Exception: #{e.message}"
+    # rescue StandardError => e
+    #   ChatwootExceptionTracker.new(e).capture_exception
+    # end
+    # parsed_response
+    {
+      "version"=>"4.7.0", 
+      "plan"=>"premium", 
+      "plan_quantity"=>10000, 
+      "chatwoot_support_identifier_hash"=>"64df2ff385709e946bd2df087e6465fd33b58dd248fd7ae8bfcf02be35eb0dd6", 
+      "chatwoot_support_website_token"=>"buziVV8JZbYzuFskjTstyKXG", 
+      "chatwoot_support_script_url"=>"https://app.chatwoot.com"
+    }
   end
 
   def self.register_instance(company_name, owner_name, owner_email)
-    info = { company_name: company_name, owner_name: owner_name, owner_email: owner_email, subscribed_to_mailers: true }
-    RestClient.post(REGISTRATION_URL, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+  #   info = { company_name: company_name, owner_name: owner_name, owner_email: owner_email, subscribed_to_mailers: true }
+  #   RestClient.post(REGISTRATION_URL, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
+  # rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
+  #   Rails.logger.error "Exception: #{e.message}"
+  # rescue StandardError => e
+  #   ChatwootExceptionTracker.new(e).capture_exception
   end
 
   def self.send_push(fcm_options)
-    info = { fcm_options: fcm_options }
-    RestClient.post(PUSH_NOTIFICATION_URL, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+  #   info = { fcm_options: fcm_options }
+  #   RestClient.post(PUSH_NOTIFICATION_URL, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
+  # rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
+  #   Rails.logger.error "Exception: #{e.message}"
+  # rescue StandardError => e
+  #   ChatwootExceptionTracker.new(e).capture_exception
   end
 
   def self.emit_event(event_name, event_data)
-    return if ENV['DISABLE_TELEMETRY']
+  #   return if ENV['DISABLE_TELEMETRY']
 
-    info = { event_name: event_name, event_data: event_data }
-    RestClient.post(EVENTS_URL, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+  #   info = { event_name: event_name, event_data: event_data }
+  #   RestClient.post(EVENTS_URL, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
+  # rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
+  #   Rails.logger.error "Exception: #{e.message}"
+  # rescue StandardError => e
+  #   ChatwootExceptionTracker.new(e).capture_exception
   end
+  
 end
