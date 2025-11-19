@@ -428,7 +428,9 @@ export default {
     },
 
     makeMessagesRead() {
-      this.$store.dispatch('markMessagesRead', { id: this.currentChat.id });
+      this.$store.dispatch('markMessagesRead', { id: this.currentChat.id }).then(() => {
+        this.$emitter.emit('fetch_conversation_stats')
+      });
     },
 
     getInReplyToMessage(parentMessage) {

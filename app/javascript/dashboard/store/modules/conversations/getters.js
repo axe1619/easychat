@@ -117,6 +117,11 @@ const getters = {
       return isUnAssigned && shouldFilter;
     });
   },
+  getUnReadChats: _state => activeFilters => {
+    return _state.allConversations.filter(conversation => {
+      return conversation.last_activity_incoming_at > conversation.agent_last_seen_at
+    });
+  },
   getAllStatusChats: _state => activeFilters => {
     return _state.allConversations.filter(conversation => {
       const shouldFilter = applyPageFilters(conversation, activeFilters);

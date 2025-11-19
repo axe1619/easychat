@@ -327,6 +327,8 @@ export const mutations = {
     } else {
       chat.conversations_state_name = message.conversations_state_name;
       chat.conversations_state = message.conversations_state;
+      chat.last_activity_incoming_at = message.conversation.last_activity_incoming_at
+      chat.last_activity_outgoing_at = message.conversation.last_activity_outgoing_at
       chat.messages.push(message);
       chat.timestamp = message.created_at;
       const { conversation: { unread_count: unreadCount = 0 } = {} } = message;
