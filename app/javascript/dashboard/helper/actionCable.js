@@ -101,6 +101,7 @@ class ActionCableConnector extends BaseActionCableConnector {
       conversationId,
       kanban_state: data.kanban_state
     });
+    this.fetchConversationStats();
   };
 
   // eslint-disable-next-line class-methods-use-this
