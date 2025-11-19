@@ -69,6 +69,8 @@ json.labels conversation.cached_label_list_array
 json.muted conversation.muted?
 json.snoozed_until conversation.snoozed_until
 json.status conversation.status
+json.last_activity_incoming_at conversation.last_activity_incoming_at.to_i
+json.last_activity_outgoing_at conversation.last_activity_outgoing_at.to_i
 json.created_at conversation.created_at.to_i
 json.timestamp conversation.last_activity_at.to_i
 json.first_reply_created_at conversation.first_reply_created_at.to_i

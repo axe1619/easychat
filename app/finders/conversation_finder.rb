@@ -38,7 +38,7 @@ class ConversationFinder
   def perform
     set_up
 
-    mine_count, unassigned_count, all_count, = set_count_for_all_conversations
+    mine_count, unassigned_count, unread_count, all_count = set_count_for_all_conversations
     assigned_count = all_count - unassigned_count
 
     filter_by_assignee_type
@@ -49,6 +49,7 @@ class ConversationFinder
         mine_count: mine_count,
         assigned_count: assigned_count,
         unassigned_count: unassigned_count,
+        unread_count: unread_count,
         all_count: all_count
       }
     }
@@ -118,6 +119,8 @@ class ConversationFinder
       @conversations = @conversations.unassigned
     when 'assigned'
       @conversations = @conversations.assigned
+    when 'unread'
+      @conversations = @conversations.unread
     end
     @conversations
   end
@@ -174,6 +177,7 @@ class ConversationFinder
     [
       @conversations.assigned_to(current_user).count,
       @conversations.unassigned.count,
+      @conversations.unread.count,
       @conversations.count
     ]
   end
