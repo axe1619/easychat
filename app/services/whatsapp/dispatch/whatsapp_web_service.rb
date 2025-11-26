@@ -2,11 +2,12 @@
 class Whatsapp::Dispatch::WhatsappWebService < ApplicationJob
   queue_as :medium
 
-  def perform(user, contact, inbox, campaign, message)
+  def perform(user, contact, inbox, campaign, message, file)
     Messages::MessageBuilder.new(user, get_last_conversation(contact, inbox), {
         content: message,
         message_type: 'outgoing',
-        additional_attributes: { campaign_id: campaign.id }
+        additional_attributes: { campaign_id: campaign.id },
+        attachments: attachments(file)
     }).perform
   end  
 
@@ -26,5 +27,20 @@ class Whatsapp::Dispatch::WhatsappWebService < ApplicationJob
         contact_id: contact.id,
         contact_inbox_id: contact_inbox.id
     })
+  end
+
+  def attachments(blob)
+    return nil unless blob
+    tempfile = Tempfile.new
+    tempfile.binmode
+    tempfile.write(blob.download)
+    tempfile.rewind
+    [
+      ActionDispatch::Http::UploadedFile.new(
+        filename: blob.filename.to_s,
+        type: blob.content_type,
+        tempfile: tempfile
+      )
+    ]
   end
 end
