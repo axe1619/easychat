@@ -203,9 +203,11 @@ export default {
       return campaignDetails;
     },
     async addCampaign() {
-      if (!await this.validateForm())
-        return
       this.loading.campaign = true
+      if (!await this.validateForm()) {
+        this.loading.campaign = false
+        return
+      }
       try {
         const campaignDetails = this.getCampaignDetails();
         await this.$store.dispatch('campaigns/create', campaignDetails);
@@ -249,7 +251,8 @@ export default {
     async validateWhatsappWeb(){
       const whatsappWebCmp = this.$refs.whatsappWeb;
       if (!whatsappWebCmp.validate()) return false;
-      this.whatsappWeb.list = await whatsappWebCmp.list;
+      this.whatsappWeb.list = whatsappWebCmp.list;
+      this.whatsappWeb.file = await whatsappWebCmp.getFile();
       this.message = this.whatsappWeb.list[0];
       return true;
     },
@@ -288,7 +291,8 @@ export default {
       }
       if (selectedInbox.channel_type == INBOX_TYPES.API) {
         return {
-          messages: this.whatsappWeb.list
+          messages: this.whatsappWeb.list,
+          file: this.whatsappWeb.file
         }
       }
       return {}

@@ -1,14 +1,23 @@
 <script>
+import { mapGetters } from 'vuex';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, requiredIf } from '@vuelidate/validators';
+import FileUpload from 'vue-upload-component';
+import { uploadFile } from '../../../../helper/uploadHelper';
 
 export default {
+  components: {
+    FileUpload
+  },
   data() {
     return {
       showListMessage: false,
+      showImageMessage: false,
       selectMessage: false,
       list: [],
       message: "",
+      file: undefined,
+      previewImagen: "/assets/images/default/image-preview.png"
     };
   },
   setup() {
@@ -26,8 +35,20 @@ export default {
       }
     }
   },
-  computed:{
-    messageError(){
+  watch: {
+    file(newFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewImagen = reader.result
+      };
+      reader.readAsDataURL(newFile);
+    }
+  },
+  computed: {
+    ...mapGetters({
+      accountId: 'getCurrentAccountId',
+    }),
+    messageError() {
       if (this.v$.message.$error) {
         return this.$t('WHATSAPP_WEB.VALIDATION.MESSAGE.MIN_LENGTH')
       }
@@ -35,7 +56,13 @@ export default {
         return this.$t('WHATSAPP_WEB.VALIDATION.LIST.MIN_LENGTH')
       }
       return '';
-    }
+    },
+    titleBtnAddOrClose() {
+      if (this.showListMessage) {
+        return this.$t('WHATSAPP_WEB.ACTION.ADD')
+      }
+      return this.$t('WHATSAPP_WEB.ACTION.CLOSE')
+    },
   },
   methods: {
     save(){
@@ -46,12 +73,38 @@ export default {
       this.showListMessage = true
       this.v$.$reset()
     },
+    onFileChange(event) {
+      if (!event) return
+      this.file = event.file
+    },
+    toogleShowImage() {
+      this.showImageMessage = !this.showImageMessage
+    },
     toogleShowList() {
       this.v$.$reset()
       this.showListMessage = !this.showListMessage
     },
     remove(messageIndex) {
       this.list = this.list.filter((_, index) => index != messageIndex)
+    },
+    getFormat(file) {
+      if (!file || !file.type) return "IMAGE";
+      if (file.type.startsWith("image/")) return "IMAGE";
+      if (file.type.startsWith("video/")) return "VIDEO";
+      if (file.type.startsWith("audio/")) return "AUDIO";
+      return "IMAGE";
+    },
+    async getFile() {
+      if (!this.file) return undefined;
+      try {
+        const response = await uploadFile(this.file, this.accountId)
+        return {
+          format: this.getFormat(this.file),
+          url: response.blobKey,
+        }
+      } catch (error) {
+        return undefined
+      }
     },
     validate(){
       this.v$.$touch();
@@ -73,7 +126,20 @@ export default {
           variant="smooth"
           color-scheme="secondary"
           @click="save"
-        />
+        >
+        {{$t('WHATSAPP_WEB.ACTION.SAVE')}}
+        </woot-button>
+        <woot-button
+          v-if="showListMessage"
+          type="button"
+          size="tiny"
+          :icon="showImageMessage ? 'eye-show' : 'eye-hide'"
+          variant="smooth"
+          color-scheme="secondary"
+          @click="toogleShowImage"
+        >
+        {{$t('WHATSAPP_WEB.FILE.IMAGE')}}
+        </woot-button>
         <woot-button
           type="button"
           size="tiny"
@@ -81,10 +147,23 @@ export default {
           variant="smooth"
           color-scheme="secondary"
           @click="toogleShowList"
-        />
+        >
+        {{ titleBtnAddOrClose }}
+        </woot-button>
       </div>
     </div>
-    <div v-if="showListMessage" class="w-full">
+    <FileUpload 
+      v-if="showListMessage && showImageMessage"
+      :multiple="false" 
+      :maximum="1" 
+      :extensions="['jpg', 'png', 'jpeg']" 
+      :accept="'image/*'"
+      @input-file="onFileChange" 
+      class="cursor-pointer mx-auto">
+      <img width="150" :src="previewImagen" alt="image preview header" class="image-preview" />
+      <button>Seleccionar imagen</button>
+    </FileUpload>
+    <div v-if="showListMessage" class="w-full pt-5">
       <div class="template__list-container">
         <div v-for="(message, index) in list">
           <button
