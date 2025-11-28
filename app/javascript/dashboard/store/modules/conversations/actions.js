@@ -83,7 +83,7 @@ export const hasMessageFailedWithExternalError = pendingMessage => {
 export const getTypeList = (type) => {
   let routeName = router.app._route.name;
   let useListConversation = "default"
-  if (routeName.includes("board")) {
+  if (["board_conversations", "inbox_board_conversation"].includes(routeName)) {
     useListConversation = "board"
   }
   return TYPE_LIST[type][useListConversation]
@@ -121,6 +121,12 @@ const actions = {
     } catch (error) {
       // Ignore error
     }
+  },
+
+  setConversations:  async ({ commit, state, dispatch }, conversations) => {
+    commit(types.SET_LIST_LOADING_STATUS);
+    commit(types.SET_ALL_CONVERSATION, conversations);
+    commit(types.CLEAR_LIST_LOADING_STATUS);
   },
 
   fetchAllConversations: async ({ commit, state, dispatch }) => {
@@ -268,7 +274,7 @@ const actions = {
       // this ensures that the `attachment` variable is always present on chat
       commit(types.SET_ALL_ATTACHMENTS, {
         id: conversationId,
-        data: attachments,
+        data: attachments || [],
       });
     }
   },

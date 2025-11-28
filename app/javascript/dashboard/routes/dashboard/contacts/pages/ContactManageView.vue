@@ -5,6 +5,8 @@ import ContactNotes from 'dashboard/modules/notes/NotesOnContactPage.vue';
 import SettingsHeader from '../../settings/SettingsHeader.vue';
 import Spinner from 'shared/components/Spinner.vue';
 import Thumbnail from 'dashboard/components/widgets/Thumbnail.vue';
+import EmptyState from '../../../../components/widgets/conversation/EmptyState/EmptyState.vue';
+import MessagesView from '../../../../components/widgets/conversation/MessagesView.vue';
 
 export default {
   components: {
@@ -13,6 +15,8 @@ export default {
     SettingsHeader,
     Spinner,
     Thumbnail,
+    MessagesView,
+    EmptyState
   },
   props: {
     contactId: {
@@ -28,12 +32,21 @@ export default {
   computed: {
     ...mapGetters({
       uiFlags: 'contacts/getUIFlags',
+      chatList: 'getAllConversations',
+      currentChat: 'getSelectedChat',
     }),
+    contactConversations(){
+      return this.$store.getters['contactConversations/getContactConversation'](this.contactId);
+    },
     tabs() {
       return [
         {
           key: 0,
           name: this.$t('NOTES.HEADER.TITLE'),
+        },
+        {
+          key: 1,
+          name:  this.$t('CONTACT.CONVERSATION.HEADER.TITLE'),
         },
       ];
     },
@@ -47,6 +60,17 @@ export default {
     backUrl() {
       return `/app/accounts/${this.$route.params.accountId}/contacts`;
     },
+  },
+  watch: {
+    '$route.query.conversationId'(id) {
+      if (this.selectedTabIndex != 1) this.selectedTabIndex = 1
+      this.$store.dispatch('setActiveChat', { data: this.chatList.find((c) => c.id == id) || {} })
+    },
+    contactConversations(newData, oldData) {
+      if (newData.length == oldData.length) return
+      this.$store.dispatch('setConversations', newData)
+      this.$store.dispatch('setActiveChat', { data: newData.find((c) => c.id == this.$route.query.conversationId) || {} })
+    }
   },
   mounted() {
     this.fetchContactDetails();
@@ -105,11 +129,17 @@ export default {
             />
           </woot-tabs>
           <div
-            class="bg-slate-25 dark:bg-slate-800 h-[calc(100%-40px)] p-4 overflow-auto"
+            class="bg-slate-25 dark:bg-slate-800 h-[calc(100%-40px)] p-4"
           >
             <ContactNotes
               v-if="selectedTabIndex === 0"
               :contact-id="Number(contactId)"
+            />
+            <MessagesView
+              v-if="selectedTabIndex === 1 && currentChat.id"
+            />
+            <EmptyState
+              v-if="selectedTabIndex === 1 && !currentChat.id"
             />
           </div>
         </div>

@@ -474,7 +474,7 @@ class Message < ApplicationRecord
       return if state_assigned_by_agent_ia.nil?
       conversation_state = ConversationState.find_by(id: state_assigned_by_agent_ia["id"])
       return if conversation_state.nil?
-      trigger_notifications(conversation, conversation_state) if conversation_state[:notification].any? && conversation.last_conversation_state_analysis.blank?
+      trigger_notifications(conversation, conversation_state)
       conversation.update!(
         conversations_state_id: conversation_state.id,
         last_conversation_state_analysis: Time.current
@@ -498,7 +498,9 @@ class Message < ApplicationRecord
   end
 
   def trigger_notifications(conversation, conversation_state)
-    Notification::WhatsappNotificationJob.perform_later(conversation, conversation_state)
+    return if conversation_state[:notification].empty?
+    notify = conversation.last_conversation_state_analysis.blank? || conversation.conversations_state_id != conversation_state.id
+    Notification::WhatsappNotificationJob.perform_later(conversation, conversation_state) if notify
   end
 
   def http_get_analize_conversation(account_id ,inbox_id , display_id)
