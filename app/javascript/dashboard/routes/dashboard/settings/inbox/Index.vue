@@ -5,6 +5,7 @@ import { useAdmin } from 'dashboard/composables/useAdmin';
 import { useAccount } from 'dashboard/composables/useAccount';
 import Settings from './Settings.vue';
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
+import whatsappInstancesClient from '../../../../api/channel/whatsappInstancesClient';
 
 export default {
   components: {
@@ -68,8 +69,19 @@ export default {
       this.showSettings = false;
       this.selectedInbox = {};
     },
+
+    async deleteInstanceWhatsappWeb() {
+      if (!this.selectedInbox || this.selectedInbox.channel_type != "Channel::Api") return
+      try {
+        await whatsappInstancesClient.logout(this.selectedInbox.name);
+      } catch (error) {
+        console.warn({ error })
+      }
+    },
+
     async deleteInbox({ id }) {
       try {
+        await this.deleteInstanceWhatsappWeb()
         await this.$store.dispatch('inboxes/delete', id);
         useAlert(this.$t('INBOX_MGMT.DELETE.API.SUCCESS_MESSAGE'));
       } catch (error) {
