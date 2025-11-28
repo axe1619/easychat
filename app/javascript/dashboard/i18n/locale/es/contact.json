@@ -390,5 +390,12 @@
     "DROPDOWN_ITEM": {
       "ID": "(ID: {identifier})"
     }
+  },
+  "CONTACT": {
+    "CONVERSATION": {
+      "HEADER": {
+        "TITLE": "Conversacion"
+      }
+    }
   }
 }
