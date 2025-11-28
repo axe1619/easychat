@@ -87,6 +87,7 @@ export const mutations = {
     if (filter === 'all') {
       Vue.set($state.hasEndReached, 'unassigned', true);
       Vue.set($state.hasEndReached, 'me', true);
+      Vue.set($state.hasEndReached, 'unread', true);
     }
     Vue.set($state.hasEndReached, filter, true);
   },
