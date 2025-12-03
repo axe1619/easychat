@@ -2,7 +2,7 @@
 
 class AccountBuilder
   include CustomExceptions::Account
-  pattr_initialize [:account_name, :email!, :confirmed, :user, :user_full_name, :user_password, :super_admin, :locale]
+  pattr_initialize [:account_name, :expires_at , :email!, :confirmed, :user, :user_full_name, :user_password, :super_admin, :locale]
 
   def perform
     if @user.nil?
@@ -24,6 +24,10 @@ class AccountBuilder
   def user_full_name
     # the empty string ensures that not-null constraint is not violated
     @user_full_name || ''
+  end
+
+  def account_expire
+    @expires_at || (Time.current + 5.days)
   end
 
   def account_name
@@ -49,7 +53,7 @@ class AccountBuilder
   end
 
   def create_account
-    @account = Account.create!(name: account_name, locale: I18n.locale)
+    @account = Account.create!(name: account_name, expires_at: account_expire , locale: I18n.locale)
     Current.account = @account
   end
 

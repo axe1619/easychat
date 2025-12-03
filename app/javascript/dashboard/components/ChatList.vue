@@ -437,10 +437,10 @@ export default {
     if (this.hasActiveFolders) {
       this.$store.dispatch('campaigns/get');
     }
-
-    this.$emitter.on('fetch_conversation_stats', () => {
-      this.$store.dispatch('conversationStats/get', this.conversationFilters);
-    });
+    this.$emitter.on('fetch_conversation_stats', this.fetchStatsListener);
+  },
+  beforeDestroy() {
+    this.$emitter.off('fetch_conversation_stats', this.fetchStatsListener);
   },
   methods: {
     updateVirtualListProps(key, value) {
@@ -866,6 +866,9 @@ export default {
     onContextMenuToggle(state) {
       this.isContextMenuOpen = state;
     },
+    fetchStatsListener() {
+      this.$store.dispatch('conversationStats/get', this.conversationFilters);
+    }
   },
 };
 </script>
