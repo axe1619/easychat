@@ -13,8 +13,13 @@ class Account::ContactsExportJob < ApplicationJob
 
   private
 
+  def csv_separator
+    locale = @account.locale.to_s.downcase
+    locale.start_with?("es") ? ";" : ","
+  end
+
   def generate_csv(headers)
-    csv_data = CSV.generate do |csv|
+    csv_data = CSV.generate(col_sep: csv_separator) do |csv|
       csv << headers
       contacts.each do |contact|
         csv << headers.map do |header| 

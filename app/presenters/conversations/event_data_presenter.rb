@@ -10,6 +10,7 @@ class Conversations::EventDataPresenter < SimpleDelegator
       id: display_id,
       kanban_state: build_kanban_state(kanban_state),
       inbox_id: inbox_id,
+      inbox_name: inbox.try(:name),
       messages: push_messages,
       labels: label_list,
       meta: push_meta,
