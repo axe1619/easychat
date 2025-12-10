@@ -33,6 +33,7 @@ class AgentBot < ApplicationRecord
   enum agent_type: { general: 0, sales: 1 }
 
   validate :validate_agent_bot_config
+  validates :prompt, length: { maximum: 50_000 }, allow_nil: true
   validates :outgoing_url, length: { maximum: Limits::URL_LENGTH_LIMIT }
 
   def available_name
