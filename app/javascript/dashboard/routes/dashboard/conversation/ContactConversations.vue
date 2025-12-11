@@ -31,6 +31,7 @@ export default {
     },
     ...mapGetters({
       uiFlags: 'contactConversations/getUIFlags',
+      accountId: 'getCurrentAccountId',
     }),
   },
   watch: {
@@ -42,7 +43,11 @@ export default {
   },
   methods: {
     redirectConversation(conversation) {
-      return { name: 'contact_profile_dashboard', query: { conversationId: conversation.id } }
+      return {
+        name: 'contact_profile_dashboard',
+        params: { accountId: this.accountId, contactId: this.contactId },
+        query: { conversationId: conversation.id }
+      }
     }
   },
   mounted() {
