@@ -185,6 +185,22 @@
               "CHAT_EMPTY": "Start the test to see messages here.",
               "SEND": "Send",
               "CLOSE": "Close"
+            },
+            "AGENT": {
+                "DELETE": {
+                    "TOOLTIP": "Delete agent",
+                    "CONFIRM": "Confirm deletion",
+                    "NO_ALLOWED": "Elimination not allowed",
+                    "QUESTION": "Are you sure you want to delete agent {item}?",
+                    "INBOXES": "This agent is used in the following inboxes:",
+                    "EMPTY_INBOXES": "This AI agent is not used in any inbox",
+                    "ACTION": {
+                        "OK": "Yes, delete",
+                        "CANCEL": "No, keep it"
+                    },
+                    "SUCCESS": "Agent successfully removed",
+                    "FAIL": "The agent could not be eliminated"
+                }
             }
         }
     }
