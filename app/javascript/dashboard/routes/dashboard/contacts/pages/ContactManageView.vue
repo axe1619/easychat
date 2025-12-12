@@ -27,6 +27,7 @@ export default {
   data() {
     return {
       selectedTabIndex: 0,
+      activeConversationByQueryParams: false
     };
   },
   computed: {
@@ -64,12 +65,16 @@ export default {
   watch: {
     '$route.query.conversationId'(id) {
       if (this.selectedTabIndex != 1) this.selectedTabIndex = 1
-      this.$store.dispatch('setActiveChat', { data: this.chatList.find((c) => c.id == id) || {} })
+      this.selectConversationQueryParams()
     },
-    contactConversations(newData, oldData) {
-      if (newData.length == oldData.length) return
+    chatList() {
+      if (!this.activeConversationByQueryParams) {
+        this.activeConversationByQueryParams = true
+        this.selectConversationQueryParams()
+      }
+    }, 
+    contactConversations(newData) {
       this.$store.dispatch('setConversations', newData)
-      this.$store.dispatch('setActiveChat', { data: newData.find((c) => c.id == this.$route.query.conversationId) || {} })
     }
   },
   mounted() {
@@ -83,13 +88,18 @@ export default {
       const { contactId: id } = this;
       this.$store.dispatch('contacts/show', { id });
     },
+    selectConversationQueryParams() {
+      let data = this.chatList.find((c) => c.id == this.$route.query.conversationId)
+      if (!data) return
+      this.$store.dispatch('setActiveChat', { data })
+    }
   },
 };
 </script>
 
 <template>
   <div
-    class="flex justify-between flex-col h-full m-0 flex-1 bg-white dark:bg-slate-900"
+    class="flex justify-between flex-col h-full m-0 flex-1 bg-white dark:bg-slate-900 overflow-hidden"
   >
     <SettingsHeader
       button-route="new"
@@ -132,7 +142,7 @@ export default {
             class="bg-slate-25 dark:bg-slate-800 h-[calc(100%-40px)] p-4"
           >
             <ContactNotes
-              v-if="selectedTabIndex === 0"
+              v-if="selectedTabIndex === 0 && contactId"
               :contact-id="Number(contactId)"
             />
             <MessagesView
