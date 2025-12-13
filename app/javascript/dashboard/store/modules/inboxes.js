@@ -146,6 +146,13 @@ export const actions = {
       // Ignore error
     }
   },
+  checkLimit: async () => {
+    try {
+      await InboxesAPI.limitStatus();
+    } catch (error) {
+      throw error;
+    }
+  },
   get: async ({ commit }, payload = {}) => {
     const { cache = true } = payload
     commit(types.default.SET_INBOXES_UI_FLAG, { isFetching: true });

@@ -32,6 +32,10 @@ class Inboxes extends CacheEnabledApiClient {
   syncConversationState(inboxId, data) {
     return axios.post(`${this.url}/${inboxId}/sync_conversation_state_inboxes`, data);
   }
+
+  limitStatus() {
+    return axios.get(`${this.url}/limit_status`);
+  }
 }
 
 export default new Inboxes();
