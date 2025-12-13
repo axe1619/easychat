@@ -14,6 +14,21 @@ module Api::V1::InboxesHelper
 
   private
 
+  def inbox_limit_reached?
+    if params.dig(:channel, :type)=="web_widget"
+      return false
+    end
+    account_inboxes_count >= Current.account.usage_limits[:inboxes]
+  end
+
+  def inbox_limit_remaining
+    [Current.account.usage_limits[:inboxes] - account_inboxes_count, 0].max
+  end
+
+  def account_inboxes_count
+    Current.account.inboxes.where.not(channel_type: 'Channel::WebWidget').count
+  end
+
   def validate_imap(channel_data)
     return unless channel_data.key?('imap_enabled') && channel_data[:imap_enabled]
 
@@ -112,7 +127,7 @@ module Api::V1::InboxesHelper
   end
 
   def validate_limit
-    return unless Current.account.inboxes.count >= Current.account.usage_limits[:inboxes]
+    return unless inbox_limit_reached?
 
     render_payment_required('Account limit exceeded. Upgrade to a higher plan')
   end

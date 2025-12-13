@@ -1,6 +1,6 @@
 class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   include Api::V1::InboxesHelper
-  before_action :fetch_inbox, except: [:index, :create, :conversation_state_inboxes]
+  before_action :fetch_inbox, except: [:index, :create, :conversation_state_inboxes, :limit_status]
   before_action :fetch_agent_bot, only: [:set_agent_bot]
   before_action :validate_limit, only: [:create]
   # we are already handling the authorization in fetch inbox
@@ -25,6 +25,14 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   def avatar
     @inbox.avatar.attachment.destroy! if @inbox.avatar.attached?
     head :ok
+  end
+
+  def limit_status
+    if inbox_limit_reached?
+      render_payment_required('Account limit exceeded. Upgrade to a higher plan')
+    else
+      render json: { allowed: true, remaining: inbox_limit_remaining }
+    end
   end
 
   def create
