@@ -1,5 +1,6 @@
 {
     "AGENTS_AI": {
+        "PAYMENT_REQUIRED": "You’ve reached the agent Ia limit for your plan. Please update your subscription and try again.",
         "HEADER_INDEX": {
             "TITLE": "Agents AI",
             "DESCRIPTION": "Select one of your AI agents to modify its properties or capabilities according to your business needs."

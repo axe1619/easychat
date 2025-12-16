@@ -1,5 +1,6 @@
 {
     "AGENTS_AI": {
+        "PAYMENT_REQUIRED": "Alcanzaste el límite de agentes Ia en tu plan. Actualiza tu suscripción e inténtalo de nuevo.",
         "HEADER_INDEX": {
             "TITLE": "Agentes IA",
             "DESCRIPTION": "Elige un agente de inteligencia artificial en la lista de abajo, para poder modificar sus capacidades de acorde a las necesidades de tu empresa."

@@ -27,9 +27,13 @@ import search from './search.json';
 import setNewPassword from './setNewPassword.json';
 import settings from './settings.json';
 import signup from './signup.json';
+import sla from './sla.json';
 import teamsSettings from './teamsSettings.json';
 import whatsappTemplates from './whatsappTemplates.json';
 import whatsappWeb from './whatsappWeb.json';
+import inbox from './inbox.json';
+import general from './general.json';
+import datePicker from './datePicker.json';
 import sorter from './sorter.json';
 import agentsAi from './agentsAi.json';
 import board from './board.json';
@@ -64,9 +68,13 @@ export default {
   ...setNewPassword,
   ...settings,
   ...signup,
+  ...sla,
   ...teamsSettings,
   ...whatsappTemplates,
   ...whatsappWeb,
+  ...inbox,
+  ...general,
+  ...datePicker,
   ...sorter,
   ...agentsAi,
   ...board
