@@ -5,6 +5,8 @@ import ContactNotes from 'dashboard/modules/notes/NotesOnContactPage.vue';
 import SettingsHeader from '../../settings/SettingsHeader.vue';
 import Spinner from 'shared/components/Spinner.vue';
 import Thumbnail from 'dashboard/components/widgets/Thumbnail.vue';
+import EmptyState from '../../../../components/widgets/conversation/EmptyState/EmptyState.vue';
+import MessagesView from '../../../../components/widgets/conversation/MessagesView.vue';
 
 export default {
   components: {
@@ -13,6 +15,8 @@ export default {
     SettingsHeader,
     Spinner,
     Thumbnail,
+    MessagesView,
+    EmptyState
   },
   props: {
     contactId: {
@@ -23,17 +27,27 @@ export default {
   data() {
     return {
       selectedTabIndex: 0,
+      activeConversationByQueryParams: false
     };
   },
   computed: {
     ...mapGetters({
       uiFlags: 'contacts/getUIFlags',
+      chatList: 'getAllConversations',
+      currentChat: 'getSelectedChat',
     }),
+    contactConversations(){
+      return this.$store.getters['contactConversations/getContactConversation'](this.contactId);
+    },
     tabs() {
       return [
         {
           key: 0,
           name: this.$t('NOTES.HEADER.TITLE'),
+        },
+        {
+          key: 1,
+          name:  this.$t('CONTACT.CONVERSATION.HEADER.TITLE'),
         },
       ];
     },
@@ -48,6 +62,21 @@ export default {
       return `/app/accounts/${this.$route.params.accountId}/contacts`;
     },
   },
+  watch: {
+    '$route.query.conversationId'(id) {
+      if (this.selectedTabIndex != 1) this.selectedTabIndex = 1
+      this.selectConversationQueryParams()
+    },
+    chatList() {
+      if (!this.activeConversationByQueryParams) {
+        this.activeConversationByQueryParams = true
+        this.selectConversationQueryParams()
+      }
+    }, 
+    contactConversations(newData) {
+      this.$store.dispatch('setConversations', newData)
+    }
+  },
   mounted() {
     this.fetchContactDetails();
   },
@@ -59,13 +88,18 @@ export default {
       const { contactId: id } = this;
       this.$store.dispatch('contacts/show', { id });
     },
+    selectConversationQueryParams() {
+      let data = this.chatList.find((c) => c.id == this.$route.query.conversationId)
+      if (!data) return
+      this.$store.dispatch('setActiveChat', { data })
+    }
   },
 };
 </script>
 
 <template>
   <div
-    class="flex justify-between flex-col h-full m-0 flex-1 bg-white dark:bg-slate-900"
+    class="flex justify-between flex-col h-full m-0 flex-1 bg-white dark:bg-slate-900 overflow-hidden"
   >
     <SettingsHeader
       button-route="new"
@@ -105,11 +139,17 @@ export default {
             />
           </woot-tabs>
           <div
-            class="bg-slate-25 dark:bg-slate-800 h-[calc(100%-40px)] p-4 overflow-auto"
+            class="bg-slate-25 dark:bg-slate-800 h-[calc(100%-40px)] p-4"
           >
             <ContactNotes
-              v-if="selectedTabIndex === 0"
+              v-if="selectedTabIndex === 0 && contactId"
               :contact-id="Number(contactId)"
+            />
+            <MessagesView
+              v-if="selectedTabIndex === 1 && currentChat.id"
+            />
+            <EmptyState
+              v-if="selectedTabIndex === 1 && !currentChat.id"
             />
           </div>
         </div>

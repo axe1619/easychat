@@ -161,6 +161,8 @@ class Message < ApplicationRecord
       assignee_id: conversation.assignee_id,
       unread_count: conversation.unread_incoming_messages.count,
       last_activity_at: conversation.last_activity_at.to_i,
+      last_activity_incoming_at: conversation.last_activity_incoming_at.to_i,
+      last_activity_outgoing_at: conversation.last_activity_outgoing_at.to_i,
       contact_inbox: { source_id: conversation.contact_inbox.source_id }
     }
   end
@@ -309,6 +311,7 @@ class Message < ApplicationRecord
 
   def execute_after_create_commit_callbacks
     # rails issue with order of active record callbacks being executed https://github.com/rails/rails/issues/20911
+    disabled_agent_bot
     set_conversation_state
     reopen_conversation
     notify_via_mail
@@ -471,7 +474,7 @@ class Message < ApplicationRecord
       return if state_assigned_by_agent_ia.nil?
       conversation_state = ConversationState.find_by(id: state_assigned_by_agent_ia["id"])
       return if conversation_state.nil?
-      trigger_notifications(conversation, conversation_state) if conversation_state[:notification].any? && conversation.last_conversation_state_analysis.blank?
+      trigger_notifications(conversation, conversation_state)
       conversation.update!(
         conversations_state_id: conversation_state.id,
         last_conversation_state_analysis: Time.current
@@ -481,12 +484,23 @@ class Message < ApplicationRecord
     end
   end
 
+  def disabled_agent_bot
+    return unless conversation&.active_agent_bot &&
+                  account.disable_bot_on_agent_reply &&
+                  outgoing? &&
+                  sender_type == 'User'
+    conversation.update_columns(active_agent_bot: false)
+    conversation.active_agent_bot = false   
+  end
+
   def skip_analysis_conversation?
     subtype_notification?
   end
 
   def trigger_notifications(conversation, conversation_state)
-    Notification::WhatsappNotificationJob.perform_later(conversation, conversation_state)
+    return if conversation_state[:notification].empty?
+    notify = conversation.last_conversation_state_analysis.blank? || conversation.conversations_state_id != conversation_state.id
+    Notification::WhatsappNotificationJob.perform_later(conversation, conversation_state) if notify
   end
 
   def http_get_analize_conversation(account_id ,inbox_id , display_id)

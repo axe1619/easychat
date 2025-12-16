@@ -131,11 +131,13 @@ export const mutations = {
 
   [types.CLEAR_ALL_MESSAGES_LOADED](_state) {
     const [chat] = getSelectedChatConversation(_state);
+    if (!chat) return
     Vue.set(chat, 'allMessagesLoaded', false);
   },
 
   [types.CLEAR_ALL_MESSAGES_LOADED_BOARD](_state) {
     const chat = getSelectedChatConversationBoard(_state);
+    if (!chat) return
     Vue.set(chat, 'allMessagesLoaded', false);
   },
 
@@ -171,7 +173,7 @@ export const mutations = {
   [types.SET_CURRENT_CHAT_WINDOW](_state, activeChat) {
     if (activeChat) {
       _state.selectedChatId = activeChat.id;
-      _state.selectedChatColumnId = activeChat.kanban_state.id || 0;
+      _state.selectedChatColumnId = activeChat.kanban_state?.id || 0;
     }
   },
 
@@ -327,6 +329,10 @@ export const mutations = {
     } else {
       chat.conversations_state_name = message.conversations_state_name;
       chat.conversations_state = message.conversations_state;
+      if (message.conversation) {
+        chat.last_activity_incoming_at = message.conversation.last_activity_incoming_at
+        chat.last_activity_outgoing_at = message.conversation.last_activity_outgoing_at
+      }
       chat.messages.push(message);
       chat.timestamp = message.created_at;
       const { conversation: { unread_count: unreadCount = 0 } = {} } = message;

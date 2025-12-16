@@ -2,6 +2,10 @@ require 'open-uri'
 require 'tempfile'
 class Whatsapp::OneoffWhatsappCampaignService
   pattr_initialize [:campaign!]
+  
+  # congested queue
+  MAX_LATENCY_JOB = 5.seconds
+  BATCH = 100
 
   def perform
     # raise "Invalid campaign #{campaign.id}" if campaign.inbox.inbox_type != 'Whatsapp' || !campaign.one_off?
@@ -22,110 +26,49 @@ class Whatsapp::OneoffWhatsappCampaignService
 
 
   def process_audience(audience_labels)
-    contacts    = campaign.account.contacts.tagged_with(audience_labels, any: true)
+    contacts    = campaign.account.contacts.tagged_with(audience_labels, any: true).where.not(phone_number: [nil, ""])
     user        = User.find_by(id: campaign.sender_id)
     inbox       = Inbox.find_by(id: campaign.inbox_id)
-    template_campaign = campaign.additional_attributes
-    file_blob = ActiveStorage::Blob.find_by(key: template_campaign["template_params"]["header"]["url"]) if header_exists?(template_campaign)
-    attachments = load_file_blob(file_blob) if header_exists?(template_campaign)
-    file_url = generate_file_url(file_blob) if header_exists?(template_campaign)
-    return if user.nil? || inbox.nil?
+    return if user.blank? || inbox.blank?
+    file = load_file_campaign(campaign.additional_attributes)
+    url  = generate_file_url(file)
     start_time_campaign = Time.now
-    contacts.each do |contact|
-      next if contact.phone_number.blank?
-      conversation = get_last_conversation(contact, inbox)
-      message = Messages::MessageBuilder.new(user, conversation, {
-        content: interpolate_message(contact, template_campaign["template_params"]["processed_params"], campaign.message),
-        message_type: 'outgoing',
-        additional_attributes: {
-          template_params: generate_template(contact, file_url, template_campaign),
-          campaign_id: campaign.id,
-        },
-        attachments: attachments
-      }).perform
+    reach_campaign = 0
+    contacts.find_in_batches(batch_size: BATCH) do |batch|
+      batch.each_with_index do |contact, index|
+        analyze_queue  = (index % 20 == 0)      
+        if analyze_queue && queue_congested?("medium", MAX_LATENCY_JOB)
+         Whatsapp::Dispatch::WhatsappService.perform_now(user, contact, inbox, campaign, file, url)
+        else
+         Whatsapp::Dispatch::WhatsappService.perform_later(user, contact, inbox, campaign, file, url)
+        end
+      end                                                                                                             
+      reach_campaign += batch.size
     end
     end_time_campaign = Time.now
     campaign.update_columns(
-      reach: contacts.distinct.count,
+      reach: reach_campaign,
       duration: (end_time_campaign - start_time_campaign).to_i
     )
   end
 
-  def load_file_blob(file_blob)
-    tempfile = Tempfile.new
-    tempfile.binmode
-    tempfile.write(file_blob.download)
-    tempfile.rewind
-    [
-      ActionDispatch::Http::UploadedFile.new(
-        filename: file_blob.filename.to_s,
-        type: file_blob.content_type,
-        tempfile: tempfile
-      )
-    ]
-  end
-
-  def get_last_conversation(contact, inbox)
-    contact_inbox = contact.contact_inboxes.find_or_create_by!(inbox_id: inbox.id) do |ci|
-       ci.contact_id = contact.id 
-       ci.source_id  = contact.phone_number.delete('+').to_s
-    end
-    conversation_last_open = if inbox.lock_to_single_conversation
-                                  contact_inbox.conversations.last
-                              else
-                                  contact_inbox.conversations.where.not(status: :resolved).last
-                              end
-    return conversation_last_open if conversation_last_open
-    ::Conversation.create!({
-        account_id: inbox.account_id,
-        inbox_id: inbox.id,
-        contact_id: contact.id,
-        contact_inbox_id: contact_inbox.id
-    })
-  end
-
-  def generate_template(contact, file_url, template_campaign)
-    template_params = {
-        "name" => template_campaign["template_params"]["name"],
-        "category" => template_campaign["template_params"]["category"],
-        "language" => template_campaign["template_params"]["language"],
-        "processed_params" => process_parameters(contact, template_campaign["template_params"]["processed_params"])
-    }
-    if header_exists?(template_campaign)
-      template_params["header"] = {
-        "url" => file_url,
-        "format" => template_campaign["template_params"]["header"]["format"]
-      }
-    end
-    template_params
-  end
-
-  def interpolate_message(contact, params, content)
-    params.each do |key, value|
-      if value["type"] == "dinamic"
-        interpolate = contact.try(value["content"]) || value["content"]
-        content = content.gsub(key, interpolate.to_s)
-      end
-    end
-    content
-  end
-
-  def process_parameters(contact, params)
-    params.each_with_object({}) do |(key, value), acc|
-      if value["type"] == "static"
-        acc[key] = value["content"]
-      else
-        acc[key] = contact.try(value["content"]) || value["content"]
-      end
-    end
-  end
-
-  def header_exists?(template)
-    template.dig("template_params", "header").present?
+  def load_file_campaign(additional_attributes)
+    key_storage = additional_attributes.dig("template_params", "header", "url")
+    return nil if key_storage.blank?
+    return ActiveStorage::Blob.find_by(key: key_storage)
   end
 
   def generate_file_url(blob)
+    return nil unless blob
     ActiveStorage::Current.url_options ||= { host: ENV.fetch("FRONTEND_URL") }
     blob.url(expires_in: 1.day, disposition: "inline")
   end
+
+  def queue_congested?(name, max_latency)
+    queue = Sidekiq::Queue.new(name)
+    congested = queue.latency > max_latency
+    Rails.logger.info "WHATSAPP_BUSSINES_QUEUE_CONGESTED: size:#{queue.size}, latency:#{queue.latency}" if congested
+    congested
+  end
+
 end

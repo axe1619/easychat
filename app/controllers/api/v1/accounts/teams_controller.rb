@@ -1,4 +1,6 @@
 class Api::V1::Accounts::TeamsController < Api::V1::Accounts::BaseController
+  
+  skip_before_action :validate_bot_access_token!, raise: false
   before_action :fetch_team, only: [:show, :update, :destroy]
   before_action :check_authorization
 

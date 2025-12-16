@@ -175,6 +175,7 @@ Rails.application.routes.draw do
             delete :avatar, on: :member
             get :conversation_state_inboxes, on: :member
             post :sync_conversation_state_inboxes, on: :member
+            get :limit_status, on: :collection
           end
           resources :inbox_members, only: [:create, :show], param: :inbox_id do
             collection do

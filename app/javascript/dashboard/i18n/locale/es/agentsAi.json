@@ -185,6 +185,22 @@
               "CHAT_EMPTY": "Comience la prueba para ver los mensajes aquí.",
               "SEND": "Enviar",
               "CLOSE": "Cerrar"
+            },
+            "AGENT": {
+                "DELETE": {
+                    "TOOLTIP": "Eliminar agente",
+                    "CONFIRM": "Confirmar eliminación",
+                    "NO_ALLOWED": "Eliminación no permitida",
+                    "QUESTION": "¿Está seguro de eliminar el agente {item}?",
+                    "INBOXES": "Este agente se está usando en las siguientes entradas:",
+                    "EMPTY_INBOXES": "Este agente no se está usando en ninguna entrada",
+                    "ACTION": {
+                        "OK": "Sí, eliminar",
+                        "CANCEL": "No, mantenerlo"
+                    },
+                    "SUCCESS": "Agente eliminado con éxito",
+                    "FAIL": "El agente no pudo ser eliminado"
+                }
             }
         }
     }

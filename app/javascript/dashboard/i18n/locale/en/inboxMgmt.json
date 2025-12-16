@@ -4,6 +4,7 @@
     "SIDEBAR_TXT": "<p><b>Inbox</b></p> <p> When you connect a website or a facebook Page to EasyContact, it is called an <b>Inbox</b>. You can have unlimited inboxes in your EasyContact account. </p><p> Click on <b>Add Inbox</b> to connect a website or a Facebook Page. </p><p> In the Dashboard, you can see all the conversations from all your inboxes in a single place and respond to them under the `Conversations` tab. </p><p> You can also see conversations specific to an inbox by clicking on the inbox name on the left pane of the dashboard. </p>",
     "RECONNECTION_REQUIRED": "Your inbox is disconnected. You won't receive new messages until you reauthorize it.",
     "CLICK_TO_RECONNECT": "Click here to reconnect.",
+    "PAYMENT_REQUIRED": "You’ve reached the inbox limit for your plan. Please update your subscription and try again.",
     "LIST": {
       "404": "There are no inboxes attached to this account."
     },

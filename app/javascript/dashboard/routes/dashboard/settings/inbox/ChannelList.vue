@@ -4,6 +4,7 @@ import router from '../../../index';
 import PageHeader from '../SettingsSubPageHeader.vue';
 import { mapGetters } from 'vuex';
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
+import { useAlert } from 'dashboard/composables';
 
 export default {
   components: {
@@ -14,6 +15,7 @@ export default {
   data() {
     return {
       enabledFeatures: {},
+      isLimitInboxesExceeded: false
     };
   },
   computed: {
@@ -36,6 +38,7 @@ export default {
         { key: 'telegram', name: 'Telegram' },
         { key: 'line', name: 'Line' },
         { key: 'whatsappweb', name: 'Whatsapp Web' },
+        { key: 'call', name: 'Call Ip' },
       ];
     },
     ...mapGetters({
@@ -45,12 +48,25 @@ export default {
   },
   mounted() {
     this.initializeEnabledFeatures();
+    this.checkInboxLimit()
   },
   methods: {
     async initializeEnabledFeatures() {
       this.enabledFeatures = this.account.features;
     },
+    async checkInboxLimit() {
+      try {
+        await this.$store.dispatch('inboxes/checkLimit');
+        this.isLimitInboxesExceeded = false
+      } catch (error) {
+        this.isLimitInboxesExceeded = true
+      }
+    },
     initChannelAuth(channel) {
+      if (this.isLimitInboxesExceeded) {
+        useAlert(this.$t('INBOX_MGMT.PAYMENT_REQUIRED'))
+        return
+      }
       const params = {
         page: 'new',
         sub_page: channel,

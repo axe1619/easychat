@@ -5,8 +5,8 @@
         "LOADING": "Obteniendo clasificadores",
         "NOTIFICATION": {
             "ENABLED": "Habilitar notificacion",
-            "SEND": "Envio",
-            "NOTIFIED": "Notificados"
+            "SEND": "Entrada que se utiliza para enviar el mensaje (Actualmente solo con Cloud API Whatsapp)",
+            "NOTIFIED": "Numeros de telefono a notificar (usar formato 591XXXXXXXX)"
         },
         "LIST": {
             "404": "No hay clasificadores disponibles en esta cuenta.",

@@ -1,3 +1,4 @@
+message_counts = @message_counts || {}
 json.id resource.display_id
 json.title resource.title
 json.description resource.description
@@ -18,10 +19,10 @@ if resource.campaign_type == 'one_off'
   json.reach resource.reach
   json.duration resource.duration
   json.message_success ( 
-    @message_counts[[resource.id.to_s, 'delivered']].to_i + 
-    @message_counts[[resource.id.to_s, 'read']].to_i
+    message_counts[[resource.id.to_s, 'delivered']].to_i + 
+    message_counts[[resource.id.to_s, 'read']].to_i
   )
-  json.message_pending @message_counts[[resource.id.to_s, 'sent']].to_i
+  json.message_pending message_counts[[resource.id.to_s, 'sent']].to_i
 end
 json.trigger_rules resource.trigger_rules
 json.trigger_only_during_business_hours resource.trigger_only_during_business_hours

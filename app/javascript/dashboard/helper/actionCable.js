@@ -3,12 +3,14 @@ import BaseActionCableConnector from '../../shared/helpers/BaseActionCableConnec
 import DashboardAudioNotificationHelper from './AudioAlerts/DashboardAudioNotificationHelper';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { emitter } from 'shared/helpers/mitt';
+import { debounce } from '@chatwoot/utils';
 
 class ActionCableConnector extends BaseActionCableConnector {
   constructor(app, pubsubToken) {
     const { websocketURL = '' } = window.chatwootConfig || {};
     super(app, pubsubToken, websocketURL);
     this.CancelTyping = [];
+    this.debouncedFetchStats = debounce(this.fetchConversationStats.bind(this),1000);
     this.events = {
       'message.created': this.onMessageCreated,
       'message.updated': this.onMessageUpdated,
@@ -101,6 +103,7 @@ class ActionCableConnector extends BaseActionCableConnector {
       conversationId,
       kanban_state: data.kanban_state
     });
+    this.debouncedFetchStats()
   };
 
   // eslint-disable-next-line class-methods-use-this

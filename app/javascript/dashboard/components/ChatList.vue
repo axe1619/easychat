@@ -190,6 +190,7 @@ export default {
       chatLists: 'getAllConversations',
       mineChatsList: 'getMineChats',
       allChatList: 'getAllStatusChats',
+      unReadChatsList: 'getUnReadChats',
       unAssignedChatsList: 'getUnAssignedChats',
       chatListLoading: 'getChatListLoadingStatus',
       activeInbox: 'getSelectedInbox',
@@ -231,6 +232,7 @@ export default {
         me: 'mineCount',
         unassigned: 'unAssignedCount',
         all: 'allCount',
+        unread: 'unReadCount',
       };
       return Object.keys(ASSIGNEE_TYPE_TAB_KEYS).map(key => {
         const count = this.conversationStats[ASSIGNEE_TYPE_TAB_KEYS[key]] || 0;
@@ -291,12 +293,12 @@ export default {
     },
     conversationListPagination() {
       const conversationsPerPage = 25;
-      const hasChatsOnView =
+      const isEmptyChatsOnView =
         this.chatsOnView &&
         Array.isArray(this.chatsOnView) &&
         !this.chatsOnView.length;
       const isNoFiltersOrFoldersAndChatListNotEmpty =
-        !this.hasAppliedFiltersOrActiveFolders && hasChatsOnView;
+        !this.hasAppliedFiltersOrActiveFolders && isEmptyChatsOnView;
       const isUnderPerPage =
         this.chatsOnView.length < conversationsPerPage &&
         this.activeAssigneeTabCount < conversationsPerPage &&
@@ -342,6 +344,8 @@ export default {
           conversationList = [...this.mineChatsList(filters)];
         } else if (this.activeAssigneeTab === 'unassigned') {
           conversationList = [...this.unAssignedChatsList(filters)];
+        } else if (this.activeAssigneeTab === 'unread') {
+          conversationList = [...this.unReadChatsList(filters)];
         } else {
           conversationList = [...this.allChatList(filters)];
         }
@@ -433,10 +437,10 @@ export default {
     if (this.hasActiveFolders) {
       this.$store.dispatch('campaigns/get');
     }
-
-    this.$emitter.on('fetch_conversation_stats', () => {
-      this.$store.dispatch('conversationStats/get', this.conversationFilters);
-    });
+    this.$emitter.on('fetch_conversation_stats', this.fetchStatsListener);
+  },
+  beforeDestroy() {
+    this.$emitter.off('fetch_conversation_stats', this.fetchStatsListener);
   },
   methods: {
     updateVirtualListProps(key, value) {
@@ -862,6 +866,9 @@ export default {
     onContextMenuToggle(state) {
       this.isContextMenuOpen = state;
     },
+    fetchStatsListener() {
+      this.$store.dispatch('conversationStats/get', this.conversationFilters);
+    }
   },
 };
 </script>

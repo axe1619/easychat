@@ -38,6 +38,10 @@ class InboxPolicy < ApplicationPolicy
     @account_user.administrator?
   end
 
+  def limit_status?
+    @account_user.administrator?
+  end
+
   def response_sources?
     @account_user.administrator?
   end

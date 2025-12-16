@@ -5,8 +5,8 @@
         "LOADING": "Fetching sorters",
         "NOTIFICATION": {
             "ENABLED": "Enable notification",
-            "SEND": "Send",
-            "NOTIFIED": "Notified"
+            "SEND": "Input used to send the message (Currently only with Cloud API Whatsapp)",
+            "NOTIFIED": "Telephone numbers to be notified (use format 591XXXXXXXX)"
         },
         "LIST": {
             "404": "There are no sorters available in this account.",

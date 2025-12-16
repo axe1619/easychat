@@ -37,14 +37,14 @@ class DataImportJob < ApplicationJob
 
     # Ensure that the data is valid UTF-8, preserving valid characters
     clean_data = utf8_data.valid_encoding? ? utf8_data : utf8_data.encode('UTF-16le', invalid: :replace, replace: '').encode('UTF-8')
-
-    csv = CSV.parse(clean_data, headers: true)
+    separator = clean_data.include?(';') ? ';' : ','
+    csv = CSV.parse(clean_data, headers: true, col_sep: separator)
     allowed_tags = @labels.pluck(:title)
 
     csv.each do |row|
       current_contact = @contact_manager.build_contact(row.to_h.with_indifferent_access)
       if row['labels'].present?
-        current_contact.label_list = row['labels'].split(',').map(&:strip) & allowed_tags
+        current_contact.label_list = row['labels'].split(/[;,]/).map(&:strip) & allowed_tags
       end
 
       if current_contact.valid?

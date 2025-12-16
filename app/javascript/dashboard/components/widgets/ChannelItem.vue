@@ -40,6 +40,7 @@ export default {
         'telegram',
         'line',
         'whatsappweb',
+        'call',
       ].includes(key);
     },
   },

@@ -10,6 +10,7 @@ class Conversations::EventDataPresenter < SimpleDelegator
       id: display_id,
       kanban_state: build_kanban_state(kanban_state),
       inbox_id: inbox_id,
+      inbox_name: inbox.try(:name),
       messages: push_messages,
       labels: label_list,
       meta: push_meta,
@@ -62,6 +63,8 @@ class Conversations::EventDataPresenter < SimpleDelegator
       agent_last_seen_at: agent_last_seen_at.to_i,
       contact_last_seen_at: contact_last_seen_at.to_i,
       last_activity_at: last_activity_at.to_i,
+      last_activity_incoming_at: last_activity_incoming_at.to_i,
+      last_activity_outgoing_at: last_activity_outgoing_at.to_i,
       timestamp: last_activity_at.to_i,
       created_at: created_at.to_i
     }

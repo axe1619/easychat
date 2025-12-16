@@ -31,6 +31,7 @@ class Whatsapp::OneoffWhatsappWebCampaignService
     start_time_campaign = Time.now
     reach_campaign = 0
     return if user.blank? || inbox.blank?
+    file = load_file_campaign(campaign.additional_attributes)
     delay = 0
     delay_queue = 0
     contacts.find_in_batches(batch_size: BATCH) do |batch|
@@ -39,12 +40,12 @@ class Whatsapp::OneoffWhatsappWebCampaignService
         message = option_messages.next  # round robin
         delay = rand(8..20)
         if analyze_queue && queue_congested?("medium", MAX_LATENCY_JOB)
-          Whatsapp::Dispatch::WhatsappWebService.perform_now(user, contact, inbox, campaign, message)
+          Whatsapp::Dispatch::WhatsappWebService.perform_now(user, contact, inbox, campaign, message, file)
           sleep(delay)
           delay_queue = [delay_queue - delay, 0].max
         else
           delay_queue += delay
-          Whatsapp::Dispatch::WhatsappWebService.set(wait: delay_queue.seconds).perform_later(user, contact, inbox, campaign, message)
+          Whatsapp::Dispatch::WhatsappWebService.set(wait: delay_queue.seconds).perform_later(user, contact, inbox, campaign, message, file)
         end
       end
       reach_campaign += batch.size
@@ -54,6 +55,12 @@ class Whatsapp::OneoffWhatsappWebCampaignService
       reach: reach_campaign,
       duration: (end_time_campaign - start_time_campaign).to_i
     )
+  end
+
+  def load_file_campaign(additional_attributes)
+    key_storage = additional_attributes.dig("file", "url")
+    return nil if key_storage.blank?
+    return ActiveStorage::Blob.find_by(key: key_storage)
   end
 
   def queue_congested?(name, max_latency)

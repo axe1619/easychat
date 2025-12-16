@@ -31,6 +31,7 @@ export default {
     },
     ...mapGetters({
       uiFlags: 'contactConversations/getUIFlags',
+      accountId: 'getCurrentAccountId',
     }),
   },
   watch: {
@@ -39,6 +40,15 @@ export default {
         this.$store.dispatch('contactConversations/get', newContactId);
       }
     },
+  },
+  methods: {
+    redirectConversation(conversation) {
+      return {
+        name: 'contact_profile_dashboard',
+        params: { accountId: this.accountId, contactId: this.contactId },
+        query: { conversationId: conversation.id }
+      }
+    }
   },
   mounted() {
     this.$store.dispatch('contactConversations/get', this.contactId);
@@ -62,6 +72,7 @@ export default {
           :hide-inbox-name="false"
           hide-thumbnail
           class="compact"
+          :redirectRoute="redirectConversation(conversation)"
         />
       </div>
     </div>

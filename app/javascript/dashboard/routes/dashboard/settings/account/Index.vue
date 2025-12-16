@@ -9,8 +9,12 @@ import { FEATURE_FLAGS } from '../../../../featureFlags';
 import semver from 'semver';
 import { getLanguageDirection } from 'dashboard/components/widgets/conversation/advancedFilterItems/languages';
 import wootConstants from 'dashboard/constants/globals';
+import SwitchButton from "dashboard/components/ui/Switch.vue";
 
 export default {
+  components: {
+    SwitchButton
+  },
   setup() {
     const { updateUISettings } = useUISettings();
     const { enabledLanguages } = useConfig();
@@ -30,6 +34,7 @@ export default {
       features: {},
       autoResolveDuration: null,
       latestChatwootVersion: null,
+      disableBotAgentReply: false
     };
   },
   validations: {
@@ -113,6 +118,7 @@ export default {
           support_email,
           features,
           auto_resolve_duration,
+          disable_bot_on_agent_reply,
           latest_chatwoot_version: latestChatwootVersion,
         } = this.getAccount(this.accountId);
 
@@ -126,6 +132,7 @@ export default {
         this.features = features;
         this.autoResolveDuration = auto_resolve_duration;
         this.latestChatwootVersion = latestChatwootVersion;
+        this.disableBotAgentReply = disable_bot_on_agent_reply;
       } catch (error) {
         // Ignore error
       }
@@ -146,6 +153,7 @@ export default {
           logo: this.file,
           support_email: this.supportEmail,
           auto_resolve_duration: this.autoResolveDuration,
+          disable_bot_on_agent_reply: this.disableBotAgentReply
         }
         for (const [key, value] of Object.entries(data)) {
           if (value !== undefined && value !== null && value !== '') 
@@ -182,6 +190,9 @@ export default {
       } catch (error) {
         console.warn({ error })
       }
+    },
+    onSwitchAgentBotReply(value){
+      this.disableBotAgentReply = value
     }
   },
 };
@@ -239,6 +250,13 @@ export default {
                 </span>
               </label>
             </div>
+          </div>
+          <div class="flex justify-between mt-2 mb-4">
+            <label>{{ $t('GENERAL_SETTINGS.FORM.DISABLE_AGENT_BOT_REPLY.LABEL') }}</label>
+            <SwitchButton
+              :value="disableBotAgentReply"
+              @input="onSwitchAgentBotReply"
+            />
           </div>
           <label v-if="featureInboundEmailEnabled">
             {{ $t('GENERAL_SETTINGS.FORM.FEATURES.INBOUND_EMAIL_ENABLED') }}

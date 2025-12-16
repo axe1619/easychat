@@ -6,6 +6,7 @@ const state = {
     me: 0,
     unassigned: 0,
     all: 0,
+    unread: 0,
     appliedFilters: 0,
     board: {}
   },
@@ -13,6 +14,7 @@ const state = {
     me: false,
     unassigned: false,
     all: false,
+    unread: false,
     board: {}
   },
 };
@@ -85,6 +87,7 @@ export const mutations = {
     if (filter === 'all') {
       Vue.set($state.hasEndReached, 'unassigned', true);
       Vue.set($state.hasEndReached, 'me', true);
+      Vue.set($state.hasEndReached, 'unread', true);
     }
     Vue.set($state.hasEndReached, filter, true);
   },
@@ -93,6 +96,7 @@ export const mutations = {
       me: 0,
       unassigned: 0,
       all: 0,
+      unread: 0,
       appliedFilters: 0,
       board: {}
     };
@@ -101,6 +105,7 @@ export const mutations = {
       me: false,
       unassigned: false,
       all: false,
+      unread: false,
       appliedFilters: false,
       board: {}
     };

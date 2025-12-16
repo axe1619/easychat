@@ -66,6 +66,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    redirectRoute: {
+      type: Object,
+      default: () => ({ name: '', params: {}, query: {} })
+    }
   },
   data() {
     return {
@@ -144,7 +148,7 @@ export default {
   },
   methods: {
     onCardClick(e) {
-      const { activeInbox, chat } = this;
+      const { activeInbox, chat, redirectRoute } = this;
       const path = frontendURL(
         conversationUrl({
           accountId: this.accountId,
@@ -165,6 +169,12 @@ export default {
         );
         return;
       }
+
+      if (redirectRoute.name.length > 0) {
+        router.push({ name: redirectRoute.name, params: redirectRoute.params, query: redirectRoute.query });
+        return
+      }
+
       if (this.isActiveChat) {
         return;
       }

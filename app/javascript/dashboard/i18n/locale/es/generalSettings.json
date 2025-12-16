@@ -34,6 +34,9 @@
         "PLACEHOLDER": "El dominio donde recibirá los emails",
         "ERROR": ""
       },
+      "DISABLE_AGENT_BOT_REPLY": {
+        "LABEL": "Desactivar agente IA cuando responda un agente"
+      },
       "SUPPORT_EMAIL": {
         "LABEL": "Email de soporte",
         "PLACEHOLDER": "Email de soporte de su empresa",

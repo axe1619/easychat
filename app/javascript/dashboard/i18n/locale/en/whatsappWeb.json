@@ -1,6 +1,14 @@
 {
     "WHATSAPP_WEB": {
         "TITLE": "List of messages",
+        "FILE": {
+            "IMAGE":"Image"
+        },
+        "ACTION": {
+            "ADD": "Add",
+            "SAVE": "Save",
+            "CLOSE": "Close"
+        },
         "VALIDATION": {
             "MESSAGE": {
                 "MIN_LENGTH": "This field must have at least 5 characters"
