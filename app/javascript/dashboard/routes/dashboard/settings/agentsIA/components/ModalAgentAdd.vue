@@ -96,7 +96,11 @@ export default {
         useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.CREATE.SUCCESS'))
         this.onClose()
       } catch (error) {
-        useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.CREATE.SUCCESS'))
+        if (error?.response?.status == 402) {
+          useAlert(this.$t('AGENTS_AI.PAYMENT_REQUIRED'))
+          return
+        }
+        useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.CREATE.ERROR'))
       }
     }
   },

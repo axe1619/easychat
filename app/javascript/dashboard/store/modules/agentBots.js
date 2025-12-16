@@ -56,7 +56,7 @@ export const actions = {
       commit(types.ADD_AGENT_BOT, response.data);
       return response.data;
     } catch (error) {
-      throwErrorMessage(error);
+      throw error;
     } finally {
       commit(types.SET_AGENT_BOT_UI_FLAG, { isCreating: false });
     }

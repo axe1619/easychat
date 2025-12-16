@@ -1,7 +1,9 @@
 class Api::V1::Accounts::AgentBotsController < Api::V1::Accounts::BaseController
+  include Api::V1::AgentBotsHelper
   before_action :current_account
   before_action :check_authorization
   before_action :agent_bot, except: [:index, :create]
+  before_action :validate_limit, only: [:create]
 
   def index
     @agent_bots = AgentBot.where(account_id: [nil, Current.account.id])

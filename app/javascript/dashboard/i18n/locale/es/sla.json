@@ -2,7 +2,7 @@
   "SLA": {
     "HEADER": "SLA",
     "ADD_ACTION": "Añadir SLA",
-    "ADD_ACTION_LONG": "Create a new SLA Policy",
+    "ADD_ACTION_LONG": "Crear una nueva política de SLA",
     "DESCRIPTION": "Los Acuerdos de Nivel de Servicio (SLA) son contratos que definen expectativas claras entre su equipo y sus clientes. Establecen normas para los tiempos de respuesta y resolución, creando un marco para la responsabilidad y garantiza una experiencia coherente y de alta calidad.",
     "LEARN_MORE": "Más información sobre SLA",
     "LOADING": "Obteniendo SLAs",
