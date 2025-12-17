@@ -27,7 +27,7 @@ class AccountBuilder
   end
 
   def account_expire
-    @expires_at || (Time.current + 5.days)
+    @expires_at || (Time.current + 2.days)
   end
 
   def account_name
@@ -53,7 +53,12 @@ class AccountBuilder
   end
 
   def create_account
-    @account = Account.create!(name: account_name, expires_at: account_expire , locale: I18n.locale)
+    @account = Account.create!(
+      name: account_name,
+      expires_at: account_expire,
+      locale: I18n.locale,
+      limits: default_limits
+    )
     Current.account = @account
   end
 
@@ -82,5 +87,9 @@ class AccountBuilder
     @user.type = 'SuperAdmin' if @super_admin
     @user.confirm if @confirmed
     @user.save!
+  end
+
+  def default_limits
+    { inboxes: 1, agents: 1 , agent_bots: 1 }
   end
 end
