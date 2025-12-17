@@ -22,6 +22,11 @@ class Api::V1::AccountsController < Api::BaseController
   end
 
   def create
+    if user_email_already_has_account?(account_params[:email])
+      render_error_response(CustomExceptions::Account::UserExists.new(email: account_params[:email]))
+      return
+    end
+
     @user, @account = AccountBuilder.new(
       account_name: account_params[:account_name],
       user_full_name: account_params[:user_full_name],
@@ -68,6 +73,13 @@ class Api::V1::AccountsController < Api::BaseController
     return if account_params[:user_full_name].present?
 
     raise CustomExceptions::Account::InvalidParams.new({})
+  end
+
+  def user_email_already_has_account?(email)
+    user = User.find_by(email: email)
+    return false unless user
+
+    user.accounts.exists?
   end
 
   def cache_keys_for_account
