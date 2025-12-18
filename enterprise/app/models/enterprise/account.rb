@@ -2,7 +2,8 @@ module Enterprise::Account
   def usage_limits
     {
       agents: agent_limits.to_i,
-      inboxes: get_limits(:inboxes).to_i
+      inboxes: get_limits(:inboxes).to_i,
+      agent_bots: get_limits(:agent_bots).to_i
     }
   end
 
@@ -41,7 +42,8 @@ module Enterprise::Account
       'type' => 'object',
       'properties' => {
         'inboxes' => { 'type': 'number' },
-        'agents' => { 'type': 'number' }
+        'agents' => { 'type': 'number' },
+        'agent_bots' => { 'type': 'number' }
       },
       'required' => [],
       'additionalProperties' => false
