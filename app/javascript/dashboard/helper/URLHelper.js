@@ -117,3 +117,45 @@ export const timeStampAppendedURL = dataUrl => {
 
   return url.toString();
 };
+
+export const getHostNameFromURL = url => {
+  try {
+    return new URL(url).hostname;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const extractFilenameFromUrl = url => {
+  if (!url || typeof url !== 'string') return url;
+
+  try {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const filename = pathname.split('/').pop();
+    return filename || url;
+  } catch (error) {
+    const match = url.match(/\/([^/?#]+)(?:[?#]|$)/);
+    return match ? match[1] : url;
+  }
+};
+
+export const sanitizeAllowedDomains = domains => {
+  if (!domains) return '';
+
+  const tokens = domains
+    .replace(/\r\n/g, '\n')
+    .replace(/\s*\n\s*/g, ',')
+    .split(',')
+    .map(d => d.trim().toLowerCase())
+    .filter(d => d.length > 0);
+
+  const seen = new Set();
+  const unique = tokens.filter(d => {
+    if (seen.has(d)) return false;
+    seen.add(d);
+    return true;
+  });
+
+  return unique.join(',');
+};

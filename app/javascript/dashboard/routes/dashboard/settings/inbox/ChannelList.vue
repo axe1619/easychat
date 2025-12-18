@@ -1,105 +1,134 @@
 <script>
 import ChannelItem from 'dashboard/components/widgets/ChannelItem.vue';
-import router from '../../../index';
-import PageHeader from '../SettingsSubPageHeader.vue';
-import { mapGetters } from 'vuex';
-import globalConfigMixin from 'shared/mixins/globalConfigMixin';
-import { useAlert } from 'dashboard/composables';
 
 export default {
   components: {
     ChannelItem,
-    PageHeader,
   },
-  mixins: [globalConfigMixin],
   data() {
     return {
       enabledFeatures: {},
-      isLimitInboxesExceeded: false
     };
   },
   computed: {
-    account() {
-      return this.$store.getters['accounts/getAccount'](this.accountId);
+    accountId() {
+      return this.$store.getters.getCurrentAccountId;
+    },
+    currentAccount() {
+      return this.$store.getters.getCurrentAccount || {};
+    },
+    globalConfig() {
+      return this.$store.getters['globalConfig/get'] || {};
+    },
+    hasTiktokConfigured() {
+      return Boolean(window.chatwootConfig?.tiktokAppId);
     },
     channelList() {
-      const { apiChannelName, apiChannelThumbnail } = this.globalConfig;
-      return [
-        { key: 'website', name: 'Website' },
-        { key: 'facebook', name: 'Messenger' },
-        { key: 'whatsapp', name: 'WhatsApp' },
-        { key: 'sms', name: 'SMS' },
-        { key: 'email', name: 'Email' },
+      const { apiChannelName } = this.globalConfig;
+      const channels = [
+        {
+          key: 'website',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.WEBSITE.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.WEBSITE.DESCRIPTION'),
+          icon: 'i-woot-website',
+        },
+        {
+          key: 'facebook',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.FACEBOOK.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.FACEBOOK.DESCRIPTION'),
+          icon: 'i-woot-messenger',
+        },
+        {
+          key: 'whatsapp',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.WHATSAPP.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.WHATSAPP.DESCRIPTION'),
+          icon: 'i-woot-whatsapp',
+        },
+        {
+          key: 'sms',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.SMS.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.SMS.DESCRIPTION'),
+          icon: 'i-woot-sms',
+        },
+        {
+          key: 'email',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.EMAIL.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.EMAIL.DESCRIPTION'),
+          icon: 'i-woot-mail',
+        },
         {
           key: 'api',
-          name: apiChannelName || 'API',
-          thumbnail: apiChannelThumbnail,
+          title: apiChannelName || this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.API.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.API.DESCRIPTION'),
+          icon: 'i-woot-api',
         },
-        { key: 'telegram', name: 'Telegram' },
-        { key: 'line', name: 'Line' },
-        { key: 'whatsappweb', name: 'Whatsapp Web' },
-        { key: 'call', name: 'Call Ip' },
+        {
+          key: 'telegram',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.TELEGRAM.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.TELEGRAM.DESCRIPTION'),
+          icon: 'i-woot-telegram',
+        },
+        {
+          key: 'line',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.LINE.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.LINE.DESCRIPTION'),
+          icon: 'i-woot-line',
+        },
+        {
+          key: 'instagram',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.INSTAGRAM.TITLE'),
+          description: this.$t(
+            'INBOX_MGMT.ADD.AUTH.CHANNEL.INSTAGRAM.DESCRIPTION'
+          ),
+          icon: 'i-woot-instagram',
+        },
       ];
+
+      if (this.hasTiktokConfigured) {
+        channels.push({
+          key: 'tiktok',
+          title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.TIKTOK.TITLE'),
+          description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.TIKTOK.DESCRIPTION'),
+          icon: 'i-woot-tiktok',
+        });
+      }
+
+      channels.push({
+        key: 'voice',
+        title: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.VOICE.TITLE'),
+        description: this.$t('INBOX_MGMT.ADD.AUTH.CHANNEL.VOICE.DESCRIPTION'),
+        icon: 'i-ri-phone-fill',
+      });
+
+      return channels;
     },
-    ...mapGetters({
-      accountId: 'getCurrentAccountId',
-      globalConfig: 'globalConfig/get',
-    }),
   },
   mounted() {
-    this.initializeEnabledFeatures();
-    this.checkInboxLimit()
+    this.enabledFeatures = this.currentAccount.features || {};
   },
   methods: {
-    async initializeEnabledFeatures() {
-      this.enabledFeatures = this.account.features;
-    },
-    async checkInboxLimit() {
-      try {
-        await this.$store.dispatch('inboxes/checkLimit');
-        this.isLimitInboxesExceeded = false
-      } catch (error) {
-        this.isLimitInboxesExceeded = true
-      }
-    },
     initChannelAuth(channel) {
-      if (this.isLimitInboxesExceeded) {
-        useAlert(this.$t('INBOX_MGMT.PAYMENT_REQUIRED'))
-        return
-      }
-      const params = {
-        page: 'new',
-        sub_page: channel,
-      };
-      router.push({ name: 'settings_inboxes_page_channel', params });
+      this.$router.push({
+        name: 'settings_inboxes_page_channel',
+        params: {
+          sub_page: channel,
+          accountId: this.accountId,
+        },
+      });
     },
   },
 };
 </script>
 
 <template>
-  <div
-    class="border border-slate-25 dark:border-slate-800/60 bg-white dark:bg-slate-900 h-full p-6 w-full max-w-full md:w-3/4 md:max-w-[75%] flex-shrink-0 flex-grow-0"
-  >
-    <PageHeader
-      class="max-w-4xl"
-      :header-title="$t('INBOX_MGMT.ADD.AUTH.TITLE')"
-      :header-content="
-        useInstallationName(
-          $t('INBOX_MGMT.ADD.AUTH.DESC'),
-          globalConfig.installationName
-        )
-      "
-    />
-    <div
-      class="grid max-w-3xl grid-cols-2 mx-0 mt-6 sm:grid-cols-3 lg:grid-cols-4"
-    >
+  <div class="w-full p-8 overflow-auto">
+    <div class="grid max-w-3xl grid-cols-1 xs:grid-cols-2 mx-0 gap-6 sm:grid-cols-3">
       <ChannelItem
         v-for="channel in channelList"
         :key="channel.key"
         :channel="channel"
         :enabled-features="enabledFeatures"
-        @channelItemClick="initChannelAuth"
+        @channel-item-click="initChannelAuth"
       />
     </div>
   </div>

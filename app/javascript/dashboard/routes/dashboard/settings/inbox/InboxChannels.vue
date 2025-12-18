@@ -9,7 +9,19 @@ export default {
       globalConfig: 'globalConfig/get',
     }),
     items() {
-      return this.$t('INBOX_MGMT.CREATE_FLOW').map(item => ({
+      const steps = ['CHANNEL', 'INBOX', 'AGENT', 'FINISH'];
+      const routes = {
+        CHANNEL: 'settings_inbox_new',
+        INBOX: 'settings_inboxes_page_channel',
+        AGENT: 'settings_inboxes_add_agents',
+        FINISH: 'settings_inbox_finish',
+      };
+
+      return steps.map(step => ({
+        title: this.$t(`INBOX_MGMT.CREATE_FLOW.${step}.TITLE`),
+        body: this.$t(`INBOX_MGMT.CREATE_FLOW.${step}.BODY`),
+        route: routes[step],
+      })).map(item => ({
         ...item,
         body: this.useInstallationName(
           item.body,
