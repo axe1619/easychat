@@ -36,6 +36,8 @@ export default {
   DOCS_URL: '//www.chatwoot.com/docs/product/',
   HELP_CENTER_DOCS_URL: '//www.chatwoot.com/docs/product/others/help-center',
   TESTIMONIAL_URL: '/testimonial/data.json',
+  WHATSAPP_EMBEDDED_SIGNUP_DOCS_URL:
+    'https://developers.facebook.com/docs/whatsapp/embedded-signup/custom-flows/onboarding-business-app-users#limitations',
   SMALL_SCREEN_BREAKPOINT: 1024,
   AVAILABILITY_STATUS_KEYS: ['online', 'busy', 'offline'],
   SNOOZE_OPTIONS: {
