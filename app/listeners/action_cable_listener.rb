@@ -170,6 +170,13 @@ class ActionCableListener < BaseListener
     broadcast(account, [user.pubsub_token], CONVERSATION_MENTIONED, conversation.push_event_data)
   end
 
+  def session_deleted(event)
+    user = event.data[:user]
+    sessions = event.data[:sessions]
+    tokens = [user.pubsub_token]
+    broadcast(user.active_account_user.account, tokens, SESSION_DELETED, { sessions: sessions })
+  end
+
   private
 
   def typing_event_listener_tokens(account, conversation, user)
