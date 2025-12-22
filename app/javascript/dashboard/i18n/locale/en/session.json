@@ -1,0 +1,8 @@
+{
+  "SESSION": {
+    "EXPIRED": {
+      "TITLE": "Session limit",
+      "MESSAGE": "Someone else has signed in with your account. You need to log in again."
+    }
+  }
+}

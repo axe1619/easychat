@@ -17,6 +17,12 @@ import {
   verifyServiceWorkerExistence,
 } from './helper/pushHelper';
 import ReconnectService from 'dashboard/helper/ReconnectService';
+import { emitter } from 'shared/helpers/mitt';
+import { BUS_EVENTS } from 'shared/constants/busEvents';
+import {
+  clearCookiesOnLogout,
+  deleteIndexedDBOnLogout,
+} from './store/utils/api';
 
 export default {
   name: 'App',
@@ -36,6 +42,7 @@ export default {
       showAddAccountModal: false,
       latestChatwootVersion: null,
       reconnectService: null,
+      showAlert:false
     };
   },
 
@@ -73,11 +80,13 @@ export default {
     this.initializeColorTheme();
     this.listenToThemeChanges();
     this.setLocale(window.chatwootConfig.selectedLocale);
+    emitter.on(BUS_EVENTS.SESSION_EXPIRED, this.showAlertModal);
   },
   beforeDestroy() {
     if (this.reconnectService) {
       this.reconnectService.disconnect();
     }
+    emitter.off(BUS_EVENTS.SESSION_EXPIRED, this.showAlertModal);
   },
   methods: {
     initializeColorTheme() {
@@ -111,6 +120,14 @@ export default {
         })
       );
     },
+    showAlertModal() {
+      this.showAlert = true
+    },
+    closeAlertModal(){
+      deleteIndexedDBOnLogout();
+      clearCookiesOnLogout();
+      this.showAlert = false
+    }
   },
 };
 </script>
@@ -133,6 +150,14 @@ export default {
       <router-view />
     </transition>
     <AddAccountModal :show="showAddAccountModal" :has-accounts="hasAccounts" />
+    <woot-modal :show.sync="showAlert" :on-close="closeAlertModal" size="small" >
+      <woot-modal-header :header-title="$t('SESSION.EXPIRED.TITLE')"/>
+      <div class="pt-5 pb-8 pl-8">
+        <p class="w-full mt-2 text-sm leading-5 break-words text-slate-600 dark:text-slate-300">
+          {{ $t('SESSION.EXPIRED.MESSAGE') }}
+        </p>
+      </div>
+    </woot-modal>
     <WootSnackbarBox />
     <NetworkNotification />
   </div>

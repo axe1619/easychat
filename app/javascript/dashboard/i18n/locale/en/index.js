@@ -37,6 +37,7 @@ import datePicker from './datePicker.json';
 import sorter from './sorter.json';
 import agentsAi from './agentsAi.json';
 import board from './board.json';
+import session from './session.json';
 
 export default {
   ...advancedFilters,
@@ -78,4 +79,5 @@ export default {
   ...sorter,
   ...agentsAi,
   ...board,
+  ...session,
 };
