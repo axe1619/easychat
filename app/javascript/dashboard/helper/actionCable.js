@@ -17,6 +17,7 @@ class ActionCableConnector extends BaseActionCableConnector {
       'conversation.created': this.onConversationCreated,
       'conversation.status_changed': this.onStatusChange,
       'user:logout': this.onLogout,
+      'session.deleted': this.onSessionDeleted,
       'page:reload': this.onReload,
       'assignee.changed': this.onAssigneeChanged,
       'conversation.typing_on': this.onTypingOn,
@@ -90,6 +91,19 @@ class ActionCableConnector extends BaseActionCableConnector {
 
   // eslint-disable-next-line class-methods-use-this
   onLogout = () => AuthAPI.logout();
+
+  onSessionDeleted = ({ sessions = [], account_id }) => {
+    const currentAccountId = this.app.$store.getters.getCurrentAccountId;
+    if (account_id != currentAccountId)
+      return
+    const currentClient = AuthAPI.getAuthData()?.client;
+    if (!currentClient)
+      return
+    const matchCurrentClient = sessions.some(session => session.session_id == currentClient);
+    if (!matchCurrentClient)
+      return;
+    emitter.emit(BUS_EVENTS.SESSION_EXPIRED);
+  };
 
   onMessageCreated = data => {
     const {
