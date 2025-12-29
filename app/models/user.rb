@@ -15,6 +15,7 @@
 #  encrypted_password     :string           default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
+#  max_sessions           :integer          default(1), not null
 #  message_signature      :text
 #  name                   :string           not null
 #  phone_number           :string

@@ -1,0 +1,8 @@
+{
+  "SESSION": {
+    "EXPIRED": {
+      "TITLE": "Límite de sesión",
+      "MESSAGE": "Un usuario ha iniciado sesión con tu cuenta. Debes volver a iniciar sesión."
+    }
+  }
+}

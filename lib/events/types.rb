@@ -54,4 +54,7 @@ module Events::Types
   # agent events
   AGENT_ADDED = 'agent.added'
   AGENT_REMOVED = 'agent.removed'
+
+  # sessions events
+  SESSION_DELETED = 'session.deleted'
 end
