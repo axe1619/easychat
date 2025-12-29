@@ -166,6 +166,9 @@ export default {
                 <span v-if="item.channel_type === 'Channel::Telegram'">
                   {{ 'Telegram' }}
                 </span>
+                <span v-if="item.channel_type === 'Channel::Instagram'">
+                  {{ 'Instagram' }}
+                </span>
                 <span v-if="item.channel_type === 'Channel::Line'">
                   {{ 'Line' }}
                 </span>

@@ -45,6 +45,9 @@ export const getReadableInboxByType = (type, phoneNumber) => {
     case INBOX_TYPES.LINE:
       return 'line';
 
+    case INBOX_TYPES.TIKTOK:
+      return 'tiktok';
+
     default:
       return 'chat';
   }
@@ -80,6 +83,9 @@ export const getInboxClassByType = (type, phoneNumber) => {
 
     case INBOX_TYPES.LINE:
       return 'brand-line';
+
+    case INBOX_TYPES.TIKTOK:
+      return 'brand-tiktok';
 
     default:
       return 'chat';

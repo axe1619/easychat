@@ -49,6 +49,13 @@
         "PICK_NAME": "Elija un nombre para su bandeja de entrada",
         "PICK_A_VALUE": "Elija un valor"
       },
+      "TIKTOK": {
+        "CONTINUE_WITH_TIKTOK": "Continuar con TikTok",
+        "CONNECT_YOUR_TIKTOK_PROFILE": "Conecta tu perfil de TikTok",
+        "HELP": "Para aÇñadir tu perfil de TikTok como canal, necesitas autenticar tu perfil de TikTok haciendo clic en 'Continuar con TikTok' ",
+        "ERROR_MESSAGE": "Se ha producido un error al conectar a TikTok, por favor intÇ¸ntelo nuevamente",
+        "ERROR_AUTH": "Se ha producido un error al conectar a TikTok, por favor intÇ¸ntelo nuevamente"
+      },
       "TWITTER": {
         "HELP": "Para añadir tu perfil de Twitter como un canal, necesitas autenticar tu perfil de Twitter haciendo clic en 'Iniciar sesión con Twitter' ",
         "ERROR_MESSAGE": "Se ha producido un error al conectar a Twitter, por favor inténtelo nuevamente",

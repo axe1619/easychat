@@ -24,7 +24,7 @@ export default {
     },
     channelList() {
       const { apiChannelName, apiChannelThumbnail } = this.globalConfig;
-      return [
+      const channels = [
         { key: 'website', name: 'Website' },
         { key: 'facebook', name: 'Messenger' },
         { key: 'whatsapp', name: 'WhatsApp' },
@@ -40,6 +40,13 @@ export default {
         { key: 'whatsappweb', name: 'Whatsapp Web' },
         { key: 'call', name: 'Call Ip' },
       ];
+      if (window.chatwootConfig?.tiktokAppId) {
+        channels.push({ key: 'tiktok', name: 'Tiktok' });
+      }
+      if (window.chatwootConfig?.instagramAppId) {
+        channels.push({ key: 'instagram', name: 'Instagram' });
+      }
+      return channels;
     },
     ...mapGetters({
       accountId: 'getCurrentAccountId',

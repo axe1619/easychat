@@ -35,6 +35,12 @@ class SuperAdmin::AppConfigsController < SuperAdmin::ApplicationController
     @allowed_configs = case @config
                        when 'facebook'
                          %w[FB_APP_ID FB_VERIFY_TOKEN FB_APP_SECRET IG_VERIFY_TOKEN FACEBOOK_API_VERSION ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT]
+                       when 'instagram'
+                         %w[INSTAGRAM_APP_ID INSTAGRAM_APP_SECRET INSTAGRAM_VERIFY_TOKEN INSTAGRAM_API_VERSION ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT]
+                       when 'tiktok'
+                         %w[TIKTOK_APP_ID TIKTOK_APP_SECRET]
+                       when 'whatsapp_embedded'
+                         %w[WHATSAPP_APP_ID WHATSAPP_APP_SECRET WHATSAPP_CONFIGURATION_ID WHATSAPP_API_VERSION]
                        when 'microsoft'
                          %w[AZURE_APP_ID AZURE_APP_SECRET]
                        when 'email'
