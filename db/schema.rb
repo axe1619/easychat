@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_17_202957) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_24_141350) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -725,6 +725,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_202957) do
     t.integer "unit_time", default: 0
     t.integer "count_reload_conversation_state"
     t.integer "notification_inbox_id"
+    t.string "mode", default: "active", null: false
     t.index ["account_id"], name: "index_inboxes_on_account_id"
     t.index ["channel_id", "channel_type"], name: "index_inboxes_on_channel_id_and_channel_type"
     t.index ["portal_id"], name: "index_inboxes_on_portal_id"

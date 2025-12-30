@@ -144,13 +144,13 @@ export default {
               name: 'Agente de Prueba',
               greeting_enabled: false,
               greeting_message: 'Hi there!',
+              mode: "sandbox",
               channel: {
                 type: 'web_widget',
                 website_url: 'http://localhost:3000/',
                 widget_color: '#009CE0',
                 welcome_title: 'Agente de Prueba!',
-                welcome_tagline:
-                  'Bienvenido al entorno de prueba de Agente de Prueba',
+                welcome_tagline: 'Bienvenido al entorno de prueba de Agente de Prueba',
               },
             }
           );

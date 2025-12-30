@@ -20,6 +20,7 @@
 #  greeting_enabled                :boolean          default(FALSE)
 #  greeting_message                :string
 #  lock_to_single_conversation     :boolean          default(FALSE), not null
+#  mode                            :string           default("active"), not null
 #  name                            :string           not null
 #  out_of_office_message           :string
 #  sender_name_type                :integer          default("friendly"), not null
@@ -85,6 +86,7 @@ class Inbox < ApplicationRecord
   has_many :conversation_states, through: :conversation_state_inboxes
 
   enum sender_name_type: { friendly: 0, professional: 1 }
+  enum mode: { active: "active", sandbox: "sandbox" }
 
   after_destroy :delete_round_robin_agents
 
