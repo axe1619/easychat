@@ -1,5 +1,5 @@
 class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
-  before_action :fetch_agent, except: [:create, :index, :bulk_create]
+  before_action :fetch_agent, except: [:create, :index, :bulk_create, :limit_status]
   before_action :check_authorization
   before_action :validate_limit, only: [:create]
   before_action :validate_limit_for_bulk_create, only: [:bulk_create]
@@ -32,6 +32,14 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
     @agent.current_account_user.destroy!
     delete_user_record(@agent)
     head :ok
+  end
+
+  def limit_status
+    if can_add_agent?
+      render json: { allowed: true, remaining: available_agent_count }
+    else
+      render_payment_required('Account limit exceeded. Please purchase more licenses')
+    end
   end
 
   def bulk_create

@@ -15,6 +15,10 @@ class UserPolicy < ApplicationPolicy
     @account_user.administrator?
   end
 
+  def limit_status?
+    @account_user.administrator?
+  end
+
   def bulk_create?
     @account_user.administrator?
   end

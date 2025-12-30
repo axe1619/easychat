@@ -125,10 +125,11 @@ class Account < ApplicationRecord
   end
 
   def usage_limits
+    limits = self[:limits] || {}
     {
-      agents: ChatwootApp.max_limit.to_i,
-      inboxes: ChatwootApp.max_limit.to_i,
-      agent_bots: ChatwootApp.max_limit.to_i
+      agents: limits['agents']&.to_i || ChatwootApp.max_limit.to_i,
+      inboxes: limits['inboxes']&.to_i || ChatwootApp.max_limit.to_i,
+      agent_bots: limits['agent_bots']&.to_i || ChatwootApp.max_limit.to_i
     }
   end
 

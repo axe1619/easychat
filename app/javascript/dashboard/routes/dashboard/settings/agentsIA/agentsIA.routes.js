@@ -1,6 +1,5 @@
 import { frontendURL } from '../../../../helper/URLHelper';
 
-// const SettingsWrapper = () => import('../SettingsWrapper.vue');
 const SettingsWrapper = () => import('../Wrapper.vue');
 const IndexAgentsAI = () => import('./Index.vue');
 const Capabilities = () => import('./Capabilities.vue');
@@ -18,16 +17,9 @@ export default {
           headerButtonText: 'SETTINGS.INBOXES.NEW_INBOX',
           icon: 'credit-card-person',
           showNewButton: false,
-          // newButtonRoutes: ['settings_agents_ia'],
           showBackButton,
         };
       },
-      // props: {
-      //   headerTitle: 'AGENTS_AI.HEADER_INDEX.TITLE',
-      //   icon: 'credit-card-person',
-      //   showNewButton: false,
-      //   showBackButton,
-      // },
       meta: {
         permissions: ['administrator'],
       },

@@ -1,6 +1,14 @@
 {
     "AGENTS_AI": {
         "PAYMENT_REQUIRED": "Alcanzaste el límite de agentes Ia en tu plan. Actualiza tu suscripción e inténtalo de nuevo.",
+        "PAYMENT": {
+            "TITLE": "Limite de cuenta",
+            "MESSAGE": "Alcanzaste el límite de agentes IA en tu plan. Actualiza tu plan e inténtalo de nuevo.",
+            "REFERENCE": {
+                "TITLE": "click aqui",
+                "REDIRECT": "https://wa.me/59162216599?text=Me%20interesa%20aumentar%20mi%20plan%20limites%20de%20agentes%20IA."
+            }
+        },
         "HEADER_INDEX": {
             "TITLE": "Agentes IA",
             "DESCRIPTION": "Elige un agente de inteligencia artificial en la lista de abajo, para poder modificar sus capacidades de acorde a las necesidades de tu empresa."

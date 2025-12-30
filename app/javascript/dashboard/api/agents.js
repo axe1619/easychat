@@ -12,6 +12,10 @@ class Agents extends ApiClient {
       emails,
     });
   }
+
+  limit_status() {
+    return axios.get(`${this.url}/limit_status`);
+  }
 }
 
 export default new Agents();
