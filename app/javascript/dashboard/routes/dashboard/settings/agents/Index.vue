@@ -9,6 +9,8 @@ import AddAgent from './AddAgent.vue';
 import EditAgent from './EditAgent.vue';
 import BaseSettingsHeader from '../components/BaseSettingsHeader.vue';
 import SettingsLayout from '../SettingsLayout.vue';
+import agentAPI from '../../../../api/agents';
+import InfoModal from '../../../../components/widgets/modal/InfoModal.vue';
 
 const getters = useStoreGetters();
 const store = useStore();
@@ -18,8 +20,10 @@ const loading = ref({});
 const showAddPopup = ref(false);
 const showDeletePopup = ref(false);
 const showEditPopup = ref(false);
-const agentAPI = ref({ message: '' });
+const showAlertLimit = ref(false);
+const responseAPI = ref({ message: '' });
 const currentAgent = ref({});
+const exceededLimit = ref(true);
 
 const deleteConfirmText = computed(
   () => `${t('AGENT_MGMT.DELETE.CONFIRM.YES')} ${currentAgent.value.name}`
@@ -38,6 +42,15 @@ const currentUserId = computed(() => getters.getCurrentUserID.value);
 onMounted(() => {
   store.dispatch('agents/get');
 });
+
+const fetchLimitAgents = async () => {
+  try {
+    await agentAPI.limit_status()
+    exceededLimit.value = false
+  } catch (error) {
+    exceededLimit.value = true
+  }
+}
 
 const verifiedAdministrators = computed(() => {
   return agentList.value.filter(
@@ -66,11 +79,17 @@ const showDeleteAction = agent => {
 const showAlertMessage = message => {
   loading.value[currentAgent.value.id] = false;
   currentAgent.value = {};
-  agentAPI.value.message = message;
+  responseAPI.value.message = message;
   useAlert(message);
 };
 
-const openAddPopup = () => {
+const openAddPopup = async () => {
+  await fetchLimitAgents();
+  if (exceededLimit.value) {
+    showAlertLimit.value = true
+    return
+  }
+  showAlertLimit.value = false
   showAddPopup.value = true;
 };
 const hideAddPopup = () => {
@@ -83,6 +102,10 @@ const openEditPopup = agent => {
 };
 const hideEditPopup = () => {
   showEditPopup.value = false;
+};
+
+const hideAlertLimit = () => {
+   showAlertLimit.value = false;
 };
 
 const openDeletePopup = agent => {
@@ -134,7 +157,6 @@ const confirmDeletion = () => {
       </BaseSettingsHeader>
     </template>
     <template #body>
-    <h1>Prueba</h1>
       <table class="divide-y divide-slate-75 dark:divide-slate-700">
         <tbody
           class="divide-y divide-slate-50 dark:divide-slate-800 text-slate-700 dark:text-slate-300"
@@ -227,5 +249,15 @@ const confirmDeletion = () => {
       :confirm-text="deleteConfirmText"
       :reject-text="deleteRejectText"
     />
+    <InfoModal
+      :title="$t('AGENT_MGMT.PAYMENT.TITLE')"
+      :show="showAlertLimit"
+      @on-close="hideAlertLimit" 
+    >
+        {{ $t('AGENT_MGMT.PAYMENT.MESSAGE') }}
+        <a target="_blank" :href="$t('AGENT_BOTS.PAYMENT.REFERENCE.REDIRECT')">
+          {{ $t('AGENT_MGMT.PAYMENT.REFERENCE.TITLE') }}
+        </a>
+    </InfoModal>
   </SettingsLayout>
 </template>
