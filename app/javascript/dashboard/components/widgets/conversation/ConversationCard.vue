@@ -197,9 +197,11 @@ export default {
       this.$emit(action, this.chat.id, this.inbox.id);
     },
     openContextMenu(e) {
-      if (!this.enableContextMenu) return;
       e.preventDefault();
-      this.$emit('contextMenuToggle', true);
+      // Si enableContextMenu está activado, emitir el evento para el componente padre
+      if (this.enableContextMenu) {
+        this.$emit('contextMenuToggle', true);
+      }
       this.contextMenu.x = e.pageX || e.clientX;
       this.contextMenu.y = e.pageY || e.clientY;
       this.showContextMenu = true;
@@ -240,11 +242,30 @@ export default {
       this.closeContextMenu();
     },
     openInNewTab() {
+      let url = '';
+      
+      // Si es un card de contacto, usar la ruta de contacto
       if (this.isContactConversationCard && this.redirectRoute) {
-        const url = frontendURL(
+        url = frontendURL(
           `accounts/${this.redirectRoute.params.accountId}/contacts/${this.redirectRoute.params.contactId}`,
           { conversationId: this.chat.id }
         );
+      } else {
+        // Para cualquier otro card, usar la ruta de conversación normal
+        const { activeInbox } = this;
+        const path = conversationUrl({
+          accountId: this.accountId,
+          activeInbox,
+          id: this.chat.id,
+          label: this.activeLabel,
+          teamId: this.teamId,
+          foldersId: this.foldersId,
+          conversationType: this.conversationType,
+        });
+        url = frontendURL(path);
+      }
+      
+      if (url) {
         window.open(
           window.chatwootConfig.hostURL + url,
           '_blank',
@@ -375,9 +396,8 @@ export default {
         @markAsUnread="markAsUnread"
         @assignPriority="assignPriority"
       />
-      <hr v-if="isContactConversationCard" />
+      <hr />
       <MenuItem
-        v-if="isContactConversationCard"
         :option="{
           icon: 'open',
           label: $t('CONVERSATION.CARD_CONTEXT_MENU.OPEN_IN_NEW_TAB'),

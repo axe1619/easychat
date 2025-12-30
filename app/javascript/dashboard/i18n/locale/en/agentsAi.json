@@ -14,6 +14,10 @@
             "DESCRIPTION": "Select one of your AI agents to modify its properties or capabilities according to your business needs."
         },
         "INBOXES_COUNT": "Number of inboxes: {count}",
+        "INBOXES_LIST": {
+            "TITLE": "Inboxes for {agentName}",
+            "EMPTY": "This agent is not assigned to any inbox"
+        },
         "BUTTON":{
             "ADD":"Add agent"
         },
