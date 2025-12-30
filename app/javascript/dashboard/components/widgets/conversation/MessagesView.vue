@@ -172,12 +172,6 @@ export default {
     isATweet() {
       return this.conversationType === 'tweet';
     },
-    isRightOrLeftIcon() {
-      if (this.isContactPanelOpen) {
-        return 'arrow-chevron-right';
-      }
-      return 'arrow-chevron-left';
-    },
     getLastSeenAt() {
       const { contact_last_seen_at: contactLastSeenAt } = this.currentChat;
       return contactLastSeenAt;
@@ -376,9 +370,6 @@ export default {
         relevantMessages
       );
     },
-    onToggleContactPanel() {
-      this.$emit('contactPanelToggle');
-    },
     setScrollParams() {
       this.heightBeforeLoad = this.conversationPanel.scrollHeight;
       this.scrollTopBeforeLoad = this.conversationPanel.scrollTop;
@@ -461,19 +452,6 @@ export default {
       :href-link="replyWindowLink"
       :href-link-text="replyWindowLinkText"
     />
-    <div class="flex justify-end">
-      <woot-button
-        variant="smooth"
-        size="tiny"
-        color-scheme="secondary"
-        class="box-border fixed z-10 bg-white border border-r-0 border-solid rounded-bl-calc rtl:rotate-180 rounded-tl-calc dark:bg-slate-700 border-slate-50 dark:border-slate-600"
-        :class="
-          isInboxView ? 'top-52 md:top-40' : 'top-[9.5rem] md:top-[6.25rem]'
-        "
-        :icon="isRightOrLeftIcon"
-        @click="onToggleContactPanel"
-      />
-    </div>
     <div class="conversation-message-content">
       <ul class="conversation-panel">
         <transition name="slide-up">

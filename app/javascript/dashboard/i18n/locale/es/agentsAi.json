@@ -13,6 +13,7 @@
             "TITLE": "Agentes IA",
             "DESCRIPTION": "Elige un agente de inteligencia artificial en la lista de abajo, para poder modificar sus capacidades de acorde a las necesidades de tu empresa."
         },
+        "INBOXES_COUNT": "Número de entradas: {count}",
         "BUTTON": {
             "ADD": "Añadir agente"
         },

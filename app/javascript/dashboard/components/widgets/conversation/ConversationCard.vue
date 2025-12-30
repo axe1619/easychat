@@ -8,6 +8,7 @@ import { frontendURL, conversationUrl } from '../../../helper/URLHelper';
 import InboxName from '../InboxName.vue';
 import inboxMixin from 'shared/mixins/inboxMixin';
 import ConversationContextMenu from './contextMenu/Index.vue';
+import MenuItem from './contextMenu/menuItem.vue';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
 import CardLabels from './conversationCardComponents/CardLabels.vue';
 import PriorityMark from './PriorityMark.vue';
@@ -19,6 +20,7 @@ export default {
     InboxName,
     Thumbnail,
     ConversationContextMenu,
+    MenuItem,
     TimeAgo,
     MessagePreview,
     PriorityMark,
@@ -145,6 +147,9 @@ export default {
     hasSlaPolicyId() {
       return this.chat?.sla_policy_id;
     },
+    isContactConversationCard() {
+      return this.redirectRoute?.name === 'contact_profile_dashboard';
+    },
   },
   methods: {
     onCardClick(e) {
@@ -233,6 +238,20 @@ export default {
     async assignPriority(priority) {
       this.$emit('assignPriority', priority, this.chat.id);
       this.closeContextMenu();
+    },
+    openInNewTab() {
+      if (this.isContactConversationCard && this.redirectRoute) {
+        const url = frontendURL(
+          `accounts/${this.redirectRoute.params.accountId}/contacts/${this.redirectRoute.params.contactId}`,
+          { conversationId: this.chat.id }
+        );
+        window.open(
+          window.chatwootConfig.hostURL + url,
+          '_blank',
+          'noopener noreferrer nofollow'
+        );
+        this.closeContextMenu();
+      }
     },
   },
 };
@@ -355,6 +374,16 @@ export default {
         @assignTeam="onAssignTeam"
         @markAsUnread="markAsUnread"
         @assignPriority="assignPriority"
+      />
+      <hr v-if="isContactConversationCard" />
+      <MenuItem
+        v-if="isContactConversationCard"
+        :option="{
+          icon: 'open',
+          label: $t('CONVERSATION.CARD_CONTEXT_MENU.OPEN_IN_NEW_TAB'),
+        }"
+        variant="icon"
+        @click="openInNewTab"
       />
     </woot-context-menu>
   </div>

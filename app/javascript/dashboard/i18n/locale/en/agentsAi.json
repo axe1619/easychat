@@ -13,6 +13,7 @@
             "TITLE": "Agents AI",
             "DESCRIPTION": "Select one of your AI agents to modify its properties or capabilities according to your business needs."
         },
+        "INBOXES_COUNT": "Number of inboxes: {count}",
         "BUTTON":{
             "ADD":"Add agent"
         },

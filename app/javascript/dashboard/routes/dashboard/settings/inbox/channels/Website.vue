@@ -44,6 +44,7 @@ export default {
             name: this.inboxName,
             greeting_enabled: this.greetingEnabled,
             greeting_message: this.greetingMessage,
+            enable_email_collect: false,
             channel: {
               type: 'web_widget',
               website_url: this.channelWebsiteUrl,

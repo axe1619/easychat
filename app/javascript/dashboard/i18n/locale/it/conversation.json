@@ -120,6 +120,7 @@
       "ASSIGN_LABEL": "Assegna etichetta",
       "AGENTS_LOADING": "Caricamento agenti...",
       "ASSIGN_TEAM": "Assegna team",
+      "OPEN_IN_NEW_TAB": "Apri in nuova scheda",
       "API": {
         "AGENT_ASSIGNMENT": {
           "SUCCESFUL": "ID conversazione %{conversationId} assegnato a \"%{agentName}\"",
