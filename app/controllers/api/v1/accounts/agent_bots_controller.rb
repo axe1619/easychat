@@ -2,7 +2,7 @@ class Api::V1::Accounts::AgentBotsController < Api::V1::Accounts::BaseController
   include Api::V1::AgentBotsHelper
   before_action :current_account
   before_action :check_authorization
-  before_action :agent_bot, except: [:index, :create]
+  before_action :agent_bot, except: [:index, :create, :limit_status]
   before_action :validate_limit, only: [:create]
 
   def index
@@ -10,6 +10,14 @@ class Api::V1::Accounts::AgentBotsController < Api::V1::Accounts::BaseController
   end
 
   def show; end
+
+  def limit_status
+    if agent_bot_limit_reached?
+      render_payment_required('Account limit exceeded. Upgrade to a higher plan')
+    else
+      render json: { allowed: true, remaining: agent_bot_limit_remaining }
+    end
+  end
 
   def create
     @agent_bot = Current.account.agent_bots.create!(permitted_params.except(:avatar_url))
