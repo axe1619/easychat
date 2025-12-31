@@ -163,8 +163,7 @@ export default {
               {{ $t('AGENTS_AI.INBOXES_COUNT', { count: a.inboxes.length }) }}
             </div>
             <img :src="a.avatar_url || avatarDefault" :alt="a.name" class="h-full object-cover mt-2" />
-          </div>
-          <h1
+            <h1
             class="text-center font-bold text-slate-700 dark:text-slate-100 border border-solid border-slate-25 dark:border-slate-800 rounded "
             :class="classOpacityAgent(a)"
           >
@@ -186,6 +185,8 @@ export default {
               @click="openDeleteModal(a)"
             />
           </div>
+          </div>
+          
         </div>
       </div>
     </div>

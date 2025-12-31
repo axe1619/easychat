@@ -269,7 +269,7 @@ export default {
         window.open(
           window.chatwootConfig.hostURL + url,
           '_blank',
-          'noopener noreferrer nofollow'
+          'noopener noreferrer'
         );
         this.closeContextMenu();
       }
