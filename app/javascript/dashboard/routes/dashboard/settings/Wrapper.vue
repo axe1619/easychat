@@ -30,6 +30,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    limitResource: {
+      type: Function,
+      default: null
+    }
   },
   data() {
     return {};
@@ -58,6 +62,7 @@ export default {
       :back-url="backUrl"
       :show-new-button="showNewButton"
       :show-sidemenu-icon="showSidemenuIcon"
+      :verify-limit-resource="limitResource"
     />
     <keep-alive v-if="keepAlive">
       <router-view />

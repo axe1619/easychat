@@ -1,0 +1,81 @@
+.navbar-link[data-v-ae654258] {
+    border-radius: .5rem;
+    font-family: Gilroy, Avenir Next, sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5rem;
+    padding: .25rem .5rem
+}
+
+.navbar-link[data-v-ae654258]:focus,
+.navbar-link[data-v-ae654258]:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(241 245 249/var(--tw-bg-opacity, 1));
+    --tw-text-opacity: 1;
+    color: rgb(15 23 42/var(--tw-text-opacity, 1))
+}
+
+.navbar-link[data-v-ae654258]:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px
+}
+
+.navbar-register-link[data-v-ae654258] {
+    align-items: center;
+    border-radius: .375rem;
+    justify-content: center;
+    --tw-bg-opacity: 1;
+    /* background-color: rgb(34 132 240/var(--tw-bg-opacity, 1)); */
+    background-color: rgb(8 110 182/var(--tw-bg-opacity, 1));
+    font-family: Gilroy, Avenir Next, sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5rem;
+    padding: .5rem 1rem;
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255/var(--tw-text-opacity, 1))
+}
+
+.navbar-register-link[data-v-ae654258]:hover {
+    --tw-bg-opacity: 0.9;
+    background-color: rgb(8 110 182/var(--tw-bg-opacity, 1));
+    --tw-text-opacity: 1;
+    color: rgb(241 245 249/var(--tw-text-opacity, 1))
+}
+
+.navbar-register-link[data-v-ae654258]:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px
+}
+
+.navbar-register-link[data-v-ae654258]:focus-visible {
+    outline-color: #2563eb;
+    outline-offset: 2px;
+    outline-width: 2px
+}
+
+.navbar-register-link[data-v-ae654258]:active {
+    --tw-bg-opacity: 1;
+    background-color: rgb(30 64 175/var(--tw-bg-opacity, 1));
+    --tw-text-opacity: 1;
+    color: rgb(219 234 254/var(--tw-text-opacity, 1))
+}
+
+[v-cloak][data-v-ae654258] {
+    display: none
+}
+
+.slide-enter-active[data-v-9c1c2a6e],
+.slide-leave-active[data-v-9c1c2a6e] {
+    transition: transform .15s ease-out
+}
+
+.slide-enter-from[data-v-9c1c2a6e],
+.slide-leave-to[data-v-9c1c2a6e] {
+    transform: translateY(120%)
+}
+
+.slide-enter-to[data-v-9c1c2a6e],
+.slide-leave-from[data-v-9c1c2a6e] {
+    transform: translateY(0)
+}

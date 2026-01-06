@@ -3,16 +3,20 @@ import { mapGetters } from 'vuex';
 import Spinner from 'shared/components/Spinner.vue';
 import ModalAgentAdd from './components/ModalAgentAdd.vue';
 import { useAlert } from 'dashboard/composables';
+import AgentBotsAPI from '../../../../api/agentBots';
+import InfoModal from '../../../../components/widgets/modal/InfoModal.vue';
 
 export default {
   name: 'AgentsIa',
-  components: { Spinner, ModalAgentAdd },
+  components: { Spinner, ModalAgentAdd , InfoModal },
   data() {
     return {
       avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
       showAddAgent: false,
       showDeleteModal: false,
-      agentSelected: undefined
+      agentSelected: undefined,
+      exceededLimit: true,
+      showAlertLimit: false
     }
   },
   computed: {
@@ -42,7 +46,12 @@ export default {
   },
   mounted() { this.$store.dispatch('agentBots/get') },
   methods: {
-    openAddAgent() {
+    async openAddAgent() {
+      await this.verifyLimitAgentBot()
+      if (this.exceededLimit) {
+        this.showAlertLimit = true
+        return
+      }
       this.showAddAgent = true
     },
     hideAddAgent() {
@@ -81,6 +90,17 @@ export default {
       return {
         'opacity-60': !agent.inboxes.length
       }
+    },
+    async verifyLimitAgentBot() {
+      try {
+        await AgentBotsAPI.limit_status()
+        this.exceededLimit = false
+      } catch (error) {
+        this.exceededLimit = true
+      }
+    },
+    hideAlertLimit() {
+      this.showAlertLimit = false
     }
   }
 }
@@ -91,7 +111,16 @@ export default {
     <woot-button color-scheme="success" class-names="button--fixed-top" icon="add-circle" @click="openAddAgent()">
       {{ $t('AGENTS_AI.BUTTON.ADD') }}
     </woot-button>
-
+    <InfoModal 
+      :title="$t('AGENTS_AI.PAYMENT.TITLE')"
+      :show="showAlertLimit"
+      @on-close="hideAlertLimit" 
+    >
+      {{ $t('AGENTS_AI.PAYMENT.MESSAGE') }}
+      <a target="_blank" :href="$t('AGENTS_AI.PAYMENT.REFERENCE.REDIRECT')">
+        {{ $t('AGENTS_AI.PAYMENT.REFERENCE.TITLE') }}
+      </a>
+    </InfoModal>
     <!-- MODALS  -->
     <woot-modal :show.sync="showAddAgent" :on-close="hideAddAgent">
       <ModalAgentAdd :on-close="hideAddAgent" />

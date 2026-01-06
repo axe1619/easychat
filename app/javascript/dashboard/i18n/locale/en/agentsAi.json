@@ -1,6 +1,14 @@
 {
     "AGENTS_AI": {
         "PAYMENT_REQUIRED": "You’ve reached the agent Ia limit for your plan. Please update your subscription and try again.",
+        "PAYMENT": {
+            "TITLE": "Account limit",
+            "MESSAGE": "You've reached the agents AI limit on your plan. Upgrade your plan and try again.",
+            "REFERENCE": {
+                "TITLE": "click here",
+                "REDIRECT": "https://wa.me/59162216599?text=Im%20interested%20in%20increasing%20my%20agent%20AI%20limits%20plan."
+            }
+        },
         "HEADER_INDEX": {
             "TITLE": "Agents AI",
             "DESCRIPTION": "Select one of your AI agents to modify its properties or capabilities according to your business needs."

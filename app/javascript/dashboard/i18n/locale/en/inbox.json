@@ -1,5 +1,13 @@
 {
   "INBOX": {
+    "PAYMENT": {
+      "TITLE": "Account limit",
+      "MESSAGE": "You've reached the inboxes limit on your plan. Upgrade your plan and try again.",
+      "REFERENCE": {
+        "TITLE": "click here",
+        "REDIRECT": "https://wa.me/59162216599?text=Im%20interested%20in%20increasing%20my%20inboxes%20limits%20plan."
+      }
+    },
     "LIST": {
       "TITLE": "Inbox",
       "DISPLAY_DROPDOWN": "Display",

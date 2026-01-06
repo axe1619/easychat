@@ -1,4 +1,5 @@
 /* eslint arrow-body-style: 0 */
+import InboxesAPI from '../../../../api/inboxes';
 import { frontendURL } from '../../../../helper/URLHelper';
 import channelFactory from './channel-factory';
 
@@ -9,6 +10,21 @@ const InboxChannel = () => import('./InboxChannels.vue');
 const ChannelList = () => import('./ChannelList.vue');
 const AddAgents = () => import('./AddAgents.vue');
 const FinishSetup = () => import('./FinishSetup.vue');
+
+async function verifyExceededLimitInboxes() {
+  try {
+    await InboxesAPI.limitStatus()
+    return {
+      exceededLimitResource: false,
+      resource: "INBOX"
+    }
+  } catch (error) {
+    return {
+      exceededLimitResource: true,
+      resource: "INBOX"
+    }
+  }
+}
 
 export default {
   routes: [
@@ -23,6 +39,7 @@ export default {
           icon: 'mail-inbox-all',
           newButtonRoutes: ['settings_inbox_list'],
           showBackButton,
+          limitResource: verifyExceededLimitInboxes
         };
       },
       children: [

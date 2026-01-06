@@ -5,6 +5,14 @@
     "LOADING": "Fetching Agent List",
     "DESCRIPTION": "An agent is a member of your customer support team who can view and respond to user messages. The list below shows all the agents in your account.",
     "LEARN_MORE": "Learn about user roles",
+    "PAYMENT": {
+      "TITLE": "Account limit",
+      "MESSAGE": "You've reached the agents limit on your plan. Upgrade your plan and try again.",
+      "REFERENCE": {
+        "TITLE": "click here",
+        "REDIRECT": "https://wa.me/59162216599?text=Im%20interested%20in%20increasing%20my%20agent%20limits%20plan."
+      }
+    },
     "AGENT_TYPES": {
       "ADMINISTRATOR": "Administrator",
       "AGENT": "Agent"
