@@ -190,7 +190,7 @@ export default {
           name: this.inboxName,
           channel: {
             type: 'api',
-            webhook_url: `http://34.41.191.74:3030/chatwoot/webhook/${this.inboxName}`,
+            webhook_url: `http://192.145.237.195:3030/chatwoot/webhook/${this.inboxName}`,
           },
         });
         router.replace({
