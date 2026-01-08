@@ -530,6 +530,14 @@ class Message < ApplicationRecord
     conversation.update_columns(updates)
     # rubocop:enable Rails/SkipsModelValidations
   end
+
+  # Temporary compatibility method for channels expecting outgoing_content
+  def outgoing_content
+    return processed_message_content if respond_to?(:processed_message_content) && processed_message_content.present?
+    return content_attributes['text'] if respond_to?(:content_attributes) && content_attributes.is_a?(Hash) && content_attributes['text'].present?
+
+    content
+  end
 end
 
 Message.prepend_mod_with('Message')
