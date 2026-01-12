@@ -3,15 +3,15 @@
 <% account_user = @resource&.account_users&.first %>
 
 <% if account_user&.inviter.present? && @resource.unconfirmed_email.blank? %>
-  <p><%= account_user.inviter.name %>, de <%= account_user.account.name %>, te invito a probar <%= global_config['BRAND_NAME'] || 'EasyContact' %>.</p>
+  <p><%= account_user.inviter.name %>, de <%= account_user.account.name %>, te invita a probar EasyContact.</p>
 <% end %>
 
 <% if @resource.confirmed? %>
-  <p>Puedes iniciar sesion en tu cuenta de <%= global_config['BRAND_NAME'] || 'EasyContact' %> usando el enlace de abajo:</p>
+  <p>Puedes iniciar sesion en tu cuenta de EasyContact usando el enlace de abajo:</p>
 <% else %>
   <% if account_user&.inviter.blank? %>
   <p>
-    Bienvenido a <%= global_config['BRAND_NAME'] || 'EasyContact' %>! Tenemos un conjunto de herramientas listas para ti. Antes necesitamos verificar tu correo electronico para confirmar que eres tu.
+    Bienvenido a EasyContact. Tenemos un conjunto de herramientas listas para ti. Antes necesitamos verificar tu correo electronico para confirmar que eres tu.
   </p>
   <% end %>
   <p>Por favor haz clic en el enlace de abajo para activar tu cuenta.</p>
