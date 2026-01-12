@@ -66,13 +66,17 @@ Rails.application.configure do
   # customize using the environment variables
   config.log_level = ENV.fetch('LOG_LEVEL', 'debug').to_sym
 
-   # URL de Action Cable para desarrollo (usando wss para conexiones seguras)
-   config.action_cable.url = "wss://telestreamsbo.com/cable"
+  # Action Cable URL and allowed origins (configurable via ENV)
+  action_cable_url = ENV['ACTION_CABLE_URL']
+  config.action_cable.url = action_cable_url if action_cable_url.present?
 
-   # Permitimos los orígenes especificados
-   config.action_cable.allowed_request_origins = [
-     'https://telestreamsbo.com'
-   ]
+  allowed_origins = ENV.fetch('ACTION_CABLE_ALLOWED_REQUEST_ORIGINS', '')
+                      .split(',')
+                      .map(&:strip)
+                      .reject(&:empty?)
+  allowed_origins += [ENV['FRONTEND_URL'], ENV['BACKEND_URL']].compact
+  allowed_origins.uniq!
+  config.action_cable.allowed_request_origins = allowed_origins if allowed_origins.present?
    
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
