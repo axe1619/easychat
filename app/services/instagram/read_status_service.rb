@@ -1,5 +1,5 @@
 class Instagram::ReadStatusService
-  pattr_initialize [:params!]
+  pattr_initialize [:params!, :channel!]
 
   def perform
     return if instagram_channel.blank?
@@ -12,7 +12,7 @@ class Instagram::ReadStatusService
   end
 
   def instagram_channel
-    @instagram_channel ||= Channel::FacebookPage.find_by(instagram_id: instagram_id)
+    @instagram_channel ||= channel
   end
 
   def message

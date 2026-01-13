@@ -133,6 +133,10 @@ class Inbox < ApplicationRecord
     channel_type == 'Channel::TwitterProfile'
   end
 
+  def tiktok?
+    channel_type == 'Channel::Tiktok'
+  end
+
   def whatsapp?
     channel_type == 'Channel::Whatsapp'
   end

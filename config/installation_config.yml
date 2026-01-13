@@ -123,6 +123,40 @@
   type: boolean
 # ------- End of Facebook Channel Related Config ------- #
 
+# ------- Instagram Channel Related Config ------- #
+- name: INSTAGRAM_APP_ID
+  display_title: 'Instagram App ID'
+  locked: false
+- name: INSTAGRAM_APP_SECRET
+  display_title: 'Instagram App Secret'
+  locked: false
+- name: INSTAGRAM_VERIFY_TOKEN
+  display_title: 'Instagram Verify Token'
+  description: 'The verify token used for Instagram Webhook'
+  locked: false
+- name: ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT
+  display_title: 'Enable human agent for instagram channel'
+  description: 'Enable human agent for instagram channel for longer message back period. Needs additional app approval: https://developers.facebook.com/docs/features-reference/human-agent/'
+  value: false
+  locked: false
+  type: boolean
+- name: INSTAGRAM_API_VERSION
+  display_title: 'Instagram API Version'
+  description: 'Configure this if you want to use a different Instagram API version. Make sure its prefixed with `v`'
+  value: 'v22.0'
+  locked: false
+# ------- End of Instagram Channel Related Config ------- #
+
+# ------- TikTok Channel Related Config ------- #
+- name: TIKTOK_APP_ID
+  display_title: 'TikTok App ID'
+  locked: false
+- name: TIKTOK_APP_SECRET
+  display_title: 'TikTok App Secret'
+  locked: false
+  type: secret
+# ------- End of TikTok Channel Related Config ------- #
+
 # MARK: Microsoft Email Channel Config
 - name: AZURE_APP_ID
   display_title: 'Azure App ID'

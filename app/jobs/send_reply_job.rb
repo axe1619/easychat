@@ -11,8 +11,10 @@ class SendReplyJob < ApplicationJob
       'Channel::TwilioSms' => ::Twilio::SendOnTwilioService,
       'Channel::Line' => ::Line::SendOnLineService,
       'Channel::Telegram' => ::Telegram::SendOnTelegramService,
+      'Channel::Tiktok' => ::Tiktok::SendOnTiktokService,
       'Channel::Whatsapp' => ::Whatsapp::SendOnWhatsappService,
-      'Channel::Sms' => ::Sms::SendOnSmsService
+      'Channel::Sms' => ::Sms::SendOnSmsService,
+      'Channel::Instagram' => ::Instagram::SendOnInstagramService
     }
 
     case channel_name
@@ -27,7 +29,7 @@ class SendReplyJob < ApplicationJob
 
   def send_on_facebook_page(message)
     if message.conversation.additional_attributes['type'] == 'instagram_direct_message'
-      ::Instagram::SendOnInstagramService.new(message: message).perform
+      ::Instagram::Messenger::SendOnInstagramService.new(message: message).perform
     else
       ::Facebook::SendOnFacebookService.new(message: message).perform
     end

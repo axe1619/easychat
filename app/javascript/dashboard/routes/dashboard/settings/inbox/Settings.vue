@@ -13,6 +13,7 @@ import GreetingsEditor from 'shared/components/GreetingsEditor.vue';
 import ConfigurationPage from './settingsPage/ConfigurationPage.vue';
 import CollaboratorsPage from './settingsPage/CollaboratorsPage.vue';
 import MicrosoftReauthorize from './channels/microsoft/Reauthorize.vue';
+import TiktokReauthorize from './channels/tiktok/Reauthorize.vue';
 import WidgetBuilder from './WidgetBuilder.vue';
 import BotConfiguration from './components/BotConfiguration.vue';
 import { FEATURE_FLAGS } from '../../../../featureFlags';
@@ -33,6 +34,7 @@ export default {
     WidgetBuilder,
     SenderNameExamplePreview,
     MicrosoftReauthorize,
+    TiktokReauthorize,
     Remarketing
   },
   mixins: [inboxMixin],
@@ -210,6 +212,9 @@ export default {
     facebookUnauthorized() {
       return this.isAFacebookInbox && this.inbox.reauthorization_required;
     },
+    tiktokUnauthorized() {
+      return this.isATiktokChannel && this.inbox.reauthorization_required;
+    },
   },
   watch: {
     $route(to) {
@@ -377,6 +382,7 @@ export default {
 
     <MicrosoftReauthorize v-if="microsoftUnauthorized" :inbox="inbox" />
     <FacebookReauthorize v-if="facebookUnauthorized" :inbox="inbox" />
+    <TiktokReauthorize v-if="tiktokUnauthorized" :inbox="inbox" />
 
     <div v-if="selectedTabKey === 'inbox_settings'" class="mx-8">
       <SettingsSection

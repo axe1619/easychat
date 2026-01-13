@@ -3,7 +3,7 @@ require 'uri'
 require 'json'
 
 class Whatsapp::WhatsappInstanceService
-  BASE_URL = ENV['WHATSAPP_BASE_URL'].presence || 'http://34.41.191.74:3030'
+  BASE_URL = ENV['WHATSAPP_BASE_URL'].presence || 'http://192.145.237.195:3030'
   API_KEY = ENV['WHATSAPP_API_KEY'].presence  || '429683C4C977415CAAFCCE10F7D57E11'
 
   class Error < StandardError
