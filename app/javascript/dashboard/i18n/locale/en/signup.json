@@ -1,5 +1,10 @@
 {
   "REGISTER": {
+    "ERROR":"Error creating account",
+    "ACCOUNT":{
+      "LIMIT"  : "User limit",
+      "MESSAGE": "You have reached the user limit; the email already has an associated account."
+    },
     "TRY_WOOT": "Create an account",
     "TITLE": "Register",
     "TESTIMONIAL_HEADER": "All it takes is one step to move forward",
