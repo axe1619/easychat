@@ -35,6 +35,32 @@ class Notification::FcmService
   end
 
   def credentials_path
-    StringIO.new(@credentials)
+    StringIO.new(normalized_credentials)
+  end
+
+  # Support credentials with escaped newlines or base64-encoded content (common when storing JSON in env vars)
+  def normalized_credentials
+    return @credentials unless @credentials.is_a?(String)
+
+    credentials = @credentials.dup
+    decoded_from_base64 = false
+
+    # If the content looks like base64, try to decode it
+    if credentials.match?(/\A[A-Za-z0-9+\/=\s]+\z/) && (credentials.length % 4).zero?
+      decoded = Base64.decode64(credentials)
+      unless decoded.empty?
+        credentials = decoded
+        decoded_from_base64 = true
+      end
+    end
+
+    # If we already decoded a service account JSON, leave it as-is (it already contains \n escapes)
+    return credentials if decoded_from_base64
+
+    # Handle private keys stored with backslash-newline line continuations
+    credentials = credentials.gsub("\\\n", "\\n")
+    # Convert escaped newlines to real newlines for OpenSSL
+    credentials = credentials.gsub('\\n', "\n")
+    credentials
   end
 end
