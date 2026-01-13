@@ -18,16 +18,20 @@ class Instagram::SendOnInstagramService < Instagram::BaseSendService
       query: query
     )
 
+    Rails.logger.info(
+      {
+        service: 'Instagram::SendOnInstagramService',
+        action: 'send_message',
+        instagram_id: instagram_id,
+        status: response.code,
+        body: response.parsed_response
+      }
+    )
+
     process_response(response, message_content)
   end
 
   def merge_human_agent_tag(params)
-    global_config = GlobalConfig.get('ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT')
-
-    return params unless global_config['ENABLE_INSTAGRAM_CHANNEL_HUMAN_AGENT']
-
-    params[:messaging_type] = 'MESSAGE_TAG'
-    params[:tag] = 'HUMAN_AGENT'
     params
   end
 end
