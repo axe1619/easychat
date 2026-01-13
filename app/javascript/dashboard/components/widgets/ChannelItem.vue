@@ -34,7 +34,8 @@ export default {
         return this.enabledFeatures.channel_facebook && this.hasFbConfigured;
       }
       if (key === 'tiktok') {
-        return this.enabledFeatures.channel_tiktok && this.hasTiktokConfigured;
+        // Keep TikTok available whenever the app is configured, ignore per-account feature flag
+        return this.hasTiktokConfigured;
       }
       if (key === 'instagram') {
         const instagramFeatureEnabled =
