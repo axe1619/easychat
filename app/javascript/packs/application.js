@@ -83,7 +83,7 @@ Vue.component('fluent-icon', FluentIcon);
 Vue.directive('resize', resizeDirective);
 Vue.directive('on-clickaway', onClickaway);
 const i18nConfig = new VueI18n({
-  locale: 'en',
+  locale: 'es',
   messages: i18n,
 });
 
