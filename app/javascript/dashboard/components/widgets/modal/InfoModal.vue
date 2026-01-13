@@ -14,6 +14,10 @@ export default {
             type: String,
             default: '',
         },
+        extraClass: {
+            type: String,
+            default: '',
+        }
     },
     methods: {
         close() {
@@ -26,7 +30,7 @@ export default {
 <template>
     <woot-modal :show.sync="show" :on-close="close">
         <woot-modal-header :header-title="title" />
-        <div class="pt-5 pb-8 px-8">
+        <div class="pt-5 pb-8 px-8" :class="extraClass">
             <p class="w-full mt-2 text-sm leading-5 break-words text-slate-600 dark:text-slate-300">
                 <slot />
             </p>

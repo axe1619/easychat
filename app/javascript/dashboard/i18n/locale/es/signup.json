@@ -1,5 +1,10 @@
 {
   "REGISTER": {
+    "ERROR":"Error al crear la cuenta",
+    "ACCOUNT": {
+      "LIMIT": "Limite de usuario",
+      "MESSAGE": "Alcanzaste el límite de usuario, el correo ya tiene una cuenta asociada"
+    },
     "TRY_WOOT": "Crear una cuenta",
     "TITLE": "Registrarse",
     "TESTIMONIAL_HEADER": "Todo lo que se necesita es un paso adelante",

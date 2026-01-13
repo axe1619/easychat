@@ -2,7 +2,6 @@
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, email } from '@vuelidate/validators';
 import { mapGetters } from 'vuex';
-import { useAlert } from 'dashboard/composables';
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
 import { DEFAULT_REDIRECT_URL } from 'dashboard/constants/globals';
 import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
@@ -105,8 +104,8 @@ export default {
       } catch (error) {
         let errorMessage =
           error?.message || this.$t('REGISTER.API.ERROR_MESSAGE');
+        this.$emit('alert', errorMessage)
         this.resetCaptcha();
-        useAlert(errorMessage);
       } finally {
         this.isSignupInProgress = false;
       }
@@ -132,77 +131,77 @@ export default {
     <form class="space-y-3" @submit.prevent="submit">
       <div class="flex">
         <FormInput
-          v-model.trim="credentials.fullName"
-          name="full_name"
-          class="flex-1"
-          :class="{ error: v$.credentials.fullName.$error }"
-          :label="$t('REGISTER.FULL_NAME.LABEL')"
-          :placeholder="$t('REGISTER.FULL_NAME.PLACEHOLDER')"
-          :has-error="v$.credentials.fullName.$error"
-          :error-message="$t('REGISTER.FULL_NAME.ERROR')"
-          @blur="v$.credentials.fullName.$touch"
+        v-model.trim="credentials.fullName"
+        name="full_name"
+        class="flex-1"
+        :class="{ error: v$.credentials.fullName.$error }"
+        :label="$t('REGISTER.FULL_NAME.LABEL')"
+        :placeholder="$t('REGISTER.FULL_NAME.PLACEHOLDER')"
+        :has-error="v$.credentials.fullName.$error"
+        :error-message="$t('REGISTER.FULL_NAME.ERROR')"
+        @blur="v$.credentials.fullName.$touch"
         />
         <FormInput
-          v-model.trim="credentials.accountName"
-          name="account_name"
-          class="flex-1 ml-2"
-          :class="{ error: v$.credentials.accountName.$error }"
-          :label="$t('REGISTER.COMPANY_NAME.LABEL')"
-          :placeholder="$t('REGISTER.COMPANY_NAME.PLACEHOLDER')"
-          :has-error="v$.credentials.accountName.$error"
-          :error-message="$t('REGISTER.COMPANY_NAME.ERROR')"
-          @blur="v$.credentials.accountName.$touch"
+        v-model.trim="credentials.accountName"
+        name="account_name"
+        class="flex-1 ml-2"
+        :class="{ error: v$.credentials.accountName.$error }"
+        :label="$t('REGISTER.COMPANY_NAME.LABEL')"
+        :placeholder="$t('REGISTER.COMPANY_NAME.PLACEHOLDER')"
+        :has-error="v$.credentials.accountName.$error"
+        :error-message="$t('REGISTER.COMPANY_NAME.ERROR')"
+        @blur="v$.credentials.accountName.$touch"
         />
       </div>
       <FormInput
-        v-model.trim="credentials.email"
-        type="email"
-        name="email_address"
-        :class="{ error: v$.credentials.email.$error }"
-        :label="$t('REGISTER.EMAIL.LABEL')"
-        :placeholder="$t('REGISTER.EMAIL.PLACEHOLDER')"
-        :has-error="v$.credentials.email.$error"
-        :error-message="$t('REGISTER.EMAIL.ERROR')"
-        @blur="v$.credentials.email.$touch"
+      v-model.trim="credentials.email"
+      type="email"
+      name="email_address"
+      :class="{ error: v$.credentials.email.$error }"
+      :label="$t('REGISTER.EMAIL.LABEL')"
+      :placeholder="$t('REGISTER.EMAIL.PLACEHOLDER')"
+      :has-error="v$.credentials.email.$error"
+      :error-message="$t('REGISTER.EMAIL.ERROR')"
+      @blur="v$.credentials.email.$touch"
       />
       <FormInput
-        v-model.trim="credentials.password"
-        type="password"
-        name="password"
-        :class="{ error: v$.credentials.password.$error }"
-        :label="$t('LOGIN.PASSWORD.LABEL')"
-        :placeholder="$t('SET_NEW_PASSWORD.PASSWORD.PLACEHOLDER')"
-        :has-error="v$.credentials.password.$error"
-        :error-message="passwordErrorText"
-        @blur="v$.credentials.password.$touch"
+      v-model.trim="credentials.password"
+      type="password"
+      name="password"
+      :class="{ error: v$.credentials.password.$error }"
+      :label="$t('LOGIN.PASSWORD.LABEL')"
+      :placeholder="$t('SET_NEW_PASSWORD.PASSWORD.PLACEHOLDER')"
+      :has-error="v$.credentials.password.$error"
+      :error-message="passwordErrorText"
+      @blur="v$.credentials.password.$touch"
       />
       <div v-if="globalConfig.hCaptchaSiteKey" class="mb-3">
         <VueHcaptcha
-          ref="hCaptcha"
-          :class="{ error: !hasAValidCaptcha && didCaptchaReset }"
-          :sitekey="globalConfig.hCaptchaSiteKey"
-          @verify="onRecaptchaVerified"
+        ref="hCaptcha"
+        :class="{ error: !hasAValidCaptcha && didCaptchaReset }"
+        :sitekey="globalConfig.hCaptchaSiteKey"
+        @verify="onRecaptchaVerified"
         />
         <span
-          v-if="!hasAValidCaptcha && didCaptchaReset"
-          class="text-xs text-red-400"
+        v-if="!hasAValidCaptcha && didCaptchaReset"
+        class="text-xs text-red-400"
         >
-          {{ $t('SET_NEW_PASSWORD.CAPTCHA.ERROR') }}
-        </span>
-      </div>
-      <SubmitButton
-        :button-text="$t('REGISTER.SUBMIT')"
-        :disabled="isSignupInProgress || !hasAValidCaptcha"
-        :loading="isSignupInProgress"
-        icon-class="arrow-chevron-right"
-      />
+        {{ $t('SET_NEW_PASSWORD.CAPTCHA.ERROR') }}
+      </span>
+    </div>
+    <SubmitButton
+    :button-text="$t('REGISTER.SUBMIT')"
+    :disabled="isSignupInProgress || !hasAValidCaptcha"
+    :loading="isSignupInProgress"
+    icon-class="arrow-chevron-right"
+    />
     </form>
     <GoogleOAuthButton v-if="showGoogleOAuth" class="flex-col-reverse">
       {{ $t('REGISTER.OAUTH.GOOGLE_SIGNUP') }}
     </GoogleOAuthButton>
     <p
-      class="text-sm mb-1 mt-5 text-slate-800 dark:text-woot-50 [&>a]:text-woot-500 [&>a]:font-medium [&>a]:hover:text-woot-600"
-      v-html="termsLink"
+    class="text-sm mb-1 mt-5 text-slate-800 dark:text-woot-50 [&>a]:text-woot-500 [&>a]:font-medium [&>a]:hover:text-woot-600"
+    v-html="termsLink"
     />
   </div>
 </template>
