@@ -1,7 +1,7 @@
 class ApplicationMailer < ActionMailer::Base
   include ActionView::Helpers::SanitizeHelper
 
-  default from: ENV.fetch('MAILER_SENDER_EMAIL', 'Chatwoot <accounts@chatwoot.com>')
+  default from: ENV.fetch('MAILER_SENDER_EMAIL', 'EasyContact <informacion@easycontact.top>')
   before_action { ensure_current_account(params.try(:[], :account)) }
   around_action :switch_locale
   layout 'mailer/base'
@@ -12,7 +12,12 @@ class ApplicationMailer < ActionMailer::Base
   helper :frontend_urls
   helper do
     def global_config
-      @global_config ||= GlobalConfig.get('BRAND_NAME', 'BRAND_URL')
+      @global_config ||= begin
+        cfg = GlobalConfig.get('BRAND_NAME', 'BRAND_URL')
+        cfg['BRAND_NAME'] = ENV.fetch('BRAND_NAME', 'EasyContact') if cfg['BRAND_NAME'].blank?
+        cfg['BRAND_URL'] = ENV.fetch('BRAND_URL', ENV['FRONTEND_URL']) if cfg['BRAND_URL'].blank?
+        cfg
+      end
     end
   end
 
