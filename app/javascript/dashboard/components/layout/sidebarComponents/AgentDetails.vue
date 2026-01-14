@@ -25,7 +25,17 @@ export default {
 
 <template>
   <woot-button
-    v-tooltip.right="$t(`SIDEBAR.PROFILE_SETTINGS`)"
+    v-tooltip.right="{
+      content: $t(`SIDEBAR.PROFILE_SETTINGS`),
+      container: 'body',
+      popperOptions: {
+        modifiers: {
+          offset: { offset: '0, 0' },
+          flip: { enabled: false },
+          preventOverflow: { enabled: true,  boundariesElement: 'viewport'},
+        },
+      },
+    }"
     variant="link"
     class="flex items-center rounded-full"
     @click="handleClick"
