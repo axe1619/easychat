@@ -138,10 +138,10 @@ export default {
       <div v-else class="grid max-w-3xl grid-cols-2 mx-0 mt-6 sm:grid-cols-3 lg:grid-cols-4">
         <div v-for="a in agentList" :key="a.id" class="w-full h-full p-3 flex flex-col justify-between">
           <div @click="goToCapabilities(a.id)" class="relative w-full h-32 p-2 flex justify-center items-center cursor-pointer" :class="classOpacityAgent(a)" >
-            <small class="absolute top-2 right-2 rounded shadow font-semibold px-2">
+            <small class="absolute top-1 right-1 rounded shadow font-semibold px-2">
               {{ a.inboxes.length }}
             </small>
-            <img :src="a.avatar_url || avatarDefault" :alt="a.name" class="h-full object-cover" />
+            <img :src="a.avatar_url || avatarDefault" :alt="a.name" class="h-full object-cover rounded " />
           </div>
           <h1
             class="text-center font-bold text-slate-700 dark:text-slate-100 border border-solid border-slate-25 dark:border-slate-800 rounded "
