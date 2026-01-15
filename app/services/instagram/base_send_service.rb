@@ -6,6 +6,15 @@ class Instagram::BaseSendService < Base::SendOnChannelService
   delegate :additional_attributes, to: :contact
 
   def perform_reply
+    Rails.logger.info(
+      {
+        service: self.class.name,
+        action: 'perform_reply',
+        message_id: message.id,
+        has_content: message.content.present?,
+        attachments_count: message.attachments.count
+      }
+    )
     send_attachments if message.attachments.present?
     send_content if message.content.present?
   rescue StandardError => e
@@ -19,10 +28,26 @@ class Instagram::BaseSendService < Base::SendOnChannelService
   end
 
   def send_content
+    Rails.logger.info(
+      {
+        service: self.class.name,
+        action: 'send_content',
+        message_id: message.id,
+        content_present: message.content.present?
+      }
+    )
     send_message(message_params)
   end
 
   def handle_error(error)
+    Rails.logger.error(
+      {
+        service: self.class.name,
+        action: 'handle_error',
+        error_class: error.class.name,
+        error_message: error.message
+      }
+    )
     ChatwootExceptionTracker.new(error, account: message.account, user: message.sender).capture_exception
   end
 
@@ -55,6 +80,15 @@ class Instagram::BaseSendService < Base::SendOnChannelService
 
   def process_response(response, message_content)
     parsed_response = response.parsed_response
+    Rails.logger.info(
+      {
+        service: self.class.name,
+        action: 'process_response',
+        status: response.code,
+        body: parsed_response
+      }
+    )
+
     if response.success? && parsed_response['error'].blank?
       message.update!(source_id: parsed_response['message_id'])
       parsed_response

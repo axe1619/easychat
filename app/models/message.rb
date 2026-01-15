@@ -538,6 +538,7 @@ class Message < ApplicationRecord
 
     content
   end
+  public :outgoing_content
 end
 
 Message.prepend_mod_with('Message')
