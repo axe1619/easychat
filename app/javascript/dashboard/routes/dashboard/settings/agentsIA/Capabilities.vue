@@ -18,6 +18,7 @@ export default {
       showAgentCalendar: false,
       showAgentCatalog: false,
       showAgentConfiguration: false,
+      avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
     }
   },
   computed: {
@@ -107,7 +108,7 @@ export default {
     </woot-modal>
 
     <woot-modal :show.sync="this.showAgentConfiguration" :on-close="hideAgentConfiguration">
-      <ModalAgentConfigutarion :botId="agentBot.id" :botName="agentBot.name" :botDescription="agentBot.description" :botPrompt="agentBot.prompt" :botInitAt="agentBot.init_at" :botFinishAt="agentBot.finish_at" :on-close="hideAgentConfiguration" />
+      <ModalAgentConfigutarion :botId="agentBot.id" :botName="agentBot.name" :botAvatar="agentBot.avatar_url || avatarDefault" :botDescription="agentBot.description" :botPrompt="agentBot.prompt" :botInitAt="agentBot.init_at" :botFinishAt="agentBot.finish_at" :on-close="hideAgentConfiguration" />
     </woot-modal>
     <!-- MODALS  -->
 

@@ -50,7 +50,9 @@ export default {
       agentTypes: [
         { value: 0, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.0'), url:`${process.env.AGENTIC_EASY_CONTACT}/api/agent/maria` },
         { value: 1, option: this.$t('AGENTS_AI.ADD.FORM.SELECT.1'), url:`${process.env.AGENTIC_EASY_CONTACT}/api/agent/sales` }
-      ]
+      ],
+      file:'',
+      image:'/assets/images/dashboard/agents-ai/robot.png'
     };
   },
   validations: {
@@ -81,7 +83,21 @@ export default {
       }
       this.scheduleEnabled = !this.scheduleEnabled;
     },
+    onChangeAvatar(event) {
+      try {
+        this.file = event.target.files[0]
+        if (!this.file) return
+        const reader = new FileReader();
+        reader.onload = e => {
+          this.image = e.target.result;
+        };
+        reader.readAsDataURL(this.file);
+      } catch (error) {
+        console.warn({ error })
+      }
+    },
     async createAgentBot() {
+      const formData = new FormData()
       const data = {
         name: this.agentName,
         description: this.agentDescription,
@@ -89,10 +105,16 @@ export default {
         agent_type: this.agentType,
         outgoing_url: this.agentTypes[this.agentType].url,
         init_at: this.initAt,
-        finish_at: this.finishAt,
+        finish_at: this.finishAt
+      }
+      if (this.file)
+        data.avatar = this.file
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== undefined && value !== null && value !== '')
+          formData.append(key, value)
       }
       try {
-        await this.$store.dispatch('agentBots/create', data)
+        await this.$store.dispatch('agentBots/create', formData)
         useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.CREATE.SUCCESS'))
         this.onClose()
       } catch (error) {
@@ -113,18 +135,25 @@ export default {
       <woot-modal-header :header-title="$t('AGENTS_AI.ADD.NAME')" :header-content="$t('AGENTS_AI.ADD.DESCRIPTION')" />
 
       <form class="flex flex-col w-full" @submit.prevent="createAgentBot">
-        <woot-input v-model="agentName" :label="$t('AGENTS_AI.ADD.FORM.NAME.LABEL')" type="text"
-          :class="{ error: v$.agentName.$error }" :error="v$.agentName.$error
-            ? $t('AGENTS_AI.ADD.FORM.NAME.ERROR')
-            : ''
-            " :placeholder="$t('AGENTS_AI.ADD.FORM.NAME.PLACEHOLDER')" @blur="v$.agentName.$touch" />
+        <div class="flex w-full gap-5">
+          <div class="flex-1">
+            <woot-input v-model="agentName" :label="$t('AGENTS_AI.ADD.FORM.NAME.LABEL')" type="text"
+              :class="{ error: v$.agentName.$error }" :error="v$.agentName.$error
+                ? $t('AGENTS_AI.ADD.FORM.NAME.ERROR')
+                : ''
+                " :placeholder="$t('AGENTS_AI.ADD.FORM.NAME.PLACEHOLDER')" @blur="v$.agentName.$touch" />
 
-        <woot-input v-model="agentDescription" :label="$t('AGENTS_AI.ADD.FORM.DESCRIPTION.LABEL')" type="text"
-          :class="{ error: v$.agentDescription.$error }" :error="v$.agentDescription.$error
-            ? $t('AGENTS_AI.ADD.FORM.DESCRIPTION.ERROR')
-            : ''
-            " :placeholder="$t('AGENTS_AI.ADD.FORM.DESCRIPTION.PLACEHOLDER')" @blur="v$.agentDescription.$touch" />
-
+            <woot-input v-model="agentDescription" :label="$t('AGENTS_AI.ADD.FORM.DESCRIPTION.LABEL')" type="text"
+              :class="{ error: v$.agentDescription.$error }" :error="v$.agentDescription.$error
+                ? $t('AGENTS_AI.ADD.FORM.DESCRIPTION.ERROR')
+                : ''
+                " :placeholder="$t('AGENTS_AI.ADD.FORM.DESCRIPTION.PLACEHOLDER')" @blur="v$.agentDescription.$touch" />
+          </div>
+          <label for="avatar" :style="{ width: '26%', maxHeight: '165px', border:'1px dashed', padding:'10px' }" class="flex justify-center items-center rounded cursor-pointer">
+            <img class="w-full" :src="image" alt="logo bot" />
+            <input id="avatar" @change="onChangeAvatar" accept="image/*" type="file" class="hidden" />
+          </label>
+        </div>
         <div>
           <label for="agent-type">{{$t('AGENTS_AI.ADD.FORM.SELECT.LABEL')}}</label>
           <select v-model="agentType" id="agent-type" disabled class="disabled:cursor-not-allowed">
