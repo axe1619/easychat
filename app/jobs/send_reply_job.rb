@@ -5,6 +5,16 @@ class SendReplyJob < ApplicationJob
     message = Message.find(message_id)
     conversation = message.conversation
     channel_name = conversation.inbox.channel.class.to_s
+    Rails.logger.info(
+      {
+        service: 'SendReplyJob',
+        action: 'perform',
+        message_id: message.id,
+        conversation_id: conversation.id,
+        channel_name: channel_name,
+        conversation_type: conversation.additional_attributes['type']
+      }
+    )
 
     services = {
       'Channel::TwitterProfile' => ::Twitter::SendOnTwitterService,
@@ -19,8 +29,24 @@ class SendReplyJob < ApplicationJob
 
     case channel_name
     when 'Channel::FacebookPage'
+      Rails.logger.info(
+        {
+          service: 'SendReplyJob',
+          action: 'dispatch',
+          channel_name: channel_name,
+          dispatch_to: conversation.additional_attributes['type'] == 'instagram_direct_message' ? 'Instagram::Messenger::SendOnInstagramService' : 'Facebook::SendOnFacebookService'
+        }
+      )
       send_on_facebook_page(message)
     else
+      Rails.logger.info(
+        {
+          service: 'SendReplyJob',
+          action: 'dispatch',
+          channel_name: channel_name,
+          dispatch_to: services[channel_name]&.name
+        }
+      )
       services[channel_name].new(message: message).perform if services[channel_name].present?
     end
   end

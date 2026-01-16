@@ -13,6 +13,16 @@ class Instagram::Messenger::SendOnInstagramService < Instagram::BaseSendService
     query = { access_token: access_token }
     query[:appsecret_proof] = app_secret_proof if app_secret_proof
 
+    Rails.logger.info(
+      {
+        service: 'Instagram::Messenger::SendOnInstagramService',
+        action: 'send_message',
+        recipient_id: message_content.dig(:recipient, :id) || message_content.dig('recipient', 'id'),
+        has_text: message_content.dig(:message, :text).present? || message_content.dig('message', 'text').present?,
+        has_attachment: message_content.dig(:message, :attachment).present? || message_content.dig('message', 'attachment').present?
+      }
+    )
+
     response = HTTParty.post(
       'https://graph.facebook.com/v11.0/me/messages',
       body: message_content,
