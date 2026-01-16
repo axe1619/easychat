@@ -246,8 +246,8 @@ export default {
             // console.log('Fallidos:', failed);
         },
         async replaceMany() {
-            this.deleteMany()
-            this.createMany()
+            await this.deleteMany()
+            await this.createMany()
         },
         async createOne() {
             const payload = {
@@ -292,11 +292,11 @@ export default {
 
                 <!-- bulkProgress -->
                 <button v-if="catalogExists" class="button primary"
-                    :disabled="rows.length === 0 || (error !== null)" @click="replaceMany">
+                    :disabled="rows.length === 0 || (error !== null) || isBulkCreating || isBulkDeleting" @click="replaceMany">
                     <Spinner v-if="isBulkCreating || isBulkDeleting" />
                     {{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.BUTTON.REPLACE') }}
                 </button>
-                <button v-else class="button primary" :disabled="rows.length === 0 || (error !== null)"
+                <button v-else class="button primary" :disabled="rows.length === 0 || (error !== null) || isBulkCreating || isBulkDeleting"
                     @click="createMany">
                     <Spinner v-if="isBulkCreating || isBulkDeleting" />
                     {{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.UPLOAD.BUTTON.ADD') }}
