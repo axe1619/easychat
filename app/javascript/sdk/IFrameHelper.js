@@ -88,6 +88,9 @@ export const IFrameHelper = {
   getBubbleHolder: () => document.getElementsByClassName('woot--bubble-holder'),
   sendMessage: (key, value) => {
     const element = IFrameHelper.getAppFrame();
+    if (!element || !element.contentWindow) {
+      return;
+    }
     element.contentWindow.postMessage(
       `chatwoot-widget:${JSON.stringify({ event: key, ...value })}`,
       '*'
