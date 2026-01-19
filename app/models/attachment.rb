@@ -32,6 +32,8 @@ class Attachment < ApplicationRecord
     application/vnd.openxmlformats-officedocument.presentationml.presentation
     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
     application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    application/vnd.android.package-archive
+    application/octet-stream
   ].freeze
   belongs_to :account
   belongs_to :message
@@ -136,7 +138,7 @@ class Attachment < ApplicationRecord
   end
 
   def validate_file_size(byte_size)
-    errors.add(:file, 'size is too big') if byte_size > 40.megabytes
+    errors.add(:file, 'size is too big') if byte_size > 80.megabytes
   end
 
   def media_file?(file_content_type)
