@@ -30,7 +30,17 @@ module Whatsapp::IncomingMessageServiceHelpers
       message.dig(:button, :text) ||
       message.dig(:interactive, :button_reply, :title) ||
       message.dig(:interactive, :list_reply, :title) ||
+      call_permission_reply_text(message) ||
       message.dig(:name, :formatted_name)
+  end
+
+  def call_permission_reply_text(message)
+    call_permission = message.dig(:interactive, :call_permission_reply)
+    return unless call_permission
+
+    response = call_permission[:response]
+    is_permanent = call_permission[:is_permanent]
+    "Call permission: #{response}#{is_permanent ? ' (permanent)' : ''}"
   end
 
   def file_content_type(file_type)
