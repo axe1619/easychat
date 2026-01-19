@@ -63,6 +63,7 @@ class ConversationFinder
     set_assignee_type
 
     find_all_conversations
+    filter_missing_contacts
     filter_by_status unless params[:q]
     filter_by_team
     filter_by_labels
@@ -146,6 +147,10 @@ class ConversationFinder
                                   .where(messages: { message_type: allowed_message_types }).includes(:messages)
                                   .where('messages.content ILIKE :search', search: "%#{params[:q]}%")
                                   .where(messages: { message_type: allowed_message_types })
+  end
+
+  def filter_missing_contacts
+    @conversations = @conversations.joins(:contact)
   end
 
   def filter_by_status

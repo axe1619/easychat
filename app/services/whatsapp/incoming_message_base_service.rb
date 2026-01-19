@@ -9,7 +9,11 @@ class Whatsapp::IncomingMessageBaseService
   def perform
     processed_params
 
-    if processed_params.try(:[], :statuses).present?
+    if calls_present?
+      process_calls
+    elsif call_statuses_present?
+      process_call_statuses
+    elsif processed_params.try(:[], :statuses).present?
       process_statuses
     elsif processed_params.try(:[], :messages).present?
       process_messages
@@ -166,5 +170,167 @@ class Whatsapp::IncomingMessageBaseService
         fallback_title: phone[:phone].to_s
       )
     end
+  end
+
+  def calls_present?
+    @processed_params.try(:[], :calls).present?
+  end
+
+  def process_calls
+    call_payload = @processed_params[:calls]&.first
+    return if call_payload.blank?
+
+    return unless call_payload.is_a?(Hash)
+    call_payload = call_payload.with_indifferent_access
+    set_contact_from_call(call_payload)
+
+    call_id = call_payload[:id] || call_payload[:call_id]
+    find_message_by_source_id(call_id) if call_id.present?
+    @conversation = @message.conversation if @message&.conversation.present?
+
+    unless @conversation
+      return unless @contact
+
+      set_conversation
+    end
+    return unless @conversation
+
+    @message ||= @conversation.messages.build(
+      account_id: @inbox.account_id,
+      inbox_id: @inbox.id,
+      message_type: :activity,
+      sender: @contact,
+      source_id: call_id
+    )
+
+    @message.sender ||= @contact
+    @message.content = build_call_activity_content(call_payload)
+    @message.additional_attributes = (@message.additional_attributes || {}).merge(
+      call: call_payload,
+      direction: call_direction(call_payload),
+      call_status: call_status(call_payload),
+      call_reason: call_reason(call_payload),
+      call_timestamp: call_timestamp(call_payload)
+    ).compact
+    @message.save!
+  end
+
+  def process_call_statuses
+    status_payload = @processed_params[:statuses]&.first
+    return if status_payload.blank?
+
+    status_payload = status_payload.with_indifferent_access
+    return unless status_payload[:type].to_s == 'call'
+
+    call_id = status_payload[:id]
+    find_message_by_source_id(call_id) if call_id.present?
+    @conversation = @message.conversation if @message&.conversation.present?
+
+    set_contact_from_call_status(status_payload) unless @contact
+
+    unless @conversation
+      return unless @contact
+
+      set_conversation
+    end
+    return unless @conversation
+
+    @message ||= @conversation.messages.build(
+      account_id: @inbox.account_id,
+      inbox_id: @inbox.id,
+      message_type: :activity,
+      sender: @contact,
+      source_id: call_id
+    )
+
+    @message.sender ||= @contact
+    @message.content = build_call_status_content(status_payload)
+    @message.additional_attributes = (@message.additional_attributes || {}).merge(
+      call_status: status_payload[:status],
+      call_timestamp: status_payload[:timestamp],
+      call_biz_opaque_callback_data: status_payload[:biz_opaque_callback_data],
+      call_status_payload: status_payload
+    ).compact
+    @message.save!
+  end
+
+  def set_contact_from_call(call_payload)
+    raw_waid = call_payload[:from] || call_payload[:caller] || call_payload[:user_number]
+    return if raw_waid.blank?
+
+    waid = processed_waid(raw_waid.to_s.delete_prefix('+'))
+    contact_inbox = ::ContactInboxWithContactBuilder.new(
+      source_id: waid,
+      inbox: inbox,
+      contact_attributes: {
+        name: call_payload.dig(:contact, :name),
+        phone_number: "+#{waid}"
+      }
+    ).perform
+
+    @contact_inbox = contact_inbox
+    @contact = contact_inbox.contact
+  end
+
+  def build_call_activity_content(call_payload)
+    direction = call_direction(call_payload)
+    status = call_status(call_payload)
+    reason = call_reason(call_payload)
+    parts = ['WhatsApp call']
+    parts << direction if direction
+    parts << "(#{status})" if status
+    parts << "- #{reason}" if reason
+    parts.join(' ')
+  end
+
+  def call_direction(call_payload)
+    direction = call_payload[:direction] || call_payload[:type]
+    return 'incoming' if direction.to_s.include?('in')
+    return 'outgoing' if direction.to_s.include?('out')
+
+    call_payload[:from].present? ? 'incoming' : (call_payload[:to].present? ? 'outgoing' : nil)
+  end
+
+  def call_status(call_payload)
+    call_payload[:status] || call_payload[:state] || call_payload[:call_status] || call_payload[:event]
+  end
+
+  def call_reason(call_payload)
+    call_payload[:reason] || call_payload.dig(:error, :message)
+  end
+
+  def call_timestamp(call_payload)
+    call_payload[:timestamp] || call_payload[:time]
+  end
+
+  def call_statuses_present?
+    statuses = @processed_params.try(:[], :statuses)
+    return false unless statuses.present?
+
+    statuses.first.with_indifferent_access[:type].to_s == 'call'
+  end
+
+  def set_contact_from_call_status(status_payload)
+    waid = status_payload[:recipient_id] || status_payload[:from] || status_payload[:to]
+    return if waid.blank?
+
+    waid = processed_waid(waid.to_s.delete_prefix('+'))
+    contact_inbox = ::ContactInboxWithContactBuilder.new(
+      source_id: waid,
+      inbox: inbox,
+      contact_attributes: {
+        phone_number: "+#{waid}"
+      }
+    ).perform
+
+    @contact_inbox = contact_inbox
+    @contact = contact_inbox.contact
+  end
+
+  def build_call_status_content(status_payload)
+    status = status_payload[:status]
+    parts = ['WhatsApp call status']
+    parts << status if status
+    parts.join(' ')
   end
 end

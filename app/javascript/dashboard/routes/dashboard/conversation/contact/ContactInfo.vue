@@ -288,15 +288,7 @@ export default {
           @click="openMergeModal"
         />
         <woot-button
-          v-if="isAdmin"
-          v-tooltip="$t('DELETE_CONTACT.BUTTON_LABEL')"
-          :title="$t('DELETE_CONTACT.BUTTON_LABEL')"
-          icon="delete"
-          variant="smooth"
-          size="small"
-          color-scheme="alert"
-          :disabled="uiFlags.isDeleting"
-          @click="toggleDeleteModal"
+          v-if="false"
         />
       </div>
       <EditContact
