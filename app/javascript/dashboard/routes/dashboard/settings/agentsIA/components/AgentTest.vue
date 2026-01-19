@@ -46,36 +46,16 @@ export default {
   },
 
   async mounted() {
-    try {
-      if (this.botId) {
-        await this.$store.dispatch('agentBots/show', this.botId);
-      }
-    } catch (e) {
-      console.log('agentBots/show error:', e);
-    }
+   this.load()
+   window.addEventListener('beforeunload', this.remove)
+  },
 
-    this._beforeUnload = () => {
-      try {
-        this.onRemove();
-      } catch (e) {}
-    };
-    window.addEventListener('beforeunload', this._beforeUnload);
-
-    this.$i18n.locale = this.$root.$i18n.locale;
+  async activated() {
+    this.load()
+    window.addEventListener('beforeunload', this.remove)
   },
 
   watch: {
-    botId: {
-      immediate: false,
-      async handler(newId) {
-        if (!newId) return;
-        try {
-          await this.$store.dispatch('agentBots/show', newId);
-        } catch (e) {
-          console.error('agentBots/show (watch) error:', e);
-        }
-      },
-    },
     agentBot: {
       immediate: true,
       async handler(newBot) {
@@ -83,42 +63,17 @@ export default {
         this.userPrompt = newBot?.prompt || '';
         this.originalPrompt = newBot?.prompt || '';
         this.editorKey++;
-        await this.$nextTick();
-        this.onStart(newBot.id);
       },
     },
   },
 
-  beforeRouteLeave(to, from, next) {
-    try {
-      this.onRemove();
-    } catch (e) {
-      console.error('onRemove error:', e);
-    }
-    next();
-  },
-  beforeRouteUpdate(to, from, next) {
-    try {
-      this.onRemove();
-    } catch (e) {
-      console.error('onRemove error:', e);
-    }
-    next();
-  },
   beforeDestroy() {
-    window.removeEventListener('beforeunload', this._beforeUnload);
-    try {
-      this.onRemove();
-    } catch (e) {
-      console.error('onRemove error:', e);
-    }
+      this.remove();
+      window.removeEventListener('beforeunload', this.remove)
   },
   deactivated() {
-    try {
-      this.onRemove();
-    } catch (e) {
-      console.error('onRemove error:', e);
-    }
+      this.remove();
+      window.removeEventListener('beforeunload', this.remove)
   },
 
   methods: {
@@ -135,7 +90,7 @@ export default {
 
       this.isRunning = true;
       this.injectError = null;
-
+      const baseUrl = window.location.origin;
       try {
         if (!this.website?.id) {
           const website = await this.$store.dispatch(
@@ -147,7 +102,7 @@ export default {
               mode: "sandbox",
               channel: {
                 type: 'web_widget',
-                website_url: 'http://localhost:3000/',
+                website_url: `${baseUrl}/`,
                 widget_color: '#009CE0',
                 welcome_title: 'Agente de Prueba!',
                 welcome_tagline: 'Bienvenido al entorno de prueba de Agente de Prueba',
@@ -199,39 +154,40 @@ export default {
         this.isUpdatingAgent = false;
       }
     },
-
-    onRemove() {
-      if (this.cleanupDone) return;
-      this.cleanupDone = true;
-
+    
+    async load() {
+      if (!this.botId) return
       try {
-        this.removeScript();
+        await this.$store.dispatch('agentBots/show', this.botId);
       } catch (e) {
-        console.error('removeScript error:', e);
+        console.log({ e });
       }
+      if (this.agentBot?.id) {
+        await this.$nextTick();
+        this.onStart(this.agentBot.id);
+      }
+    },
 
+    remove() {
+      this.hasStarted = false
       try {
-        this.deleteInbox();
+        const websiteId = this.website?.id;
+        this.website = null;
+        this.scriptContent = '';
+        this.deleteInbox(websiteId);
+        this.removeScript();
       } catch (e) {
         console.error('deleteInbox error:', e);
       }
     },
 
     removeScript() {
-      document
-        .querySelectorAll(`script[name="${SCRIPT_NAME}"]`)
-        .forEach(el => el.remove());
-      document
-        .querySelectorAll(
-          'iframe[src*="easycontact.top"], iframe[src*="localhost:3000"], iframe[id^="woot-"], iframe[name^="woot-"]'
-        )
-        .forEach(el => el.remove());
-      document
-        .querySelectorAll('[class*="woot-widget-holder"]')
-        .forEach(el => el.remove());
-      document
-        .querySelectorAll('[class*="woot--bubble-holder"]')
-        .forEach(el => el.remove());
+      document.querySelectorAll(`script[name="${SCRIPT_NAME}"]`).forEach(el => el.remove());
+      document.querySelector('#chatwoot_live_chat_widget')?.remove();
+      document.querySelector('#cw-widget-holder')?.remove();
+      document.querySelector('#cw-bubble-holder')?.remove();
+      document.querySelector('#cw-widget-styles')?.remove();
+      delete window.$chatwoot;
     },
 
     async injectWidgetScript(rawScript) {
@@ -245,8 +201,8 @@ export default {
       let code = match ? match[1] : decoded;
 
       code = code.replace(
-        /var BASE_URL\s*=\s*["']https:\/\/www\.easycontact\.top["'];/,
-        'var BASE_URL="http://localhost:3000";'
+        /var BASE_URL\s*=\s*["'][^"']+["'];/,
+        `var BASE_URL="${window.location.origin}";`
       );
 
       const blob = new Blob([code], { type: 'text/javascript' });
@@ -282,10 +238,10 @@ export default {
       document.head.appendChild(script);
     },
 
-    async deleteInbox() {
-      if (!this.website?.id) return;
+    async deleteInbox(inboxId = this.website?.id) {
+      if (!inboxId) return;
       try {
-        await this.$store.dispatch('inboxes/delete', this.website.id);
+        await this.$store.dispatch('inboxes/delete', inboxId);
       } catch (e) {
         console.log('deleteInbox error:', e);
       } finally {
@@ -331,7 +287,7 @@ export default {
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
           <div class="md:col-span-2">
-            <TinyEditor v-model="userPrompt" :key="editorKey" />
+            <TinyEditor v-if="agentBot" v-model="userPrompt" :key="editorKey" />
           </div>
 
           <aside class="space-y-2">

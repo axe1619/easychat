@@ -97,8 +97,8 @@ export default {
           branding: false,
           statusbar: false,
           browser_spellcheck: true,
-          skin_url: `${baseUrl}/skins/ui/oxide`,
-          content_css: `${baseUrl}/skins/content/default/content.min.css`,
+          skin: 'oxide',
+          content_css: 'default', 
 
           content_style: this.buildContentStyle(),
 
@@ -120,10 +120,12 @@ export default {
         })
       }
 
-      if (window.tinymce) start()
-      else {
+      if (window.tinymce) {
+        start()
+      } else {
         const s = document.createElement('script')
         s.src = `${baseUrl}/tinymce.min.js`
+        s.async = false 
         s.onload = start
         document.head.appendChild(s)
       }

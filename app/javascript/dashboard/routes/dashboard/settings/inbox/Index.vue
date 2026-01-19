@@ -6,6 +6,8 @@ import { useAccount } from 'dashboard/composables/useAccount';
 import Settings from './Settings.vue';
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
 import whatsappInstancesClient from '../../../../api/channel/whatsappInstancesClient';
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 
 export default {
   components: {
@@ -101,6 +103,12 @@ export default {
       this.showDeletePopup = false;
       this.selectedInbox = {};
     },
+    formatDate(date) {
+      if (!date) return ''
+      return format(new Date(date), 'dd MMM yyyy', {
+        locale: es
+      })
+    }
   },
 };
 </script>
@@ -174,6 +182,14 @@ export default {
                 </span>
                 <span v-if="item.channel_type === 'Channel::Api'">
                   {{ globalConfig.apiChannelName || 'API' }}
+                </span>
+              </td>
+
+              <!-- created -->
+
+              <td>
+                 <span>
+                  {{ formatDate(item.created_at) }}
                 </span>
               </td>
 

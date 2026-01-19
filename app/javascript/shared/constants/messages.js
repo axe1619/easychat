@@ -35,7 +35,7 @@ export const CONVERSATION_PRIORITY_ORDER = {
 };
 
 // Size in mega bytes
-export const MAXIMUM_FILE_UPLOAD_SIZE = 40;
+export const MAXIMUM_FILE_UPLOAD_SIZE = 80;
 export const MAXIMUM_FILE_UPLOAD_SIZE_TWILIO_SMS_CHANNEL = 5;
 
 export const ALLOWED_FILE_TYPES =
@@ -47,7 +47,7 @@ export const ALLOWED_FILE_TYPES =
   'application/zip, application/x-7z-compressed application/vnd.rar application/x-tar,' +
   'application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/vnd.oasis.opendocument.text,' +
   'application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document,';
+  'application/vnd.android.package-archive, application/vnd.openxmlformats-officedocument.wordprocessingml.document,';
 
 export const ALLOWED_FILE_TYPES_FOR_TWILIO_WHATSAPP =
   'image/png, image/jpeg,' +

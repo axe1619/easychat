@@ -20,12 +20,13 @@ class Api::V1::Accounts::AgentBotsController < Api::V1::Accounts::BaseController
   end
 
   def create
-    @agent_bot = Current.account.agent_bots.create!(permitted_params.except(:avatar_url))
+    params[:agent_type] = Integer(params[:agent_type], exception: false) || 0
+    @agent_bot = Current.account.agent_bots.create!(permitted_params)
     process_avatar_from_url
   end
 
   def update
-    @agent_bot.update!(permitted_params.except(:avatar_url))
+    @agent_bot.update!(permitted_params)
     process_avatar_from_url
   end
 

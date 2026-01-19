@@ -36,6 +36,8 @@ class AgentBot < ApplicationRecord
   validates :prompt, length: { maximum: 100_000 }, allow_nil: true
   validates :outgoing_url, length: { maximum: Limits::URL_LENGTH_LIMIT }
 
+  has_one_attached :avatar
+
   def available_name
     name
   end
