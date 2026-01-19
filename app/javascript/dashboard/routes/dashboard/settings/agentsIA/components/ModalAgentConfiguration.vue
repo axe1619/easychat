@@ -78,7 +78,7 @@ export default {
       show: true,
       darkMode: true,
       file:'',
-      image:''
+      image:'/assets/images/dashboard/agents-ai/robot.png'
     };
   },
   validations: {

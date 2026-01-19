@@ -2,7 +2,7 @@ json.id resource.id
 json.name resource.name
 json.description resource.description
 json.outgoing_url resource.outgoing_url
-json.avatar_url resource.avatar_url
+json.avatar_url resource.avatar_variant
 json.bot_type resource.bot_type
 json.bot_config resource.bot_config
 json.agent_type resource.agent_type
