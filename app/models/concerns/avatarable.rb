@@ -16,6 +16,10 @@ module Avatarable
     ''
   end
 
+  def avatar_variant
+    return avatar.attached? ? url_for(avatar) : nil
+  end  
+
   def fetch_avatar_from_gravatar
     return unless saved_changes.key?(:email)
     return if email.blank?
