@@ -255,7 +255,7 @@ const confirmDeletion = () => {
       @on-close="hideAlertLimit" 
     >
         {{ $t('AGENT_MGMT.PAYMENT.MESSAGE') }}
-        <a target="_blank" :href="$t('AGENT_BOTS.PAYMENT.REFERENCE.REDIRECT')">
+        <a target="_blank" :href="$t('AGENT_MGMT.PAYMENT.REFERENCE.REDIRECT')">
           {{ $t('AGENT_MGMT.PAYMENT.REFERENCE.TITLE') }}
         </a>
     </InfoModal>
