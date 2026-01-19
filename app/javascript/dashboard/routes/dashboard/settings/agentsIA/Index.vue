@@ -19,16 +19,22 @@ export default {
       exceededLimit: true,
       showAlertLimit: false,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       showInboxesTooltip: false,
       agentForTooltip: null,
       tooltipPosition: { x: 0, y: 0 }
 =======
+=======
+>>>>>>> Stashed changes
       searchQuery: '',
       defaultAgentId: null,
       showDefaultAgentModal: false,
       selectedDefaultAgentId: null,
       showMenuForAgent: null,
       agentEnabledStatus: {} // Almacena el estado enabled de cada agente
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
   },
@@ -152,6 +158,7 @@ export default {
       this.showAlertLimit = false
     },
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     showInboxesList(agent, event) {
       event.stopPropagation();
       if (agent.inboxes && agent.inboxes.length > 0) {
@@ -167,6 +174,8 @@ export default {
       this.showInboxesTooltip = false;
       this.agentForTooltip = null;
 =======
+=======
+>>>>>>> Stashed changes
     goToKnowledgeSources() {
       // Funcionalidad deshabilitada por el momento
       return;
@@ -265,6 +274,9 @@ export default {
       if (this.showMenuForAgent && !event.target.closest('.menu-container')) {
         this.closeMenu();
       }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
   }
@@ -349,6 +361,7 @@ export default {
         <Spinner />
       </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       <div v-else class="grid max-w-3xl grid-cols-2 mx-0 mt-6 sm:grid-cols-3 lg:grid-cols-4">
         <div v-for="a in agentList" :key="a.id" class="w-full h-full p-3 flex flex-col justify-between">
           <div @click="goToCapabilities(a.id)" class="relative w-full h-32 p-2 flex flex-col justify-center items-center cursor-pointer bg-white dark:bg-slate-900 border border-solid border-slate-200 dark:border-slate-800 hover:border-woot-500 dark:hover:border-woot-500 hover:shadow-md transition-all duration-200 ease-in" :class="classOpacityAgent(a)" >
@@ -409,6 +422,33 @@ export default {
               class="max-h-full max-w-full object-contain"
             />
           </div>
+=======
+      <div v-else class="grid max-w-6xl grid-cols-1 mx-0 mt-6 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards de agentes existentes -->
+        <div 
+          v-for="a in filteredAgentList" 
+          :key="a.id" 
+          class="relative bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 flex flex-col min-h-[300px]"
+        >
+          <!-- Labels de estado -->
+          <div class="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
+            <span v-if="isDefaultAgent(a)" class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+              {{ $t('AGENTS_AI.CARD.DEFAULT') }}
+            </span>
+            <span v-if="isAgentActive(a)" class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+              {{ $t('AGENTS_AI.CARD.ACTIVE') }}
+            </span>
+          </div>
+          
+          <!-- Avatar/Icono - Centrado verticalmente en la parte superior -->
+          <div class="flex justify-center items-center mb-4 mt-2 h-20">
+            <img 
+              :src="a.avatar_url || avatarDefault" 
+              :alt="a.name" 
+              class="max-h-full max-w-full object-contain"
+            />
+          </div>
+>>>>>>> Stashed changes
           
           <!-- Título -->
           <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2 text-center">
@@ -491,6 +531,9 @@ export default {
               {{ $t('AGENTS_AI.CARD.CREATE_NEW.BUTTON') }}
             </woot-button>
           </div>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         </div>
       </div>
@@ -526,6 +569,7 @@ export default {
         </div>
       </div>
     </woot-modal>
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 
     <!-- Tooltip/Modal de Inboxes -->
@@ -563,6 +607,8 @@ export default {
             {{ $t('AGENTS_AI.MODALS.SANDBOX.CLOSE') }}
           </woot-button>
 =======
+=======
+>>>>>>> Stashed changes
     
     <!-- Modal para seleccionar agente predeterminado -->
     <woot-modal
@@ -638,6 +684,9 @@ export default {
               {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.SAVE') }}
             </span>
           </button>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         </div>
       </div>
