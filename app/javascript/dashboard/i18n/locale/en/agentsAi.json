@@ -19,7 +19,34 @@
             "EMPTY": "This agent is not assigned to any inbox"
         },
         "BUTTON":{
-            "ADD":"Add agent"
+            "ADD":"Add agent",
+            "MANAGE_KNOWLEDGE_SOURCES": "Manage knowledge sources"
+        },
+        "SEARCH": {
+            "PLACEHOLDER": "Search"
+        },
+        "DEFAULT_AGENT": {
+            "TITLE": "Set default AI Agent",
+            "DESCRIPTION": "All new open conversations are automatically assigned to your selected AI Agent.",
+            "BUTTON": "Select AI Agent"
+        },
+        "CARD": {
+            "ACTIVE": "Active",
+            "DEFAULT": "Default",
+            "EDIT": "Edit",
+            "ENABLED_SUCCESS": "Agent enabled successfully",
+            "DISABLED_SUCCESS": "Agent disabled successfully",
+            "TOGGLE_ERROR": "Error toggling agent status",
+            "MENU": {
+                "DUPLICATE": "Duplicate",
+                "DELETE": "Delete",
+                "DUPLICATE_NOT_AVAILABLE": "Duplicate functionality is not yet available"
+            },
+            "CREATE_NEW": {
+                "TITLE": "Create new AI Agent",
+                "DESCRIPTION": "Add a new AI Agent to your team.",
+                "BUTTON": "Create AI Agent"
+            }
         },
         "ADD": {
             "NAME": "Add new agent",
@@ -215,6 +242,17 @@
                     "SUCCESS": "Agent successfully removed",
                     "FAIL": "The agent could not be eliminated"
                 }
+            },
+            "DEFAULT_AGENT": {
+                "TITLE": "Select default AI Agent",
+                "SUBTITLE": "Select AI Agent",
+                "DESCRIPTION": "This AI Agent will manage all new open conversations.",
+                "SELECT_LABEL": "Select agent",
+                "NONE": "None",
+                "SAVE": "Save",
+                "CANCEL": "Cancel",
+                "SUCCESS": "Default agent updated successfully",
+                "ERROR": "Error updating default agent"
             }
         }
     }

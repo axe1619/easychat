@@ -19,7 +19,34 @@
             "EMPTY": "Este agente no está asignado a ninguna entrada"
         },
         "BUTTON": {
-            "ADD": "Añadir agente"
+            "ADD": "Añadir agente",
+            "MANAGE_KNOWLEDGE_SOURCES": "Administrar fuentes de conocimiento"
+        },
+        "SEARCH": {
+            "PLACEHOLDER": "Buscar"
+        },
+        "DEFAULT_AGENT": {
+            "TITLE": "Establecer Agente IA predeterminado",
+            "DESCRIPTION": "Todas las nuevas conversaciones abiertas se asignan automáticamente a tu Agente IA seleccionado.",
+            "BUTTON": "Seleccionar Agente IA"
+        },
+        "CARD": {
+            "ACTIVE": "Activo",
+            "DEFAULT": "Predeterminado",
+            "EDIT": "Editar",
+            "ENABLED_SUCCESS": "Agente activado correctamente",
+            "DISABLED_SUCCESS": "Agente desactivado correctamente",
+            "TOGGLE_ERROR": "Error al cambiar el estado del agente",
+            "MENU": {
+                "DUPLICATE": "Duplicar",
+                "DELETE": "Eliminar",
+                "DUPLICATE_NOT_AVAILABLE": "La funcionalidad de duplicar aún no está disponible"
+            },
+            "CREATE_NEW": {
+                "TITLE": "Crear nuevo Agente IA",
+                "DESCRIPTION": "Añade un nuevo Agente IA a tu equipo.",
+                "BUTTON": "Crear Agente IA"
+            }
         },
         "ADD": {
             "NAME": "Agregar nuevo agente",
@@ -215,6 +242,17 @@
                     "SUCCESS": "Agente eliminado con éxito",
                     "FAIL": "El agente no pudo ser eliminado"
                 }
+            },
+            "DEFAULT_AGENT": {
+                "TITLE": "Seleccionar Agente IA predeterminado",
+                "SUBTITLE": "Seleccionar Agente IA",
+                "DESCRIPTION": "Este Agente IA gestionará todas las nuevas conversaciones abiertas.",
+                "SELECT_LABEL": "Seleccionar agente",
+                "NONE": "Ninguno",
+                "SAVE": "Guardar",
+                "CANCEL": "Cancelar",
+                "SUCCESS": "Agente predeterminado actualizado correctamente",
+                "ERROR": "Error al actualizar el agente predeterminado"
             }
         }
     }
