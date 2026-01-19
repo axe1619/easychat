@@ -86,6 +86,57 @@
             "DESCRIPTION_A": "En esta sección puedes configurar cómo deseas que tu agente de inteligencia artificial te ayude a responder mensajes, brindar información o realizar tareas de forma automática.",
             "DESCRIPTION_B": "Personaliza su comportamiento, el tono de sus respuestas y las funciones que deseas activar. No necesitas conocimientos técnicos: solo elige lo que mejor se adapte a tu negocio y deja que el agente trabaje por ti."
         },
+        "CAPABILITIES": {
+            "HEADER": {
+                "EDIT_TITLE": "Editar {agentName}",
+                "LAST_UPDATE": "Última actualización hace {days} días",
+                "ACTIVE": "Activo",
+                "SAVE": "Guardar",
+                "CANCEL": "Cancelar"
+            },
+            "CONFIGURATION": {
+                "TITLE": "Configuración",
+                "DESCRIPTION": "Define claramente de qué es responsable el Agente IA y cómo respalda tu negocio.",
+                "EMOJI_LABEL": "Emoji",
+                "NAME_LABEL": "Nombre",
+                "SHOW_DESCRIPTION": "Mostrar descripción",
+                "INSTRUCTIONS": {
+                    "TITLE": "Instrucciones",
+                    "DESCRIPTION": "Describe la función del agente de IA, su estilo de comunicación y las acciones que debe realizar. Proporciona instrucciones paso a paso utilizando un lenguaje claro y práctico.",
+                    "ADD_TEMPLATES": "Añadir plantillas de indicaciones",
+                    "OPTIMIZE": "Optimizar",
+                    "LEARN_TO_WRITE": "Aprende a escribir esto"
+                }
+            },
+            "TEST_AGENT": {
+                "TITLE": "Probar Agente IA",
+                "RESET_CHAT": "Restablecer chat",
+                "TAB_CHAT": "Chatear",
+                "TAB_CONTACT_FIELDS": "Campos de contacto",
+                "PLACEHOLDER": "Introduce el mensaje aquí",
+                "EMPTY_STATE": {
+                    "TITLE": "Prueba tu Agente IA",
+                    "DESCRIPTION": "Para empezar la prueba, dale un nombre a tu Agente IA y algunas instrucciones para ver cómo responderá en una conversación real."
+                }
+            },
+            "ACTIONS": {
+                "TITLE": "Acciones",
+                "DESCRIPTION": "Asigna acciones que el Agente IA puede realizar durante una conversación. Cada acción solo funciona si está habilitada.",
+                "KNOWLEDGE_SOURCES": {
+                    "TITLE": "Fuentes de conocimiento",
+                    "EMPTY_ALERT": "¿Quieres que tu Agente IA responda con mayor precisión? Añade y habilita fuentes de conocimiento para dar a tu Agente IA el contexto que necesita para respuestas precisas y específicas de la empresa.",
+                    "EMPTY_TITLE": "Entrenar a tu Agente IA",
+                    "EMPTY_DESCRIPTION": "Para mejorar la exactitud, recomendamos entrenar a tu Agente IA con documentos y enlaces específicos de la empresa.",
+                    "ADD_BUTTON": "+ Añadir fuente de conocimiento"
+                },
+                "CALENDAR": {
+                    "TITLE": "Calendario"
+                },
+                "CATALOG": {
+                    "TITLE": "Catálogo"
+                }
+            }
+        },
         "CARDS": {
             "IN_DEPLOY": "En desarrollo",
             "RAG": {
