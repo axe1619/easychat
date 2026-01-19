@@ -4,7 +4,7 @@ class Whatsapp::OneoffWhatsappWebCampaignService
   pattr_initialize [:campaign!]
 
   # congested queue
-  MAX_LATENCY_JOB = 5.seconds
+  MAX_LATENCY_JOB = 30.seconds
   BATCH = 100
 
   def perform
