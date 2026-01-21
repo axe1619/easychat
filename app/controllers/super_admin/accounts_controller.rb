@@ -1,3 +1,5 @@
+require 'csv'
+
 class SuperAdmin::AccountsController < SuperAdmin::ApplicationController
   # Overwrite any of the RESTful controller actions to implement custom behavior
   # For example, you may want to send an email after a foo is updated.
@@ -64,5 +66,57 @@ class SuperAdmin::AccountsController < SuperAdmin::ApplicationController
     # rubocop:disable Rails/I18nLocaleTexts
     redirect_back(fallback_location: [namespace, requested_resource], notice: 'Account deletion is in progress.')
     # rubocop:enable Rails/I18nLocaleTexts
+  end
+
+  def export
+    resources = scoped_resource
+    resources = filter_by_status(resources)
+    resources = resources.includes(account_users: :user) if csv_attributes.include?(:email)
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << csv_headers
+      resources.each do |resource|
+        csv << csv_attributes.map { |attribute| csv_value(resource, attribute) }
+      end
+    end
+
+    timestamp = Time.zone.now.strftime('%Y%m%d-%H%M%S')
+    csv_with_bom = "\uFEFF#{csv_data}"
+    send_data csv_with_bom,
+              filename: "accounts-#{timestamp}.csv",
+              type: 'text/csv; charset=utf-8',
+              disposition: 'attachment'
+  end
+
+  private
+
+  def csv_attributes
+    %i[id name email status created_at]
+  end
+
+  def csv_headers
+    csv_attributes.map do |attribute|
+      I18n.t(
+        "helpers.label.#{resource_name}.#{attribute}",
+        default: resource_class.human_attribute_name(attribute).titleize
+      )
+    end
+  end
+
+  def csv_value(resource, attribute)
+    value = resource.public_send(attribute)
+    return value.count if value.respond_to?(:count) && !value.is_a?(String)
+
+    value
+  end
+
+
+  def filter_by_status(resources)
+    return resources if params[:status].blank?
+
+    status = params[:status].to_s
+    return resources.where(status: status) if Account.statuses.key?(status)
+
+    resources
   end
 end
