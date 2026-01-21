@@ -99,6 +99,10 @@ class Account < ApplicationRecord
     users.where(account_users: { role: :administrator })
   end
 
+  def email
+    account_users.order(:created_at).includes(:user).first&.user&.email
+  end
+
   def all_conversation_tags
     # returns array of tags
     conversation_ids = conversations.pluck(:id)

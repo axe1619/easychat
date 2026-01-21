@@ -20,13 +20,14 @@ class AccountDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number.with_options(searchable: true),
     name: Field::String.with_options(searchable: true),
+    email: Field::String.with_options(searchable: false),
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
     expires_at: Field::DateTime,
     users: CountField,
     conversations: CountField,
     locale: Field::Select.with_options(collection: LANGUAGES_CONFIG.map { |_x, y| y[:iso_639_1_code] }),
-    status: Field::Select.with_options(collection: [%w[Active active], %w[Suspended suspended]]),
+    status: Field::Select.with_options(collection: [%w[Active active], %w[Suspended suspended]], searchable: false),
     account_users: Field::HasMany
   }.merge(enterprise_attribute_types).freeze
 
@@ -38,6 +39,7 @@ class AccountDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
+    email
     locale
     users
     conversations
@@ -50,6 +52,7 @@ class AccountDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = (%i[
     id
     name
+    email
     created_at
     updated_at
     locale
@@ -80,7 +83,10 @@ class AccountDashboard < Administrate::BaseDashboard
   #   COLLECTION_FILTERS = {
   #     open: ->(resources) { resources.where(open: true) }
   #   }.freeze
-  COLLECTION_FILTERS = {}.freeze
+  COLLECTION_FILTERS = {
+    active: ->(resources) { resources.where(status: :active) },
+    suspended: ->(resources) { resources.where(status: :suspended) }
+  }.freeze
 
   # Overwrite this method to customize how accounts are displayed
   # across all pages of the admin dashboard.
