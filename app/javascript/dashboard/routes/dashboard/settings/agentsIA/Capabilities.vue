@@ -12,6 +12,7 @@ import Spinner from 'shared/components/Spinner.vue';
 import WootSubmitButton from '../../../../components/buttons/FormSubmitButton.vue';
 import axios from 'axios';
 import { frontUrl } from './services/apiAgent';
+import { uploadFile } from 'dashboard/helper/uploadHelper';
 
 const SCRIPT_NAME = 'snap-script';
 
@@ -44,6 +45,17 @@ export default {
       initAt: '',
       finishAt: '',
       showDescription: false,
+      showTemplatesDropdown: false,
+      templateSearchQuery: '',
+      avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
+      avatarUrl: null,
+      isUploadingAvatar: false,
+      promptTemplates: [
+        { id: 'general', titleKey: 'GENERAL', content: '# CONTEXT\n[Describe who the AI Agent is talking to and any key info it needs (e.g. company, conversation goal, business hours)]' },
+        { id: 'communication', titleKey: 'COMMUNICATION', content: '# COMMUNICATION STYLE\n- Speak casually and use emojis where it feels natural.\n- Ask only one question at a time. Keep...' },
+        { id: 'location', titleKey: 'LOCATION', content: '# BRANCHES ENQUIRIES\nIf a user asks about branches, only mention [e.g. North London (Camden), East London (Shoreditch)...]' },
+        { id: 'hours', titleKey: 'HOURS', content: "# BUSINESS HOURS\nBusiness hours are [e.g. Monday-Friday, 9am-5pm]. If outside these timings, reply 'We're closed, but we..." }
+      ],
       
       // Test agent data
       website: null,
@@ -52,7 +64,6 @@ export default {
       isRunning: false,
       hasStarted: false,
       cleanupDone: false,
-      testTab: 'chat',
       
       // RAG data
       agentRags: [],
@@ -119,8 +130,25 @@ export default {
         return 0;
       }
     },
+    filteredPromptTemplates() {
+      const q = (this.templateSearchQuery || '').toLowerCase();
+      if (!q) return this.promptTemplates;
+      return this.promptTemplates.filter(t => {
+        const title = this.$t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.ITEMS.' + t.titleKey) || '';
+        return title.toLowerCase().includes(q);
+      });
+    },
   },
   watch: {
+    showTemplatesDropdown(val) {
+      if (val) {
+        this.$nextTick(() => {
+          document.addEventListener('click', this.handleTemplatesClickOutside);
+        });
+      } else {
+        document.removeEventListener('click', this.handleTemplatesClickOutside);
+      }
+    },
     agentBot: {
       immediate: true,
       handler(newBot) {
@@ -131,6 +159,7 @@ export default {
           this.scheduleEnabled = !!(newBot.init_at || newBot.finish_at);
           this.initAt = newBot.init_at || '';
           this.finishAt = newBot.finish_at || '';
+          this.avatarUrl = newBot.avatar_url || null;
           
           // Initialize test agent
           if (newBot.id && !this.hasStarted) {
@@ -156,6 +185,10 @@ export default {
       } catch (e) {}
     };
     window.addEventListener('beforeunload', this._beforeUnload);
+  },
+  beforeRouteLeave(to, from, next) {
+    this.onRemove();
+    next();
   },
   beforeDestroy() {
     window.removeEventListener('beforeunload', this._beforeUnload);
@@ -202,6 +235,23 @@ export default {
       }
       this.scheduleEnabled = !this.scheduleEnabled;
     },
+    toggleTemplatesDropdown() {
+      this.showTemplatesDropdown = !this.showTemplatesDropdown;
+      if (!this.showTemplatesDropdown) this.templateSearchQuery = '';
+    },
+    handleTemplatesClickOutside(event) {
+      const el = this.$refs.templatesDropdownRef;
+      if (el && !el.contains(event.target)) {
+        this.showTemplatesDropdown = false;
+        document.removeEventListener('click', this.handleTemplatesClickOutside);
+      }
+    },
+    addPromptTemplate(t) {
+      const sep = this.agentPrompt ? '\n\n' : '';
+      this.agentPrompt = (this.agentPrompt || '') + sep + t.content;
+      this.showTemplatesDropdown = false;
+      this.templateSearchQuery = '';
+    },
     async saveConfiguration() {
       if (this.isButtonDisabled || this.isUpdating || !this.agentBot || !this.agentBot.id) return;
       
@@ -213,6 +263,9 @@ export default {
         init_at: this.scheduleEnabled ? this.initAt : '',
         finish_at: this.scheduleEnabled ? this.finishAt : '',
       };
+      if (this.avatarUrl) {
+        data.avatar_url = this.avatarUrl;
+      }
       
       try {
         await this.$store.dispatch('agentBots/update', data);
@@ -220,6 +273,42 @@ export default {
         await this.$store.dispatch('agentBots/get');
       } catch (error) {
         useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.UPDATE.ERROR'));
+      }
+    },
+    triggerAvatarUpload() {
+      this.$refs.avatarInput?.click();
+    },
+    async handleAvatarUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      
+      // Validar que sea una imagen
+      if (!file.type.startsWith('image/')) {
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_INVALID_TYPE') || 'Por favor selecciona un archivo de imagen');
+        return;
+      }
+      
+      // Validar tamaño (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_SIZE_LIMIT') || 'La imagen no debe exceder 5MB');
+        return;
+      }
+      
+      this.isUploadingAvatar = true;
+      try {
+        const result = await uploadFile(file, this.accountId);
+        this.avatarUrl = result.fileUrl;
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_SUCCESS') || 'Imagen cargada correctamente');
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_ERROR') || 'Error al cargar la imagen');
+      } finally {
+        this.isUploadingAvatar = false;
+        // Reset input para permitir seleccionar el mismo archivo de nuevo
+        if (event.target) {
+          event.target.value = '';
+        }
       }
     },
     cancelChanges() {
@@ -579,14 +668,44 @@ export default {
             </p>
           </div>
 
-          <!-- Emoji and Name -->
+          <!-- Imagen (avatar) y Nombre -->
           <div class="flex items-start gap-3">
             <div class="flex-shrink-0">
               <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.EMOJI_LABEL') }}
+                {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.IMAGE_LABEL') }}
               </label>
-              <div class="w-12 h-12 rounded border border-slate-300 dark:border-slate-600 flex items-center justify-center bg-slate-50 dark:bg-slate-700">
-                <span class="text-2xl">💜</span>
+              <input
+                ref="avatarInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleAvatarUpload"
+              />
+              <div
+                @click="triggerAvatarUpload"
+                class="w-20 h-20 rounded border border-slate-300 dark:border-slate-600 flex items-center justify-center bg-slate-50 dark:bg-slate-700 overflow-hidden cursor-pointer hover:border-woot-500 dark:hover:border-woot-500 transition-colors relative group"
+              >
+                <img
+                  :src="avatarUrl || (agentBot && agentBot.avatar_url) || avatarDefault"
+                  :alt="agentName"
+                  class="w-full h-full object-cover"
+                />
+                <div
+                  v-if="isUploadingAvatar"
+                  class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                >
+                  <Spinner />
+                </div>
+                <div
+                  v-else
+                  class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-opacity"
+                >
+                  <fluent-icon
+                    icon="camera"
+                    size="24"
+                    class="text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
               </div>
             </div>
             <div class="flex-1">
@@ -640,14 +759,42 @@ export default {
 
             <!-- Prompt Actions -->
             <div class="flex items-center gap-3 flex-wrap">
-              <woot-button
-                variant="smooth"
-                color-scheme="secondary"
-                size="small"
-                icon="add"
-              >
-                {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.INSTRUCTIONS.ADD_TEMPLATES') }}
-              </woot-button>
+              <div ref="templatesDropdownRef" class="relative templates-dropdown-container">
+                <woot-button
+                  variant="smooth"
+                  color-scheme="secondary"
+                  size="small"
+                  icon="chevron-down"
+                  @click.stop="toggleTemplatesDropdown"
+                >
+                  {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.INSTRUCTIONS.ADD_TEMPLATES') }}
+                </woot-button>
+                <div v-if="showTemplatesDropdown" class="absolute left-0 top-full mt-1 z-30 w-96 max-h-[420px] bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden">
+                  <h4 class="px-4 py-3 text-sm font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">
+                    {{ $t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.TITLE') }}
+                  </h4>
+                  <div class="p-2 border-b border-slate-200 dark:border-slate-700">
+                    <input
+                      v-model="templateSearchQuery"
+                      type="text"
+                      :placeholder="$t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.SEARCH_PLACEHOLDER')"
+                      class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-woot-500"
+                    />
+                  </div>
+                  <div class="flex-1 overflow-y-auto p-2">
+                    <button
+                      v-for="t in filteredPromptTemplates"
+                      :key="t.id"
+                      type="button"
+                      @click.stop="addPromptTemplate(t)"
+                      class="w-full text-left px-3 py-3 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors"
+                    >
+                      <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ $t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.ITEMS.' + t.titleKey) }}</p>
+                      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{{ t.content }}</p>
+                    </button>
+                  </div>
+                </div>
+              </div>
               <woot-button
                 variant="smooth"
                 color-scheme="primary"
@@ -657,11 +804,6 @@ export default {
                 {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.INSTRUCTIONS.OPTIMIZE') }}
               </woot-button>
             </div>
-
-            <a href="#" class="inline-flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-              <fluent-icon icon="book" size="16" />
-              {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.INSTRUCTIONS.LEARN_TO_WRITE') }}
-            </a>
           </div>
 
           <!-- Schedule -->
@@ -711,69 +853,17 @@ export default {
             </div>
           </div>
 
-          <!-- Tabs -->
-          <div class="flex border-b border-slate-200 dark:border-slate-700 mb-4">
-            <button
-              @click="testTab = 'chat'"
-              :class="[
-                'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
-                testTab === 'chat'
-                  ? 'border-woot-500 text-woot-500'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-              ]"
-            >
-              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.TAB_CHAT') }}
-            </button>
-            <button
-              @click="testTab = 'contact'"
-              :class="[
-                'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
-                testTab === 'contact'
-                  ? 'border-woot-500 text-woot-500'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-              ]"
-            >
-              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.TAB_CONTACT_FIELDS') }}
-            </button>
+          <div v-if="!hasStarted" class="flex-1 flex flex-col items-center justify-center text-center p-8">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.EMPTY_STATE.TITLE') }}
+            </h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400 max-w-md">
+              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.EMPTY_STATE.DESCRIPTION') }}
+            </p>
           </div>
-
-          <!-- Chat Content -->
-          <div v-if="testTab === 'chat'" class="flex-1 flex flex-col min-h-[400px]">
-            <div v-if="!hasStarted" class="flex-1 flex flex-col items-center justify-center text-center p-8">
-              <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.EMPTY_STATE.TITLE') }}
-              </h3>
-              <p class="text-sm text-slate-600 dark:text-slate-400 max-w-md">
-                {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.EMPTY_STATE.DESCRIPTION') }}
-              </p>
-            </div>
-            <div v-else class="flex-1 flex flex-col">
-              <!-- Chat messages area would go here -->
-              <div class="flex-1 p-4 overflow-y-auto">
-                <p class="text-sm text-slate-500 dark:text-slate-400 text-center">
-                  {{ $t('AGENTS_AI.MODALS.SANDBOX.CHAT_EMPTY') }}
-                </p>
-              </div>
-              <!-- Message Input -->
-              <div class="border-t border-slate-200 dark:border-slate-700 p-4">
-                <div class="flex items-center gap-2">
-                  <input
-                    type="text"
-                    :placeholder="$t('AGENTS_AI.CAPABILITIES.TEST_AGENT.PLACEHOLDER')"
-                    class="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-woot-500"
-                  />
-                  <button class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
-                    <fluent-icon icon="send" size="20" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Contact Fields Content -->
           <div v-else class="flex-1 p-4">
             <p class="text-sm text-slate-500 dark:text-slate-400">
-              Contact fields content goes here
+              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.WIDGET_ACTIVE') }}
             </p>
           </div>
         </div>
@@ -806,7 +896,7 @@ export default {
             </div>
             <div class="text-center py-8">
               <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 mb-4">
-                <fluent-icon icon="book-add" size="32" class="text-slate-500 dark:text-slate-400" />
+                <fluent-icon icon="folder" size="32" class="text-slate-500 dark:text-slate-400" />
               </div>
               <h4 class="text-base font-semibold text-slate-900 dark:text-white mb-2">
                 {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.EMPTY_TITLE') }}
@@ -816,7 +906,6 @@ export default {
               </p>
               <woot-button
                 color-scheme="primary"
-                icon="add"
                 @click="showAgentRag = true"
               >
                 {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.ADD_BUTTON') }}
@@ -830,7 +919,6 @@ export default {
               <woot-button
                 variant="smooth"
                 color-scheme="primary"
-                icon="add"
                 size="small"
                 @click="showAgentRag = true"
               >

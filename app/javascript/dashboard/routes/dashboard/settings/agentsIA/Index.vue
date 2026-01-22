@@ -1,7 +1,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import Spinner from 'shared/components/Spinner.vue';
-import ModalAgentAdd from './components/ModalAgentAdd.vue';
 import { useAlert } from 'dashboard/composables';
 import AgentBotsAPI from '../../../../api/agentBots';
 import InfoModal from '../../../../components/widgets/modal/InfoModal.vue';
@@ -9,11 +8,10 @@ import SwitchButton from 'dashboard/components/ui/Switch.vue';
 
 export default {
   name: 'AgentsIa',
-  components: { Spinner, ModalAgentAdd, InfoModal, SwitchButton },
+  components: { Spinner, InfoModal, SwitchButton },
   data() {
     return {
       avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
-      showAddAgent: false,
       showDeleteModal: false,
       agentSelected: undefined,
       exceededLimit: true,
@@ -90,15 +88,12 @@ export default {
   },
   methods: {
     async openAddAgent() {
-      await this.verifyLimitAgentBot()
+      await this.verifyLimitAgentBot();
       if (this.exceededLimit) {
-        this.showAlertLimit = true
-        return
+        this.showAlertLimit = true;
+        return;
       }
-      this.showAddAgent = true
-    },
-    hideAddAgent() {
-      this.showAddAgent = false
+      this.$router.push({ name: 'settings_agents_ia_templates' });
     },
     openDeleteModal(agent){
       this.agentSelected = agent
@@ -260,11 +255,6 @@ export default {
         {{ $t('AGENTS_AI.PAYMENT.REFERENCE.TITLE') }}
       </a>
     </InfoModal>
-    <!-- MODALS  -->
-    <woot-modal :show.sync="showAddAgent" :on-close="hideAddAgent">
-      <ModalAgentAdd :on-close="hideAddAgent" />
-    </woot-modal>
-    <!-- MODALS  -->
 
     <div class="px-4 text-base mb-6">
       <p>{{ $t('AGENTS_AI.HEADER_INDEX.DESCRIPTION') }}</p>
@@ -313,7 +303,7 @@ export default {
         <woot-button 
           variant="smooth"
           color-scheme="secondary"
-          @click="openAddAgent"
+          @click="openDefaultAgentModal"
         >
           {{ $t('AGENTS_AI.DEFAULT_AGENT.BUTTON') }}
         </woot-button>
@@ -334,11 +324,15 @@ export default {
         >
           <!-- Labels de estado -->
           <div class="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
-            <span v-if="isDefaultAgent(a)" class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
-              {{ $t('AGENTS_AI.CARD.DEFAULT') }}
-            </span>
+           
             <span v-if="isAgentActive(a)" class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-semibold px-2.5 py-1 rounded-full">
               {{ $t('AGENTS_AI.CARD.ACTIVE') }}
+            </span>
+            <span v-if="!isAgentActive(a)" class="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+              {{ $t('AGENTS_AI.CARD.INACTIVE') }}
+            </span>
+            <span v-if="isDefaultAgent(a)" class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+              {{ $t('AGENTS_AI.CARD.DEFAULT') }}
             </span>
           </div>
           
@@ -352,12 +346,12 @@ export default {
           </div>
           
           <!-- Título -->
-          <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2 text-center">
+          <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">
             {{ a.name }}
           </h3>
           
           <!-- Descripción -->
-          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4 flex-1 text-center min-h-[3rem]">
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4 flex-1 min-h-[3rem]">
             {{ a.description || '' }}
           </p>
           
@@ -474,16 +468,10 @@ export default {
       size="small"
     >
       <div class="pt-8 pl-8 pr-8 pb-4">
-        <div class="flex items-center justify-between mb-6">
+        <div class="mb-6">
           <h2 class="text-lg font-semibold leading-6 text-slate-800 dark:text-slate-50">
             {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.TITLE') }}
           </h2>
-          <button
-            @click="closeDefaultAgentModal"
-            class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-          >
-            <fluent-icon icon="dismiss" size="24" />
-          </button>
         </div>
         
         <div class="mb-4">
@@ -499,27 +487,18 @@ export default {
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.SELECT_LABEL') }}
           </label>
-          <div class="relative">
-            <select
-              v-model="selectedDefaultAgentId"
-              class="w-full px-4 py-3 pl-10 pr-10 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-woot-500 appearance-none cursor-pointer"
+          <select
+            v-model="selectedDefaultAgentId"
+          >
+            <option :value="null">{{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.NONE') }}</option>
+            <option
+              v-for="agent in activeAgents"
+              :key="agent.id"
+              :value="agent.id"
             >
-              <option :value="null">{{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.NONE') }}</option>
-              <option
-                v-for="agent in activeAgents"
-                :key="agent.id"
-                :value="agent.id"
-              >
-                {{ agent.name }}
-              </option>
-            </select>
-            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <fluent-icon icon="heart" size="20" class="text-woot-500" />
-            </div>
-            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <fluent-icon icon="chevron-down" size="20" class="text-slate-400" />
-            </div>
-          </div>
+              {{ agent.name }}
+            </option>
+          </select>
         </div>
         
         <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">

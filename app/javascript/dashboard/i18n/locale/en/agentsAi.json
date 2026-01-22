@@ -30,8 +30,34 @@
             "DESCRIPTION": "All new open conversations are automatically assigned to your selected AI Agent.",
             "BUTTON": "Select AI Agent"
         },
+        "TEMPLATES": {
+            "TITLE": "AI Agent Templates",
+            "DESCRIPTION": "Use a template designed for business objectives such as assistance or sales, or create your own AI Agent from scratch.",
+            "USE_TEMPLATE": "Use template",
+            "ALERT_CLOSE": "Close",
+            "CREATE_FROM_SCRATCH": {
+                "TITLE": "Create from scratch",
+                "SUBTITLE": "Create a custom AI Agent.",
+                "BUTTON": "Start from scratch"
+            },
+            "ITEMS": {
+                "RECEPTIONIST": "Receptionist",
+                "RECEPTIONIST_DESC": "Greets contacts, identifies their needs, captures essential details and efficiently directs conversations to the right team or person for further help.",
+                "SALES_AGENT": "Sales agent",
+                "SALES_AGENT_DESC": "Greets potential customers, learns their needs, suggests suitable products and connects them with the corresponding team when ready.",
+                "SUPPORT_AGENT": "Support agent",
+                "SUPPORT_AGENT_DESC": "Answers product questions using your AI knowledge sources and, when necessary, seamlessly escalates the case to a human."
+            }
+        },
+        "CREATE": {
+            "TITLE": "Create AI Agent",
+            "CANCEL": "Cancel",
+            "PUBLISH": "Publish",
+            "KNOWLEDGE_AFTER_PUBLISH": "You can add knowledge sources, calendar and catalog on the capabilities page after publishing the agent."
+        },
         "CARD": {
             "ACTIVE": "Active",
+            "INACTIVE": "Inactive",
             "DEFAULT": "Default",
             "EDIT": "Edit",
             "ENABLED_SUCCESS": "Agent enabled successfully",
@@ -97,7 +123,7 @@
             "CONFIGURATION": {
                 "TITLE": "Configuration",
                 "DESCRIPTION": "Clearly define what the AI Agent is responsible for and how it supports your business.",
-                "EMOJI_LABEL": "Emoji",
+                "IMAGE_LABEL": "Image",
                 "NAME_LABEL": "Name",
                 "SHOW_DESCRIPTION": "Show description",
                 "INSTRUCTIONS": {
@@ -108,12 +134,23 @@
                     "LEARN_TO_WRITE": "Learn to write this"
                 }
             },
+            "PROMPT_TEMPLATES": {
+                "TITLE": "Prompt templates",
+                "SEARCH_PLACEHOLDER": "Search",
+                "ITEMS": {
+                    "GENERAL": "General instructions template",
+                    "COMMUNICATION": "Communication style",
+                    "LOCATION": "Geographic location",
+                    "HOURS": "Business hours"
+                }
+            },
             "TEST_AGENT": {
                 "TITLE": "Test AI Agent",
                 "RESET_CHAT": "Reset chat",
                 "TAB_CHAT": "Chat",
                 "TAB_CONTACT_FIELDS": "Contact fields",
                 "PLACEHOLDER": "Enter message here",
+                "WIDGET_ACTIVE": "The test widget is active in the corner of the page. Use it to test the agent.",
                 "EMPTY_STATE": {
                     "TITLE": "Test your AI Agent",
                     "DESCRIPTION": "To start the test, give your AI Agent a name and some instructions to see how it will respond in a real conversation."
@@ -127,7 +164,7 @@
                     "EMPTY_ALERT": "Do you want your AI Agent to respond with greater precision? Add and enable knowledge sources to give your AI Agent the context it needs for precise and company-specific responses.",
                     "EMPTY_TITLE": "Train your AI Agent",
                     "EMPTY_DESCRIPTION": "To improve accuracy, we recommend training your AI Agent with company-specific documents and links.",
-                    "ADD_BUTTON": "+ Add knowledge source"
+                    "ADD_BUTTON": "Add knowledge source"
                 },
                 "CALENDAR": {
                     "TITLE": "Calendar"
