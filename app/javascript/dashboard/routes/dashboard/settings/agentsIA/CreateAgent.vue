@@ -5,7 +5,6 @@ import { required } from '@vuelidate/validators';
 import { useAlert } from 'dashboard/composables';
 import TinyEditor from './widgets/TinyEditor.vue';
 import Spinner from 'shared/components/Spinner.vue';
-import { uploadFile } from 'dashboard/helper/uploadHelper';
 
 export default {
   name: 'CreateAgent',
@@ -87,6 +86,9 @@ export default {
   },
   beforeDestroy() {
     document.removeEventListener('click', this.handleTemplatesClickOutside);
+    if (this.avatarUrl && this.avatarUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(this.avatarUrl);
+    }
   },
   methods: {
     applyTemplateOrScratch() {
@@ -130,6 +132,8 @@ export default {
         this.showDescription = false;
         this.agent_type = 0;
         this.outgoing_url = `${base}/api/agent/maria`;
+        this.avatarUrl = null;
+        this.avatarFile = null;
       }
       this.$nextTick(() => {
         if (this.v$ && this.v$.$reset) this.v$.$reset();
@@ -138,41 +142,31 @@ export default {
     triggerAvatarUpload() {
       this.$refs.avatarInput?.click();
     },
-    async handleAvatarUpload(event) {
+    handleAvatarUpload(event) {
       const file = event.target.files?.[0];
       if (!file) return;
-      
-      // Validar que sea una imagen
+
       if (!file.type.startsWith('image/')) {
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_INVALID_TYPE') || 'Por favor selecciona un archivo de imagen');
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_INVALID_TYPE'));
         return;
       }
-      
-      // Validar tamaño (max 5MB)
+
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_SIZE_LIMIT') || 'La imagen no debe exceder 5MB');
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_SIZE_LIMIT'));
         return;
       }
-      
-      this.isUploadingAvatar = true;
-      try {
-        const result = await uploadFile(file, this.accountId);
-        this.avatarUrl = result.fileUrl;
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_SUCCESS') || 'Imagen cargada correctamente');
-      } catch (error) {
-        console.error('Error uploading avatar:', error);
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_ERROR') || 'Error al cargar la imagen');
-      } finally {
-        this.isUploadingAvatar = false;
-        // Reset input para permitir seleccionar el mismo archivo de nuevo
-        if (event.target) {
-          event.target.value = '';
-        }
+
+      if (this.avatarUrl && this.avatarUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(this.avatarUrl);
       }
+      this.avatarFile = file;
+      this.avatarUrl = URL.createObjectURL(file);
+      useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_SUCCESS'));
+      if (event.target) event.target.value = '';
     },
     cancel() {
-      this.$router.push({ path: 'templates' });
+      this.$router.push({ name: 'settings_agents_ia' });
     },
     toggleScheduleEnabled() {
       if (!this.scheduleEnabled) {
@@ -209,16 +203,13 @@ export default {
         init_at: this.scheduleEnabled ? this.initAt : '',
         finish_at: this.scheduleEnabled ? this.finishAt : '',
       };
-      if (this.avatarUrl) {
-        data.avatar_url = this.avatarUrl;
+      if (this.avatarFile instanceof File) {
+        data.avatar = this.avatarFile;
       }
       try {
-        const created = await this.$store.dispatch('agentBots/create', data);
+        await this.$store.dispatch('agentBots/create', data);
         useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.CREATE.SUCCESS'));
-        this.$router.replace({
-          name: 'settings_agent_capabilities',
-          query: { agent: created.id },
-        });
+        this.$router.replace({ name: 'settings_agents_ia' });
       } catch (error) {
         if (error?.response?.status === 402) {
           useAlert(this.$t('AGENTS_AI.PAYMENT_REQUIRED'));
@@ -302,13 +293,6 @@ export default {
                 class="w-full h-full object-cover"
               />
               <div
-                v-if="isUploadingAvatar"
-                class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-              >
-                <Spinner />
-              </div>
-              <div
-                v-else
                 class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-opacity"
               >
                 <fluent-icon

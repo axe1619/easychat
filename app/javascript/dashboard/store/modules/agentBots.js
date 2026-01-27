@@ -5,6 +5,21 @@ import AgentBotsAPI from '../../api/agentBots';
 import InboxesAPI from '../../api/inboxes';
 import { throwErrorMessage } from '../utils/api';
 
+const buildAgentBotFormData = (params) => {
+  const formData = new FormData();
+  const { avatar, id, ...rest } = params;
+  Object.keys(rest).forEach((key) => {
+    const v = rest[key];
+    if (v !== undefined && v !== null && key !== 'isFormData') {
+      formData.append(key, typeof v === 'boolean' ? (v ? '1' : '0') : v);
+    }
+  });
+  if (avatar instanceof File) {
+    formData.append('avatar', avatar);
+  }
+  return formData;
+};
+
 export const state = {
   records: [],
   uiFlags: {
@@ -52,7 +67,11 @@ export const actions = {
   create: async ({ commit }, agentBotObj) => {
     commit(types.SET_AGENT_BOT_UI_FLAG, { isCreating: true });
     try {
-      const response = await AgentBotsAPI.create(agentBotObj);
+      const isFormData = agentBotObj.avatar instanceof File;
+      const payload = isFormData
+        ? buildAgentBotFormData(agentBotObj)
+        : agentBotObj;
+      const response = await AgentBotsAPI.create(payload);
       commit(types.ADD_AGENT_BOT, response.data);
       return response.data;
     } catch (error) {
@@ -65,7 +84,11 @@ export const actions = {
   update: async ({ commit }, { id, ...agentBotObj }) => {
     commit(types.SET_AGENT_BOT_UI_FLAG, { isUpdating: true });
     try {
-      const response = await AgentBotsAPI.update(id, agentBotObj);
+      const isFormData = agentBotObj.avatar instanceof File;
+      const payload = isFormData
+        ? buildAgentBotFormData(agentBotObj)
+        : agentBotObj;
+      const response = await AgentBotsAPI.update(id, payload);
       commit(types.EDIT_AGENT_BOT, response.data);
     } catch (error) {
       throwErrorMessage(error);

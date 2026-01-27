@@ -53,7 +53,11 @@
             "TITLE": "Crear Agente IA",
             "CANCEL": "Cancelar",
             "PUBLISH": "Publicar",
-            "KNOWLEDGE_AFTER_PUBLISH": "Podrás añadir fuentes de conocimiento, calendario y catálogo en la página de capacidades después de publicar el agente."
+            "KNOWLEDGE_AFTER_PUBLISH": "Podrás añadir fuentes de conocimiento, calendario y catálogo en la página de capacidades después de publicar el agente.",
+            "AVATAR_INVALID_TYPE": "Por favor selecciona un archivo de imagen (JPG, PNG, GIF, WebP).",
+            "AVATAR_SIZE_LIMIT": "La imagen no debe exceder 5 MB.",
+            "AVATAR_UPLOAD_SUCCESS": "Imagen cargada correctamente.",
+            "AVATAR_UPLOAD_ERROR": "Error al cargar la imagen. Inténtalo de nuevo."
         },
         "CARD": {
             "ACTIVE": "Activo",
@@ -146,6 +150,7 @@
             },
             "TEST_AGENT": {
                 "TITLE": "Probar Agente IA",
+                "START_BUTTON": "Iniciar prueba",
                 "RESET_CHAT": "Restablecer chat",
                 "TAB_CHAT": "Chatear",
                 "TAB_CONTACT_FIELDS": "Campos de contacto",

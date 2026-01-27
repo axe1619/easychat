@@ -53,7 +53,11 @@
             "TITLE": "Create AI Agent",
             "CANCEL": "Cancel",
             "PUBLISH": "Publish",
-            "KNOWLEDGE_AFTER_PUBLISH": "You can add knowledge sources, calendar and catalog on the capabilities page after publishing the agent."
+            "KNOWLEDGE_AFTER_PUBLISH": "You can add knowledge sources, calendar and catalog on the capabilities page after publishing the agent.",
+            "AVATAR_INVALID_TYPE": "Please select an image file (JPG, PNG, GIF, WebP).",
+            "AVATAR_SIZE_LIMIT": "The image must not exceed 5 MB.",
+            "AVATAR_UPLOAD_SUCCESS": "Image uploaded successfully.",
+            "AVATAR_UPLOAD_ERROR": "Error uploading image. Please try again."
         },
         "CARD": {
             "ACTIVE": "Active",
@@ -146,6 +150,7 @@
             },
             "TEST_AGENT": {
                 "TITLE": "Test AI Agent",
+                "START_BUTTON": "Start test",
                 "RESET_CHAT": "Reset chat",
                 "TAB_CHAT": "Chat",
                 "TAB_CONTACT_FIELDS": "Contact fields",

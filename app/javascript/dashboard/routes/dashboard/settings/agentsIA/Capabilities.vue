@@ -12,9 +12,9 @@ import Spinner from 'shared/components/Spinner.vue';
 import WootSubmitButton from '../../../../components/buttons/FormSubmitButton.vue';
 import axios from 'axios';
 import { frontUrl } from './services/apiAgent';
-import { uploadFile } from 'dashboard/helper/uploadHelper';
 
 const SCRIPT_NAME = 'snap-script';
+const TEST_INBOX_NAME = 'Agente de Prueba';
 
 export default {
   components: {
@@ -49,7 +49,7 @@ export default {
       templateSearchQuery: '',
       avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
       avatarUrl: null,
-      isUploadingAvatar: false,
+      avatarFile: null,
       promptTemplates: [
         { id: 'general', titleKey: 'GENERAL', content: '# CONTEXT\n[Describe who the AI Agent is talking to and any key info it needs (e.g. company, conversation goal, business hours)]' },
         { id: 'communication', titleKey: 'COMMUNICATION', content: '# COMMUNICATION STYLE\n- Speak casually and use emojis where it feels natural.\n- Ask only one question at a time. Keep...' },
@@ -160,11 +160,7 @@ export default {
           this.initAt = newBot.init_at || '';
           this.finishAt = newBot.finish_at || '';
           this.avatarUrl = newBot.avatar_url || null;
-          
-          // Initialize test agent
-          if (newBot.id && !this.hasStarted) {
-            this.initTestAgent(newBot.id);
-          }
+          this.avatarFile = null;
         }
       },
     },
@@ -193,6 +189,9 @@ export default {
   beforeDestroy() {
     window.removeEventListener('beforeunload', this._beforeUnload);
     window.removeEventListener('message', this.handleGoogleAuthMessage);
+    if (this.avatarUrl && this.avatarUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(this.avatarUrl);
+    }
     this.onRemove();
   },
   methods: {
@@ -254,7 +253,7 @@ export default {
     },
     async saveConfiguration() {
       if (this.isButtonDisabled || this.isUpdating || !this.agentBot || !this.agentBot.id) return;
-      
+
       const data = {
         id: this.agentBot.id,
         name: this.agentName,
@@ -263,10 +262,10 @@ export default {
         init_at: this.scheduleEnabled ? this.initAt : '',
         finish_at: this.scheduleEnabled ? this.finishAt : '',
       };
-      if (this.avatarUrl) {
-        data.avatar_url = this.avatarUrl;
+      if (this.avatarFile instanceof File) {
+        data.avatar = this.avatarFile;
       }
-      
+
       try {
         await this.$store.dispatch('agentBots/update', data);
         useAlert(this.$t('AGENTS_AI.ALERT.AGENT_BOT.UPDATE.SUCCESS'));
@@ -278,72 +277,72 @@ export default {
     triggerAvatarUpload() {
       this.$refs.avatarInput?.click();
     },
-    async handleAvatarUpload(event) {
+    handleAvatarUpload(event) {
       const file = event.target.files?.[0];
       if (!file) return;
-      
-      // Validar que sea una imagen
+
       if (!file.type.startsWith('image/')) {
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_INVALID_TYPE') || 'Por favor selecciona un archivo de imagen');
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_INVALID_TYPE'));
         return;
       }
-      
-      // Validar tamaño (max 5MB)
+
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_SIZE_LIMIT') || 'La imagen no debe exceder 5MB');
+        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_SIZE_LIMIT'));
         return;
       }
-      
-      this.isUploadingAvatar = true;
-      try {
-        const result = await uploadFile(file, this.accountId);
-        this.avatarUrl = result.fileUrl;
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_SUCCESS') || 'Imagen cargada correctamente');
-      } catch (error) {
-        console.error('Error uploading avatar:', error);
-        useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_ERROR') || 'Error al cargar la imagen');
-      } finally {
-        this.isUploadingAvatar = false;
-        // Reset input para permitir seleccionar el mismo archivo de nuevo
-        if (event.target) {
-          event.target.value = '';
-        }
+
+      if (this.avatarUrl && this.avatarUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(this.avatarUrl);
       }
+      this.avatarFile = file;
+      this.avatarUrl = URL.createObjectURL(file);
+      useAlert(this.$t('AGENTS_AI.CREATE.AVATAR_UPLOAD_SUCCESS'));
+      if (event.target) event.target.value = '';
     },
     cancelChanges() {
-      this.$router.push({ name: 'settings_agents_ai' });
+      this.$router.push({ name: 'settings_agents_ia' });
     },
     
-    // Test Agent methods
+    // Test Agent: solo al hacer clic en "Iniciar prueba". Reutilizar inbox "Agente de Prueba".
     async initTestAgent(agentBotId) {
       if (!agentBotId || this.hasStarted) return;
-      
+
       this.isRunning = true;
       this.injectError = null;
-      
+
       try {
+        await this.$store.dispatch('inboxes/get');
         if (!this.website?.id) {
-          const website = await this.$store.dispatch('inboxes/createWebsiteChannel', {
-            name: 'Agente de Prueba',
-            greeting_enabled: false,
-            greeting_message: 'Hi there!',
-            enable_email_collect: false,
-            mode: 'sandbox',
-            channel: {
-              type: 'web_widget',
-              website_url: 'http://localhost:3000/',
-              widget_color: '#009CE0',
-              welcome_title: 'Agente de Prueba!',
-              welcome_tagline: 'Bienvenido al entorno de prueba de Agente de Prueba',
-            },
-          });
-          this.website = website || null;
-          this.scriptContent = website?.web_widget_script || '';
+          const websiteInboxes = this.$store.getters['inboxes/getWebsiteInboxes'] || [];
+          const existing = websiteInboxes.find(
+            inbox => inbox.name && inbox.name.trim() === TEST_INBOX_NAME
+          );
+          if (existing) {
+            this.website = existing;
+            this.scriptContent = existing.web_widget_script || '';
+          } else {
+            const website = await this.$store.dispatch('inboxes/createWebsiteChannel', {
+              name: TEST_INBOX_NAME,
+              greeting_enabled: false,
+              greeting_message: 'Hi there!',
+              enable_email_collect: false,
+              mode: 'sandbox',
+              channel: {
+                type: 'web_widget',
+                website_url: 'http://localhost:3000/',
+                widget_color: '#009CE0',
+                welcome_title: 'Agente de Prueba!',
+                welcome_tagline: 'Bienvenido al entorno de prueba de Agente de Prueba',
+              },
+            });
+            this.website = website || null;
+            this.scriptContent = website?.web_widget_script || '';
+          }
         } else {
           this.scriptContent = this.website?.web_widget_script || this.scriptContent;
         }
-        
+
         if (this.website?.id && agentBotId) {
           await this.$store.dispatch('agentBots/setAgentBotInbox', {
             inboxId: this.website.id,
@@ -385,14 +384,6 @@ export default {
       
       script.onload = () => {
         URL.revokeObjectURL(src);
-        const observer = new MutationObserver(() => {
-          const bubble = document.querySelector('.woot-widget-bubble.woot-elements--right');
-          if (bubble) {
-            bubble.click();
-            observer.disconnect();
-          }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
       };
       
       script.onerror = () => {
@@ -411,21 +402,13 @@ export default {
     async onRemove() {
       if (this.cleanupDone) return;
       this.cleanupDone = true;
-      
+
       try {
         this.removeScript();
       } catch (e) {
         console.error('removeScript error:', e);
       }
-      
-      try {
-        if (this.website?.id) {
-          await this.$store.dispatch('inboxes/delete', this.website.id);
-          this.website = null;
-        }
-      } catch (e) {
-        console.error('deleteInbox error:', e);
-      }
+      // No eliminar el inbox de prueba: se reutiliza en futuras visitas a Capabilities
     },
     resetChat() {
       this.onRemove();
@@ -691,13 +674,6 @@ export default {
                   class="w-full h-full object-cover"
                 />
                 <div
-                  v-if="isUploadingAvatar"
-                  class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-                >
-                  <Spinner />
-                </div>
-                <div
-                  v-else
                   class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-opacity"
                 >
                   <fluent-icon
@@ -857,9 +833,19 @@ export default {
             <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">
               {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.EMPTY_STATE.TITLE') }}
             </h3>
-            <p class="text-sm text-slate-600 dark:text-slate-400 max-w-md">
+            <p class="text-sm text-slate-600 dark:text-slate-400 max-w-md mb-4">
               {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.EMPTY_STATE.DESCRIPTION') }}
             </p>
+            <woot-button
+              variant="smooth"
+              color-scheme="primary"
+              size="small"
+              :loading="isRunning"
+              :disabled="isRunning"
+              @click="initTestAgent(agentBot && agentBot.id)"
+            >
+              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.START_BUTTON') }}
+            </woot-button>
           </div>
           <div v-else class="flex-1 p-4">
             <p class="text-sm text-slate-500 dark:text-slate-400">
