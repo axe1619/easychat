@@ -99,6 +99,7 @@ export default {
               name: 'Agente de Prueba',
               greeting_enabled: false,
               greeting_message: 'Hi there!',
+              enable_email_collect: false,
               mode: "sandbox",
               channel: {
                 type: 'web_widget',

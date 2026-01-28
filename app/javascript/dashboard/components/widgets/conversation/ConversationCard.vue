@@ -8,6 +8,7 @@ import { frontendURL, conversationUrl } from '../../../helper/URLHelper';
 import InboxName from '../InboxName.vue';
 import inboxMixin from 'shared/mixins/inboxMixin';
 import ConversationContextMenu from './contextMenu/Index.vue';
+import MenuItem from './contextMenu/menuItem.vue';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
 import CardLabels from './conversationCardComponents/CardLabels.vue';
 import PriorityMark from './PriorityMark.vue';
@@ -19,6 +20,7 @@ export default {
     InboxName,
     Thumbnail,
     ConversationContextMenu,
+    MenuItem,
     TimeAgo,
     MessagePreview,
     PriorityMark,
@@ -145,6 +147,9 @@ export default {
     hasSlaPolicyId() {
       return this.chat?.sla_policy_id;
     },
+    isContactConversationCard() {
+      return this.redirectRoute?.name === 'contact_profile_dashboard';
+    },
   },
   methods: {
     onCardClick(e) {
@@ -192,9 +197,11 @@ export default {
       this.$emit(action, this.chat.id, this.inbox.id);
     },
     openContextMenu(e) {
-      if (!this.enableContextMenu) return;
       e.preventDefault();
-      this.$emit('contextMenuToggle', true);
+      // Si enableContextMenu está activado, emitir el evento para el componente padre
+      if (this.enableContextMenu) {
+        this.$emit('contextMenuToggle', true);
+      }
       this.contextMenu.x = e.pageX || e.clientX;
       this.contextMenu.y = e.pageY || e.clientY;
       this.showContextMenu = true;
@@ -233,6 +240,39 @@ export default {
     async assignPriority(priority) {
       this.$emit('assignPriority', priority, this.chat.id);
       this.closeContextMenu();
+    },
+    openInNewTab() {
+      let url = '';
+      
+      // Si es un card de contacto, usar la ruta de contacto
+      if (this.isContactConversationCard && this.redirectRoute) {
+        url = frontendURL(
+          `accounts/${this.redirectRoute.params.accountId}/contacts/${this.redirectRoute.params.contactId}`,
+          { conversationId: this.chat.id }
+        );
+      } else {
+        // Para cualquier otro card, usar la ruta de conversación normal
+        const { activeInbox } = this;
+        const path = conversationUrl({
+          accountId: this.accountId,
+          activeInbox,
+          id: this.chat.id,
+          label: this.activeLabel,
+          teamId: this.teamId,
+          foldersId: this.foldersId,
+          conversationType: this.conversationType,
+        });
+        url = frontendURL(path);
+      }
+      
+      if (url) {
+        window.open(
+          window.chatwootConfig.hostURL + url,
+          '_blank',
+          'noopener noreferrer'
+        );
+        this.closeContextMenu();
+      }
     },
   },
 };
@@ -355,6 +395,15 @@ export default {
         @assignTeam="onAssignTeam"
         @markAsUnread="markAsUnread"
         @assignPriority="assignPriority"
+      />
+      <hr />
+      <MenuItem
+        :option="{
+          icon: 'open',
+          label: $t('CONVERSATION.CARD_CONTEXT_MENU.OPEN_IN_NEW_TAB'),
+        }"
+        variant="icon"
+        @click="openInNewTab"
       />
     </woot-context-menu>
   </div>

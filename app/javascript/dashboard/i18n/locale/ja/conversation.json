@@ -120,6 +120,7 @@
       "ASSIGN_LABEL": "ラベルを割り当てる",
       "AGENTS_LOADING": "エージェントを読み込む...",
       "ASSIGN_TEAM": "チームを割り当てる",
+      "OPEN_IN_NEW_TAB": "新しいタブで開く",
       "API": {
         "AGENT_ASSIGNMENT": {
           "SUCCESFUL": "会話 ID %{conversationId} が \"%{agentName}\" に割り当てられました",

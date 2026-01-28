@@ -2,6 +2,8 @@ import { frontendURL } from '../../../../helper/URLHelper';
 
 const SettingsWrapper = () => import('../Wrapper.vue');
 const IndexAgentsAI = () => import('./Index.vue');
+const TemplatesAgentsIA = () => import('./TemplatesAgentsIA.vue');
+const CreateAgent = () => import('./CreateAgent.vue');
 const Capabilities = () => import('./Capabilities.vue');
 const AgentTest = () => import('./components/AgentTest.vue');
 
@@ -32,6 +34,22 @@ export default {
           path: 'list',
           name: 'settings_agents_ia',
           component: IndexAgentsAI,
+          meta: {
+            permissions: ['administrator'],
+          },
+        },
+        {
+          path: 'templates',
+          name: 'settings_agents_ia_templates',
+          component: TemplatesAgentsIA,
+          meta: {
+            permissions: ['administrator'],
+          },
+        },
+        {
+          path: 'create',
+          name: 'settings_agents_ia_create',
+          component: CreateAgent,
           meta: {
             permissions: ['administrator'],
           },

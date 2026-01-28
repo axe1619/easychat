@@ -160,6 +160,7 @@
       "ASSIGN_LABEL": "Assign label",
       "AGENTS_LOADING": "Loading agents...",
       "ASSIGN_TEAM": "Assign team",
+      "OPEN_IN_NEW_TAB": "Open in new tab",
       "API": {
         "AGENT_ASSIGNMENT": {
           "SUCCESFUL": "Conversation id %{conversationId} assigned to \"%{agentName}\"",

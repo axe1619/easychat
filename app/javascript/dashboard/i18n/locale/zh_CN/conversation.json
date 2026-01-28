@@ -120,6 +120,7 @@
       "ASSIGN_LABEL": "分配标签",
       "AGENTS_LOADING": "正在加载客服代表...",
       "ASSIGN_TEAM": "分配一个团队",
+      "OPEN_IN_NEW_TAB": "在新标签页中打开",
       "API": {
         "AGENT_ASSIGNMENT": {
           "SUCCESFUL": "对话 ID %{conversationId} 已分配给 \"%{agentName}\"",

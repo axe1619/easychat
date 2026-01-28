@@ -13,8 +13,70 @@
             "TITLE": "Agentes IA",
             "DESCRIPTION": "Elige un agente de inteligencia artificial en la lista de abajo, para poder modificar sus capacidades de acorde a las necesidades de tu empresa."
         },
+        "INBOXES_COUNT": "Número de entradas: {count}",
+        "INBOXES_LIST": {
+            "TITLE": "Entradas para {agentName}",
+            "EMPTY": "Este agente no está asignado a ninguna entrada"
+        },
         "BUTTON": {
-            "ADD": "Añadir agente"
+            "ADD": "Añadir agente",
+            "MANAGE_KNOWLEDGE_SOURCES": "Administrar fuentes de conocimiento"
+        },
+        "SEARCH": {
+            "PLACEHOLDER": "Buscar"
+        },
+        "DEFAULT_AGENT": {
+            "TITLE": "Establecer Agente IA predeterminado",
+            "DESCRIPTION": "Todas las nuevas conversaciones abiertas se asignan automáticamente a tu Agente IA seleccionado.",
+            "BUTTON": "Seleccionar Agente IA"
+        },
+        "TEMPLATES": {
+            "TITLE": "Plantillas de Agentes IA",
+            "DESCRIPTION": "Utiliza una plantilla diseñada para objetivos de negocio como asistencia o ventas, o crea tu propio Agente IA desde cero.",
+            "USE_TEMPLATE": "Usar plantilla",
+            "ALERT_CLOSE": "Cerrar",
+            "CREATE_FROM_SCRATCH": {
+                "TITLE": "Crear uno desde cero",
+                "SUBTITLE": "Crear un Agente IA personalizado.",
+                "BUTTON": "Empezar desde cero"
+            },
+            "ITEMS": {
+                "RECEPTIONIST": "Recepcionista",
+                "RECEPTIONIST_DESC": "Saluda a los contactos, identifica sus necesidades, captura detalles esenciales y dirige de manera eficiente las conversaciones al equipo o persona adecuada para obtener ayuda adicional.",
+                "SALES_AGENT": "Agente de ventas",
+                "SALES_AGENT_DESC": "Saluda a los clientes potenciales, conoce sus necesidades, sugiere productos adecuados y los conecta con el equipo correspondiente cuando está listo.",
+                "SUPPORT_AGENT": "Agente de soporte",
+                "SUPPORT_AGENT_DESC": "Responde a preguntas sobre productos utilizando tus fuentes de conocimiento de IA y, cuando es necesario, deriva el caso a un humano sin problemas."
+            }
+        },
+        "CREATE": {
+            "TITLE": "Crear Agente IA",
+            "CANCEL": "Cancelar",
+            "PUBLISH": "Publicar",
+            "KNOWLEDGE_AFTER_PUBLISH": "Podrás añadir fuentes de conocimiento, calendario y catálogo en la página de capacidades después de publicar el agente.",
+            "AVATAR_INVALID_TYPE": "Por favor selecciona un archivo de imagen (JPG, PNG, GIF, WebP).",
+            "AVATAR_SIZE_LIMIT": "La imagen no debe exceder 5 MB.",
+            "AVATAR_UPLOAD_SUCCESS": "Imagen cargada correctamente.",
+            "AVATAR_UPLOAD_ERROR": "Error al cargar la imagen. Inténtalo de nuevo."
+        },
+        "CARD": {
+            "ACTIVE": "Activo",
+            "INACTIVE": "Desactivado",
+            "DEFAULT": "Predeterminado",
+            "EDIT": "Editar",
+            "ENABLED_SUCCESS": "Agente activado correctamente",
+            "DISABLED_SUCCESS": "Agente desactivado correctamente",
+            "TOGGLE_ERROR": "Error al cambiar el estado del agente",
+            "MENU": {
+                "DUPLICATE": "Duplicar",
+                "DELETE": "Eliminar",
+                "DUPLICATE_NOT_AVAILABLE": "La funcionalidad de duplicar aún no está disponible"
+            },
+            "CREATE_NEW": {
+                "TITLE": "Crear nuevo Agente IA",
+                "DESCRIPTION": "Añade un nuevo Agente IA a tu equipo.",
+                "BUTTON": "Crear Agente IA"
+            }
         },
         "ADD": {
             "NAME": "Agregar nuevo agente",
@@ -53,6 +115,69 @@
             "TITLE": "Capacidades",
             "DESCRIPTION_A": "En esta sección puedes configurar cómo deseas que tu agente de inteligencia artificial te ayude a responder mensajes, brindar información o realizar tareas de forma automática.",
             "DESCRIPTION_B": "Personaliza su comportamiento, el tono de sus respuestas y las funciones que deseas activar. No necesitas conocimientos técnicos: solo elige lo que mejor se adapte a tu negocio y deja que el agente trabaje por ti."
+        },
+        "CAPABILITIES": {
+            "HEADER": {
+                "EDIT_TITLE": "Editar {agentName}",
+                "LAST_UPDATE": "Última actualización hace {days} días",
+                "ACTIVE": "Activo",
+                "SAVE": "Guardar",
+                "CANCEL": "Cancelar"
+            },
+            "CONFIGURATION": {
+                "TITLE": "Configuración",
+                "DESCRIPTION": "Define claramente de qué es responsable el Agente IA y cómo respalda tu negocio.",
+                "IMAGE_LABEL": "Imagen",
+                "NAME_LABEL": "Nombre",
+                "SHOW_DESCRIPTION": "Mostrar descripción",
+                "INSTRUCTIONS": {
+                    "TITLE": "Instrucciones",
+                    "DESCRIPTION": "Describe la función del agente de IA, su estilo de comunicación y las acciones que debe realizar. Proporciona instrucciones paso a paso utilizando un lenguaje claro y práctico.",
+                    "ADD_TEMPLATES": "Añadir plantillas de indicaciones",
+                    "OPTIMIZE": "Optimizar",
+                    "LEARN_TO_WRITE": "Aprende a escribir esto"
+                }
+            },
+            "PROMPT_TEMPLATES": {
+                "TITLE": "Plantillas de indicaciones",
+                "SEARCH_PLACEHOLDER": "Buscar",
+                "ITEMS": {
+                    "GENERAL": "Plantilla de instrucciones generales",
+                    "COMMUNICATION": "Estilo de comunicación",
+                    "LOCATION": "Ubicación geográfica",
+                    "HOURS": "Horario de atención"
+                }
+            },
+            "TEST_AGENT": {
+                "TITLE": "Probar Agente IA",
+                "START_BUTTON": "Iniciar prueba",
+                "RESET_CHAT": "Restablecer chat",
+                "TAB_CHAT": "Chatear",
+                "TAB_CONTACT_FIELDS": "Campos de contacto",
+                "PLACEHOLDER": "Introduce el mensaje aquí",
+                "WIDGET_ACTIVE": "El widget de prueba está activo en la esquina de la página. Úsalo para probar el agente.",
+                "EMPTY_STATE": {
+                    "TITLE": "Prueba tu Agente IA",
+                    "DESCRIPTION": "Para empezar la prueba, dale un nombre a tu Agente IA y algunas instrucciones para ver cómo responderá en una conversación real."
+                }
+            },
+            "ACTIONS": {
+                "TITLE": "Acciones",
+                "DESCRIPTION": "Asigna acciones que el Agente IA puede realizar durante una conversación. Cada acción solo funciona si está habilitada.",
+                "KNOWLEDGE_SOURCES": {
+                    "TITLE": "Fuentes de conocimiento",
+                    "EMPTY_ALERT": "¿Quieres que tu Agente IA responda con mayor precisión? Añade y habilita fuentes de conocimiento para dar a tu Agente IA el contexto que necesita para respuestas precisas y específicas de la empresa.",
+                    "EMPTY_TITLE": "Entrenar a tu Agente IA",
+                    "EMPTY_DESCRIPTION": "Para mejorar la exactitud, recomendamos entrenar a tu Agente IA con documentos y enlaces específicos de la empresa.",
+                    "ADD_BUTTON": "Añadir fuente de conocimiento"
+                },
+                "CALENDAR": {
+                    "TITLE": "Calendario"
+                },
+                "CATALOG": {
+                    "TITLE": "Catálogo"
+                }
+            }
         },
         "CARDS": {
             "IN_DEPLOY": "En desarrollo",
@@ -210,6 +335,17 @@
                     "SUCCESS": "Agente eliminado con éxito",
                     "FAIL": "El agente no pudo ser eliminado"
                 }
+            },
+            "DEFAULT_AGENT": {
+                "TITLE": "Seleccionar Agente IA predeterminado",
+                "SUBTITLE": "Seleccionar Agente IA",
+                "DESCRIPTION": "Este Agente IA gestionará todas las nuevas conversaciones abiertas.",
+                "SELECT_LABEL": "Seleccionar agente",
+                "NONE": "Ninguno",
+                "SAVE": "Guardar",
+                "CANCEL": "Cancelar",
+                "SUCCESS": "Agente predeterminado actualizado correctamente",
+                "ERROR": "Error al actualizar el agente predeterminado"
             }
         }
     }
