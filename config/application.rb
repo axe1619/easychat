@@ -66,4 +66,9 @@ module Chatwoot
     # ref: https://www.rubydoc.info/stdlib/openssl/OpenSSL/SSL/SSLContext#DEFAULT_PARAMS-constant
     ENV['REDIS_OPENSSL_VERIFY_MODE'] == 'none' ? OpenSSL::SSL::VERIFY_NONE : OpenSSL::SSL::VERIFY_PEER
   end
+
+  def self.encryption_configured?
+    config = ActiveRecord::Encryption.config
+    config.primary_key.present? && config.deterministic_key.present? && config.key_derivation_salt.present?
+  end
 end

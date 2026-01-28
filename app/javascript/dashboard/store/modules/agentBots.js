@@ -96,6 +96,17 @@ export const actions = {
       commit(types.SET_AGENT_BOT_UI_FLAG, { isUpdating: false });
     }
   },
+  updateFormData: async ({ commit }, { id, data }) => {
+    commit(types.SET_AGENT_BOT_UI_FLAG, { isUpdating: true });
+    try {
+      const response = await AgentBotsAPI.update(id, data);
+      commit(types.EDIT_AGENT_BOT, response.data);
+    } catch (error) {
+      throwErrorMessage(error);
+    } finally {
+      commit(types.SET_AGENT_BOT_UI_FLAG, { isUpdating: false });
+    }
+  },
   delete: async ({ commit }, id) => {
     commit(types.SET_AGENT_BOT_UI_FLAG, { isDeleting: true });
     try {

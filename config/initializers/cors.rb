@@ -23,16 +23,20 @@ end
 
 # Mount Action Cable outside main process or domain
 Rails.application.config.action_cable.mount_path = nil
-Rails.application.config.action_cable.url = 'wss://telestreamsbo.com/cable'
 
-# List of allowed origins that can connect to Action Cable
-Rails.application.config.action_cable.allowed_request_origins = [
-  'https://development.controlfacilito.com', # Frontend en desarrollo con HTTPS
-  'http://development.controlfacilito.com',  # Frontend en desarrollo con HTTP
-  'https://www.controlfacilito.com'         # Dominio en producción
-]
+# Configure Action Cable URL from environment
+action_cable_url = ENV['ACTION_CABLE_URL']
+Rails.application.config.action_cable.url = action_cable_url if action_cable_url.present?
+
+# Allowed origins for Action Cable
+allowed_origins = ENV.fetch('ACTION_CABLE_ALLOWED_REQUEST_ORIGINS', '')
+                    .split(',')
+                    .map(&:strip)
+                    .reject(&:empty?)
+allowed_origins += [ENV['FRONTEND_URL'], ENV['BACKEND_URL']].compact
+allowed_origins.uniq!
+Rails.application.config.action_cable.allowed_request_origins = allowed_origins if allowed_origins.present?
 
 # Enable connecting to the API channel public APIs
 # Disables request forgery protection for Action Cable
 Rails.application.config.action_cable.disable_request_forgery_protection = true
-

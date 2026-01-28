@@ -133,6 +133,10 @@ class Inbox < ApplicationRecord
     channel_type == 'Channel::TwitterProfile'
   end
 
+  def tiktok?
+    channel_type == 'Channel::Tiktok'
+  end
+
   def whatsapp?
     channel_type == 'Channel::Whatsapp'
   end
@@ -180,6 +184,21 @@ class Inbox < ApplicationRecord
 
   def member_ids_with_assignment_capacity
     members.ids
+  end
+
+  def destroy_sandbox!
+    ActiveRecord::Base.transaction do
+      campaigns.destroy_all
+      contact_inboxes.destroy_all
+      inbox_members.destroy_all
+      conversations.destroy_all
+      messages.destroy_all
+      agent_bot_inbox&.destroy
+      webhooks.destroy_all
+      hooks.destroy_all
+
+      destroy!
+    end
   end
 
   private

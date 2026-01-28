@@ -16,6 +16,12 @@ export default {
     hasFbConfigured() {
       return window.chatwootConfig?.fbAppId;
     },
+    hasTiktokConfigured() {
+      return window.chatwootConfig?.tiktokAppId;
+    },
+    hasInstagramConfigured() {
+      return window.chatwootConfig?.instagramAppId;
+    },
     isActive() {
       const { key } = this.channel;
       if (Object.keys(this.enabledFeatures).length === 0) {
@@ -26,6 +32,17 @@ export default {
       }
       if (key === 'facebook') {
         return this.enabledFeatures.channel_facebook && this.hasFbConfigured;
+      }
+      if (key === 'tiktok') {
+        // Keep TikTok available whenever the app is configured, ignore per-account feature flag
+        return this.hasTiktokConfigured;
+      }
+      if (key === 'instagram') {
+        const instagramFeatureEnabled =
+          this.enabledFeatures.channel_instagram ?? true;
+        return (
+          instagramFeatureEnabled && this.hasInstagramConfigured
+        );
       }
       if (key === 'email') {
         return this.enabledFeatures.channel_email;
@@ -41,6 +58,8 @@ export default {
         'line',
         'whatsappweb',
         'call',
+        'tiktok',
+        'instagram',
       ].includes(key);
     },
   },

@@ -12,8 +12,14 @@ class Base::SendOnChannelService
 
   def perform
     validate_target_channel
-    return unless outgoing_message?
-    return if invalid_message?
+    unless outgoing_message?
+      Rails.logger.info({ service: self.class.name, action: 'perform', skipped: 'not_outgoing', message_id: message.id })
+      return
+    end
+    if invalid_message?
+      Rails.logger.info({ service: self.class.name, action: 'perform', skipped: 'invalid_message', message_id: message.id, private: message.private?, source_id_present: message.source_id.present? })
+      return
+    end
 
     perform_reply
   end

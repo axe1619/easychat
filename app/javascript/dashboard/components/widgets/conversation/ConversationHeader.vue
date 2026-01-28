@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { mapGetters } from 'vuex';
 import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents';
+import { useAlert } from 'dashboard/composables';
 import agentMixin from '../../../mixins/agentMixin.js';
 import BackButton from '../BackButton.vue';
 import inboxMixin from 'shared/mixins/inboxMixin';
@@ -131,6 +132,44 @@ export default {
         FEATURE_FLAGS.LINEAR
       );
     },
+    isWhatsAppChannel() {
+      return this.isAWhatsAppChannel;
+    },
+    lastCallActivity() {
+      const messages = this.chat?.messages || [];
+      return [...messages]
+        .reverse()
+        .find(
+          msg =>
+            msg.message_type === 2 &&
+            msg.additional_attributes &&
+            (msg.additional_attributes.call_status ||
+              msg.additional_attributes.call)
+        );
+    },
+    hasIncomingCallIntent() {
+      const call = this.lastCallActivity?.additional_attributes || {};
+      return (
+        (call.direction || '').includes('in') ||
+        call.call_status?.toString().toLowerCase() === 'ringing'
+      );
+    },
+    callStatusLabel() {
+      const call = this.lastCallActivity?.additional_attributes || {};
+      const status = call.call_status || call.status;
+      if (!status && !this.hasIncomingCallIntent) return '';
+      const parts = [];
+      parts.push(call.direction === 'outgoing' ? 'Llamada saliente' : 'Llamada entrante');
+      if (status) {
+        parts.push(`(${status.toString().toUpperCase()})`);
+      }
+      return parts.join(' ');
+    },
+  },
+  methods: {
+    startCall() {
+      useAlert('Pronto podras iniciar llamadas de WhatsApp desde aqui.');
+    },
   },
 };
 </script>
@@ -214,6 +253,23 @@ export default {
           :conversation-id="currentChat.id"
         />
         <MoreActions :conversation-id="currentChat.id" />
+        <woot-button
+          v-if="isWhatsAppChannel"
+          class="hidden lg:flex"
+          variant="secondary"
+          icon="call"
+          size="small"
+          @click="startCall"
+        >
+          Llamada (beta)
+        </woot-button>
+        <span
+          v-if="isWhatsAppChannel && hasIncomingCallIntent"
+          class="flex items-center gap-1 px-2 py-1 text-xs font-medium text-yellow-700 bg-yellow-50 border rounded-full border-yellow-200"
+        >
+          <fluent-icon icon="call" size="12" />
+          {{ callStatusLabel || 'Llamada entrante' }}
+        </span>
       </div>
     </div>
   </div>

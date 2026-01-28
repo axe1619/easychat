@@ -708,7 +708,7 @@
         <!--[-->
       <main class="min-h-screen" style="overflow-x: hidden;">
         <section class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 reveal hero-section">
-          <div class="max-w-6xl mx-auto grid gap-10 md:grid-cols-2 md:items-center">
+          <div class="max-w-6xl mx-auto responsive-layout">
             <div class="text-center md:text-left">
               <h1 class="mx-auto max-w-4xl font-display text-4xl font-semibold text-slate-900 sm:text-6xl xl:text-7xl aos-init aos-animate hero-title" data-v-762a749a="">
                 Inteligencia Artificial que <div id="change_word"  class="bg-clip-text bg-gradient-to-r from-[#007cf0] to-[#32b7e4] text-transparent inline-block">trabajan</div>  por ti 
@@ -768,7 +768,7 @@
             </div>
             <div class="relative">
               <div class="absolute -inset-3 bg-gradient-to-r from-[#007cf0]/15 via-[#1f3b5a]/10 to-[#32b7e4]/15 blur-3xl rounded-3xl"></div>
-              <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 mx-auto w-[380px] min-w-[380px] max-w-[380px] h-[520px] min-h-[620px] max-h-[520px] flex flex-col gap-3 overflow-hidden flex-shrink-0" style="width:380px;height:520px;">
+              <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 mx-auto w-[380px] min-w-[380px] max-w-[380px] h-[520px] min-h-[620px] max-h-[520px] flex flex-col gap-3 overflow-hidden flex-shrink-0" style="height:520px;">
                 <div class="flex items-center justify-between flex-none">
                   <div class="flex items-center space-x-3">
                     <span class="h-10 w-10 rounded-full bg-woot/10 flex items-center justify-center text-woot-darker font-semibold">IA</span>
@@ -806,12 +806,12 @@
           </div>
         </section>
         <div id="Soluciones-dir"></div>
-        <section class="pt-12 pb-16 reveal" data-v-4d10d60a="" style="background: transparent;">
+        <section class="pt-12 pb-8 sm:pb-16 reveal" data-v-4d10d60a="" style="background: transparent;">
           <div class="container mx-auto" data-v-4d10d60a="">
             <p class="text-center text-gray-500 mb-6 font-semibold text-base" data-v-4d10d60a=""> usado por más de 1000 empresas </p>
           </div>
           <div class="container mx-auto relative overflow-hidden gradient-fade clients-container" data-v-4d10d60a="">
-            <div class="w-[3492px] slide-animate flex" data-v-4d10d60a="">
+            <div class="w-[3492px] slide-animate flex" style="opacity: 1 !important;" data-v-4d10d60a="">
               <div class="relative overflow-hidden inline-block w-[1500px] h-8" data-v-4d10d60a="">
                 <img alt="clients" class="absolute top-0 left-0 w-full h-full object-cover object-center transition-all duration-500" src="EasyContact_files/clients.jpg" data-v-4d10d60a="">
               </div>
@@ -1820,6 +1820,7 @@
     /* ===== left stack ===== */
     .eco-stack{
       position: relative;
+      width: 300px;
       height: 360px;
       display: grid;
       place-items: center;
@@ -2164,6 +2165,30 @@
     }
 
     /* ===== responsive ===== */
+      /* Mobile / sm */
+    .responsive-layout-grid {
+      display: block;
+    }
+
+    @media (min-width: 768px) {
+      .eco-stack{
+        position: relative;
+        width: auto;
+        height: 360px;
+        display: grid;
+        place-items: center;
+        overflow: visible;   /* CLAVE: deja ver offsets */
+        justify-items: start; /* look tipo referencia */
+        padding-left: 10px;
+      }
+      .responsive-layout {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+        align-items: center;
+      }
+    }
+
     @media (max-width: 980px){
       .eco-main{ grid-template-columns: 1fr; }
       .eco-bottom{ grid-template-columns: 1fr; }
@@ -4271,6 +4296,7 @@
   <script src="EasyContact_files/menu.js"></script>
   <!-- Google tag (gtag.js) -->
   <script async="" src="EasyContact_files/js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WSVPHSMMR6"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}

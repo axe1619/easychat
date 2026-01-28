@@ -4,16 +4,22 @@ import globalConfigMixin from 'shared/mixins/globalConfigMixin';
 import SignupForm from './components/Signup/Form.vue';
 import Testimonials from './components/Testimonials/Index.vue';
 import Spinner from 'shared/components/Spinner.vue';
+import InfoModal from '../../../../dashboard/components/widgets/modal/InfoModal.vue';
 
 export default {
   components: {
     SignupForm,
     Spinner,
     Testimonials,
+    InfoModal
   },
   mixins: [globalConfigMixin],
   data() {
-    return { isLoading: false };
+    return {
+      isLoading: false,
+      showAlert: false,
+      error:''
+    };
   },
   computed: {
     ...mapGetters({ globalConfig: 'globalConfig/get' }),
@@ -28,6 +34,13 @@ export default {
     resizeContainers() {
       this.isLoading = false;
     },
+    hideAlert() {
+      this.showAlert = false
+    },
+    onAlert(err){
+      this.error     = err 
+      this.showAlert = true
+    }
   },
 };
 </script>
@@ -46,7 +59,7 @@ export default {
               {{ $t('REGISTER.TRY_WOOT') }}
             </h2>
           </div>
-          <SignupForm />
+          <SignupForm @alert="onAlert" />
           <div class="px-1 text-sm text-slate-800 dark:text-woot-50">
             <span>{{ $t('REGISTER.HAVE_AN_ACCOUNT') }}</span>
             <router-link class="text-link" to="/app/login">
@@ -72,6 +85,14 @@ export default {
     >
       <Spinner color-scheme="primary" size="" />
     </div>
+    <InfoModal 
+      :title="$t('REGISTER.ACCOUNT.LIMIT')"
+      :show="showAlert"
+      @on-close="hideAlert"
+      extra-class="!pt-2" 
+    >
+      {{ $t('REGISTER.ACCOUNT.MESSAGE') }}
+    </InfoModal>
   </div>
 </template>
 

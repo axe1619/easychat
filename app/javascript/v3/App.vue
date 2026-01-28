@@ -1,10 +1,16 @@
 <script>
 import SnackbarContainer from './components/SnackBar/Container.vue';
+import { getLanguageDirection } from 'dashboard/components/widgets/conversation/advancedFilterItems/languages';
 
 export default {
   components: { SnackbarContainer },
   data() {
     return { theme: 'light' };
+  },
+  computed: {
+    isRTL() {
+      return getLanguageDirection(this.$i18n?.locale);
+    },
   },
   mounted() {
     this.setColorTheme();
@@ -31,14 +37,14 @@ export default {
       };
     },
     setLocale(locale) {
-      this.$root.$i18n.locale = locale;
+      this.$root.$i18n.locale = 'es';
     },
   },
 };
 </script>
 
 <template>
-  <div class="h-full w-full antialiased" :class="theme">
+  <div class="h-full w-full antialiased" :class="theme" :dir="isRTL ? 'rtl' : 'ltr'">
     <router-view />
     <SnackbarContainer />
   </div>

@@ -69,7 +69,7 @@ export default {
 
 <template>
   <div
-    class="flex flex-col justify-between w-16 h-full bg-white border-r dark:bg-slate-900 border-slate-50 dark:border-slate-800/50 rtl:border-l rtl:border-r-0"
+    class="flex flex-col justify-between w-16 h-full bg-white border-r dark:bg-slate-900 border-slate-50 dark:border-slate-800/50 rtl:border-l rtl:border-r-0 overflow-auto"
   >
     <div class="flex flex-col items-center">
       <Logo
@@ -78,14 +78,14 @@ export default {
         :account-id="accountId"
         class="m-4 mb-10"
       />
-      <PrimaryNavItem
-        v-for="menuItem in menuItems"
-        :key="menuItem.toState"
-        :icon="menuItem.icon"
-        :name="menuItem.label"
-        :to="menuItem.toState"
-        :is-child-menu-active="menuItem.key === activeMenuItem"
-      />
+        <PrimaryNavItem
+          v-for="menuItem in menuItems"
+          :key="menuItem.toState"
+          :icon="menuItem.icon"
+          :name="menuItem.label"
+          :to="menuItem.toState"
+          :is-child-menu-active="menuItem.key === activeMenuItem"
+        />
     </div>
     <div class="flex flex-col items-center justify-end pb-6">
       <NotificationBell @openNotificationPanel="openNotificationPanel" />
