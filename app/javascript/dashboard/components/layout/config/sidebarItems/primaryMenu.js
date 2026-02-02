@@ -3,6 +3,13 @@ import { frontendURL } from '../../../../helper/URLHelper';
 
 const primaryMenuItems = accountId => [
   {
+    icon: 'play-circle',
+    key: 'onboarding',
+    label: 'ONBOARDING',
+    toState: frontendURL(`accounts/${accountId}/onboarding`),
+    toStateName: 'onboarding',
+  },
+  {
     icon: 'mail-inbox',
     key: 'inboxView',
     label: 'INBOX_VIEW',

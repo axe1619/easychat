@@ -53,6 +53,7 @@
             "TITLE": "Crear Agente IA",
             "CANCEL": "Cancelar",
             "PUBLISH": "Publicar",
+            "CREATE_BUTTON": "Crear",
             "KNOWLEDGE_AFTER_PUBLISH": "Podrás añadir fuentes de conocimiento, calendario y catálogo en la página de capacidades después de publicar el agente.",
             "AVATAR_INVALID_TYPE": "Por favor selecciona un archivo de imagen (JPG, PNG, GIF, WebP).",
             "AVATAR_SIZE_LIMIT": "La imagen no debe exceder 5 MB.",
@@ -120,6 +121,7 @@
             "HEADER": {
                 "EDIT_TITLE": "Editar {agentName}",
                 "LAST_UPDATE": "Última actualización hace {days} días",
+                "LAST_UPDATE_DATE": "Última actualización: {date}",
                 "ACTIVE": "Activo",
                 "SAVE": "Guardar",
                 "CANCEL": "Cancelar"
@@ -135,6 +137,9 @@
                     "DESCRIPTION": "Describe la función del agente de IA, su estilo de comunicación y las acciones que debe realizar. Proporciona instrucciones paso a paso utilizando un lenguaje claro y práctico.",
                     "ADD_TEMPLATES": "Añadir plantillas de indicaciones",
                     "OPTIMIZE": "Optimizar",
+                    "OPTIMIZE_EMPTY": "Escribe instrucciones antes de optimizar.",
+                    "OPTIMIZE_SUCCESS": "Instrucciones optimizadas correctamente.",
+                    "OPTIMIZE_ERROR": "No se pudo optimizar. Comprueba la conexión o intenta más tarde.",
                     "LEARN_TO_WRITE": "Aprende a escribir esto"
                 }
             },
@@ -346,6 +351,22 @@
                 "CANCEL": "Cancelar",
                 "SUCCESS": "Agente predeterminado actualizado correctamente",
                 "ERROR": "Error al actualizar el agente predeterminado"
+            },
+            "CREATE_CANCEL": {
+                "TITLE": "Configuración del agente en proceso",
+                "BODY": "Estás configurando tu Agente IA. Si sales ahora, no se guardarán los cambios.",
+                "ACTION": {
+                  "CANCEL": "Cancelar",
+                  "EXIT": "Salir"
+                }
+            },
+            "NO_RAGS": {
+                "TITLE": "No hay fuentes de conocimiento habilitadas",
+                "BODY": "Si continúas sin habilitar ninguna fuente de conocimiento, tu Agente IA no podrá incluir información específica de la empresa en sus respuestas.",
+                "ACTION": {
+                  "CANCEL": "Cancelar",
+                  "CONTINUE": "Continuar"
+                }
             }
         }
     }

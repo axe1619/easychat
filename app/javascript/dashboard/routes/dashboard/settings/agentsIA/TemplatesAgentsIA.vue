@@ -114,13 +114,6 @@ export default {
   <div class="flex-1 min-w-0 p-8 overflow-auto bg-slate-50 dark:bg-slate-900">
     <!-- Header -->
     <div class="mb-6 px-4">
-      <button
-        @click="goBack"
-        class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white mb-4"
-      >
-        <fluent-icon icon="arrow-left" size="20" />
-        <span>{{ $t('AGENTS_AI.TEMPLATES.TITLE') }}</span>
-      </button>
       <p class="text-sm text-slate-600 dark:text-slate-400">
         {{ $t('AGENTS_AI.TEMPLATES.DESCRIPTION') }}
       </p>
@@ -145,9 +138,9 @@ export default {
         </p>
         <woot-button
           variant="smooth"
-          color-scheme="secondary"
+          color-scheme="primary"
           size="small"
-          class="w-full"
+          class="w-full items-center"
           :disabled="exceededLimit"
           @click="useTemplate(t)"
         >

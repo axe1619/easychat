@@ -44,18 +44,14 @@ export default {
       scheduleEnabled: false,
       initAt: '',
       finishAt: '',
-      showDescription: false,
-      showTemplatesDropdown: false,
-      templateSearchQuery: '',
+      // Always show description
+      // showTemplatesDropdown removed (no prompt templates in capabilities)
       avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
       avatarUrl: null,
       avatarFile: null,
-      promptTemplates: [
-        { id: 'general', titleKey: 'GENERAL', content: '# CONTEXT\n[Describe who the AI Agent is talking to and any key info it needs (e.g. company, conversation goal, business hours)]' },
-        { id: 'communication', titleKey: 'COMMUNICATION', content: '# COMMUNICATION STYLE\n- Speak casually and use emojis where it feels natural.\n- Ask only one question at a time. Keep...' },
-        { id: 'location', titleKey: 'LOCATION', content: '# BRANCHES ENQUIRIES\nIf a user asks about branches, only mention [e.g. North London (Camden), East London (Shoreditch)...]' },
-        { id: 'hours', titleKey: 'HOURS', content: "# BUSINESS HOURS\nBusiness hours are [e.g. Monday-Friday, 9am-5pm]. If outside these timings, reply 'We're closed, but we..." }
-      ],
+      // Cancel confirmation
+      showCancelConfirm: false,
+      // promptTemplates removed
       
       // Test agent data
       website: null,
@@ -100,6 +96,43 @@ export default {
       if (!botId) return null;
       return this.$store.getters['agentBots/getBot'](botId);
     },
+    updatedLabel() {
+      if (!this.agentBot?.updated_at) return '';
+      try {
+        const now = new Date();
+        const updated = new Date(this.agentBot.updated_at);
+        const diffMs = now - updated;
+        const diffSec = Math.round(diffMs / 1000);
+        const diffMin = Math.round(diffSec / 60);
+        const diffHours = Math.round(diffMin / 60);
+
+        const locale = (this.$i18n && this.$i18n.locale) || 'es';
+
+        // Usar RelativeTimeFormat solo si está disponible en el navegador
+        if (typeof Intl !== 'undefined' && typeof Intl.RelativeTimeFormat !== 'undefined') {
+          const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+
+          if (Math.abs(diffMin) < 60) {
+            return rtf.format(-Math.round(diffMin), 'minute');
+          }
+          if (Math.abs(diffHours) < 24) {
+            return rtf.format(-Math.round(diffHours), 'hour');
+          }
+        }
+
+        // Fallback: fecha y hora formateadas
+        const date = new Date(this.agentBot.updated_at);
+        return date.toLocaleDateString(locale, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return '';
+      }
+    },
     isButtonDisabled() {
       return (
         this.v$.agentName.$invalid ||
@@ -130,25 +163,24 @@ export default {
         return 0;
       }
     },
-    filteredPromptTemplates() {
-      const q = (this.templateSearchQuery || '').toLowerCase();
-      if (!q) return this.promptTemplates;
-      return this.promptTemplates.filter(t => {
-        const title = this.$t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.ITEMS.' + t.titleKey) || '';
-        return title.toLowerCase().includes(q);
-      });
-    },
-  },
-  watch: {
-    showTemplatesDropdown(val) {
-      if (val) {
-        this.$nextTick(() => {
-          document.addEventListener('click', this.handleTemplatesClickOutside);
+    formattedUpdatedAt() {
+      if (!this.agentBot?.updated_at) return '';
+      try {
+        const date = new Date(this.agentBot.updated_at);
+        return date.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
         });
-      } else {
-        document.removeEventListener('click', this.handleTemplatesClickOutside);
+      } catch (e) {
+        return '';
       }
     },
+
+  },
+  watch: {
     agentBot: {
       immediate: true,
       handler(newBot) {
@@ -195,6 +227,27 @@ export default {
     this.onRemove();
   },
   methods: {
+    mountTestAgentWidget() {
+      const container = this.$refs.testAgentChatContainer;
+      if (!container) return;
+
+      const holder =
+        document.querySelector('.woot-widget-holder') ||
+        Array.from(document.querySelectorAll('[class*="woot-widget-holder"]'))[0];
+
+      if (holder && !container.contains(holder)) {
+        container.innerHTML = '';
+        container.appendChild(holder);
+      }
+
+      if (window.$chatwoot && typeof window.$chatwoot.toggle === 'function') {
+        try {
+          window.$chatwoot.toggle();
+        } catch (e) {
+          // ignore toggle errors
+        }
+      }
+    },
     async loadAgentData() {
       if (!this.agentBot?.id) return;
       
@@ -234,23 +287,7 @@ export default {
       }
       this.scheduleEnabled = !this.scheduleEnabled;
     },
-    toggleTemplatesDropdown() {
-      this.showTemplatesDropdown = !this.showTemplatesDropdown;
-      if (!this.showTemplatesDropdown) this.templateSearchQuery = '';
-    },
-    handleTemplatesClickOutside(event) {
-      const el = this.$refs.templatesDropdownRef;
-      if (el && !el.contains(event.target)) {
-        this.showTemplatesDropdown = false;
-        document.removeEventListener('click', this.handleTemplatesClickOutside);
-      }
-    },
-    addPromptTemplate(t) {
-      const sep = this.agentPrompt ? '\n\n' : '';
-      this.agentPrompt = (this.agentPrompt || '') + sep + t.content;
-      this.showTemplatesDropdown = false;
-      this.templateSearchQuery = '';
-    },
+
     async saveConfiguration() {
       if (this.isButtonDisabled || this.isUpdating || !this.agentBot || !this.agentBot.id) return;
 
@@ -301,6 +338,21 @@ export default {
       if (event.target) event.target.value = '';
     },
     cancelChanges() {
+      // If there are unsaved changes, show confirm modal
+      const nameChanged = this.agentName !== (this.agentBot && this.agentBot.name) || false;
+      const descChanged = this.agentDescription !== (this.agentBot && this.agentBot.description) || false;
+      const promptChanged = this.agentPrompt !== (this.agentBot && this.agentBot.prompt) || false;
+      if (nameChanged || descChanged || promptChanged || this.avatarFile) {
+        this.showCancelConfirm = true;
+        return;
+      }
+      this.$router.push({ name: 'settings_agents_ia' });
+    },
+    hideCancelConfirm() {
+      this.showCancelConfirm = false;
+    },
+    confirmExitWithoutSaving() {
+      this.showCancelConfirm = false;
       this.$router.push({ name: 'settings_agents_ia' });
     },
     
@@ -384,6 +436,10 @@ export default {
       
       script.onload = () => {
         URL.revokeObjectURL(src);
+        // Dar tiempo a que el widget se monte y luego moverlo al contenedor fijo
+        setTimeout(() => {
+          this.mountTestAgentWidget();
+        }, 1000);
       };
       
       script.onerror = () => {
@@ -607,7 +663,7 @@ export default {
               <fluent-icon icon="arrow-left" size="20" />
             </button>
             <div>
-              <h1 class="text-xl font-bold text-slate-900 dark:text-white">
+              <h1 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
                 {{ $t('AGENTS_AI.CAPABILITIES.HEADER.EDIT_TITLE', { agentName: (agentBot && agentBot.name) || '' }) }}
               </h1>
               <div class="flex items-center gap-3 mt-1">
@@ -615,7 +671,7 @@ export default {
                   {{ $t('AGENTS_AI.CAPABILITIES.HEADER.ACTIVE') }}
                 </span>
                 <span class="text-sm text-slate-500 dark:text-slate-400">
-                  {{ $t('AGENTS_AI.CAPABILITIES.HEADER.LAST_UPDATE', { days: lastUpdateDays }) }}
+                  {{ updatedLabel ? $t('AGENTS_AI.CAPABILITIES.HEADER.LAST_UPDATE_DATE', { date: updatedLabel }) : $t('AGENTS_AI.CAPABILITIES.HEADER.LAST_UPDATE', { days: lastUpdateDays }) }}
                 </span>
               </div>
             </div>
@@ -697,23 +753,13 @@ export default {
             </div>
           </div>
 
-          <!-- Show Description Toggle -->
-          <button
-            @click="showDescription = !showDescription"
-            class="text-sm text-woot-500 hover:text-woot-600 dark:text-woot-400 dark:hover:text-woot-300"
-          >
-            {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.SHOW_DESCRIPTION') }}
-          </button>
-
-          <!-- Description (if shown) -->
-          <div v-if="showDescription">
-            <woot-input
-              v-model="agentDescription"
-              :label="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.DESCRIPTION.LABEL')"
-              type="text"
-              :placeholder="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.DESCRIPTION.PLACEHOLDER')"
-            />
-          </div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ $t('AGENTS_AI.CARDS.CONFIGURATION.FORM.DESCRIPTION.LABEL') }}</label>
+          <textarea
+            v-model="agentDescription"
+            rows="3"
+            class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-woot-500"
+            :placeholder="$t('AGENTS_AI.CARDS.CONFIGURATION.FORM.DESCRIPTION.PLACEHOLDER')"
+          />
 
           <!-- Instructions Section -->
           <div class="space-y-4">
@@ -735,50 +781,7 @@ export default {
 
             <!-- Prompt Actions -->
             <div class="flex items-center gap-3 flex-wrap">
-              <div ref="templatesDropdownRef" class="relative templates-dropdown-container">
-                <woot-button
-                  variant="smooth"
-                  color-scheme="secondary"
-                  size="small"
-                  icon="chevron-down"
-                  @click.stop="toggleTemplatesDropdown"
-                >
-                  {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.INSTRUCTIONS.ADD_TEMPLATES') }}
-                </woot-button>
-                <div v-if="showTemplatesDropdown" class="absolute left-0 top-full mt-1 z-30 w-96 max-h-[420px] bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden">
-                  <h4 class="px-4 py-3 text-sm font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">
-                    {{ $t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.TITLE') }}
-                  </h4>
-                  <div class="p-2 border-b border-slate-200 dark:border-slate-700">
-                    <input
-                      v-model="templateSearchQuery"
-                      type="text"
-                      :placeholder="$t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.SEARCH_PLACEHOLDER')"
-                      class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-woot-500"
-                    />
-                  </div>
-                  <div class="flex-1 overflow-y-auto p-2">
-                    <button
-                      v-for="t in filteredPromptTemplates"
-                      :key="t.id"
-                      type="button"
-                      @click.stop="addPromptTemplate(t)"
-                      class="w-full text-left px-3 py-3 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors"
-                    >
-                      <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ $t('AGENTS_AI.CAPABILITIES.PROMPT_TEMPLATES.ITEMS.' + t.titleKey) }}</p>
-                      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{{ t.content }}</p>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <woot-button
-                variant="smooth"
-                color-scheme="primary"
-                size="small"
-                icon="graph"
-              >
-                {{ $t('AGENTS_AI.CAPABILITIES.CONFIGURATION.INSTRUCTIONS.OPTIMIZE') }}
-              </woot-button>
+  
             </div>
           </div>
 
@@ -811,22 +814,8 @@ export default {
         </div>
 
         <!-- Right Column: Test Agent -->
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 flex flex-col">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 flex flex-col lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)]">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">
-              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.TITLE') }}
-            </h2>
-            <div class="flex items-center gap-2">
-              <fluent-icon icon="call" size="20" class="text-slate-500 dark:text-slate-400" />
-              <woot-button
-                variant="smooth"
-                color-scheme="secondary"
-                size="small"
-                @click="resetChat"
-              >
-                {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.RESET_CHAT') }}
-              </woot-button>
-            </div>
           </div>
 
           <div v-if="!hasStarted" class="flex-1 flex flex-col items-center justify-center text-center p-8">
@@ -847,128 +836,179 @@ export default {
               {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.START_BUTTON') }}
             </woot-button>
           </div>
-          <div v-else class="flex-1 p-4">
-            <p class="text-sm text-slate-500 dark:text-slate-400">
-              {{ $t('AGENTS_AI.CAPABILITIES.TEST_AGENT.WIDGET_ACTIVE') }}
-            </p>
+          <div v-else class="flex-1 p-0">
+            <div class="h-full flex flex-col">
+              <div
+                ref="testAgentChatContainer"
+                class="mt-2 flex-1 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-900"
+              />
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Actions Section -->
-      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 space-y-6">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
-            {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.TITLE') }}
-          </h2>
-          <p class="text-sm text-slate-600 dark:text-slate-400">
-            {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.DESCRIPTION') }}
-          </p>
-        </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Column: Actions (align with Configuration) -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 space-y-6">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
+              {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.TITLE') }}
+            </h2>
+            <p class="text-sm text-slate-600 dark:text-slate-400">
+              {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.DESCRIPTION') }}
+            </p>
+          </div>
 
-        <!-- Knowledge Sources -->
-        <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
-          <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">
-            {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.TITLE') }}
-          </h3>
+          <!-- Knowledge Sources -->
+          <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
+            <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">
+              {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.TITLE') }}
+            </h3>
 
-          <!-- Empty State -->
-          <div v-if="!agentRags || agentRags.length === 0" class="space-y-4">
-            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex items-start gap-3">
-              <fluent-icon icon="warning" size="20" class="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-              <p class="text-sm text-amber-800 dark:text-amber-200">
-                {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.EMPTY_ALERT') }}
-              </p>
-            </div>
-            <div class="text-center py-8">
-              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 mb-4">
-                <fluent-icon icon="folder" size="32" class="text-slate-500 dark:text-slate-400" />
+            <!-- Empty State -->
+            <div v-if="!agentRags || agentRags.length === 0" class="space-y-4">
+              <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex items-start gap-3">
+                <fluent-icon icon="warning" size="20" class="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                <p class="text-sm text-amber-800 dark:text-amber-200">
+                  {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.EMPTY_ALERT') }}
+                </p>
               </div>
-              <h4 class="text-base font-semibold text-slate-900 dark:text-white mb-2">
-                {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.EMPTY_TITLE') }}
-              </h4>
-              <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 max-w-md mx-auto">
-                {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.EMPTY_DESCRIPTION') }}
-              </p>
-              <woot-button
-                color-scheme="primary"
-                @click="showAgentRag = true"
-              >
-                {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.ADD_BUTTON') }}
-              </woot-button>
+              <div class="text-center py-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-700 mb-4">
+                  <fluent-icon icon="folder" size="32" class="text-slate-500 dark:text-slate-400" />
+                </div>
+                <h4 class="text-base font-semibold text-slate-900 dark:text-white mb-2">
+                  {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.EMPTY_TITLE') }}
+                </h4>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 max-w-md mx-auto">
+                  {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.EMPTY_DESCRIPTION') }}
+                </p>
+                <woot-button
+                  color-scheme="primary"
+                  @click="showAgentRag = true"
+                >
+                  {{ $t('AGENTS_AI.CAPABILITIES.ACTIONS.KNOWLEDGE_SOURCES.ADD_BUTTON') }}
+                </woot-button>
+              </div>
+            </div>
+
+            <!-- RAG List -->
+            <div v-else>
+              <div class="flex justify-end mb-4">
+                <woot-button
+                  variant="smooth"
+                  color-scheme="primary"
+                  size="small"
+                  @click="showAgentRag = true"
+                >
+                  {{ $t('AGENTS_AI.CARDS.RAG.ADD') }}
+                </woot-button>
+              </div>
+              <div class="px-0 pb-0">
+                <table class="divide-y divide-slate-75 dark:divide-slate-700 w-full">
+                  <thead class="divide-y divide-slate-50 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                    <tr>
+                      <th class="text-center py-3">ARCHIVO</th>
+                      <th class="text-center py-3">ACCION</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-50 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                    <tr v-if="isRagUpdating || isRagDeleting">
+                      <td colspan="2" class="py-4">
+                        <div class="flex justify-center items-center">
+                          <Spinner />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else v-for="item in agentRags" :key="item.id">
+                      <td class="py-2 text-center">
+                        <p class="text-center font-bold">
+                          {{ item.collection_name }} - {{ formatDate(item.created_at) }}
+                        </p>
+                        <p class="font-semibold mt-2">
+                          {{ $t('AGENTS_AI.CARDS.RAG.FORM.LABEL_DESCRIPTION') }}
+                        </p>
+                        <textarea
+                          v-if="item.id === idDescription"
+                          v-model="valueDescription"
+                          class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm"
+                          :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
+                        />
+                        <span v-else class="text-sm text-slate-600 dark:text-slate-400">
+                          {{ item.description || '-' }}
+                        </span>
+                      </td>
+                      <td class="py-4 text-center">
+                        <div v-if="item.id === idDescription" class="flex justify-evenly items-center">
+                          <woot-button
+                            size="tiny"
+                            variant="smooth"
+                            color-scheme="success"
+                            icon="checkmark"
+                            @click="updateDescriptionRag"
+                          />
+                          <woot-button
+                            size="tiny"
+                            variant="smooth"
+                            color-scheme="alert"
+                            icon="dismiss"
+                            @click="desactiveEditDescription"
+                          />
+                        </div>
+                        <div v-else-if="item.id === idDeleteRag" class="flex justify-evenly items-center">
+                          <woot-button
+                            size="tiny"
+                            variant="smooth"
+                            color-scheme="success"
+                            icon="checkmark"
+                            @click="deleteRag"
+                          />
+                          <woot-button
+                            size="tiny"
+                            variant="smooth"
+                            color-scheme="alert"
+                            icon="dismiss"
+                            @click="desactiveDeleteRag"
+                          />
+                        </div>
+                        <div v-else class="flex justify-evenly items-center">
+                          <woot-button
+                            v-if="dbCollections.includes(item.collection_name)"
+                            size="tiny"
+                            variant="smooth"
+                            color-scheme="primary"
+                            icon="edit"
+                            @click="activeEditDescription(item.id, item.description)"
+                          />
+                          <span
+                            v-else
+                            class="inline-flex items-center p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded"
+                          >
+                            <fluent-icon
+                              icon="warning"
+                              size="16"
+                              class="text-yellow-600 dark:text-yellow-400"
+                            />
+                          </span>
+                          <woot-button
+                            size="tiny"
+                            variant="smooth"
+                            color-scheme="alert"
+                            icon="delete"
+                            @click="activeDeleteRag(item.id, item.collection_name)"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <!-- RAG List -->
-          <div v-else class="space-y-4">
-            <div class="flex justify-end">
-              <woot-button
-                variant="smooth"
-                color-scheme="primary"
-                size="small"
-                @click="showAgentRag = true"
-              >
-                {{ $t('AGENTS_AI.CARDS.RAG.ADD') }}
-              </woot-button>
-            </div>
-            <div class="divide-y divide-slate-200 dark:divide-slate-700">
-              <div v-for="item in agentRags" :key="item.id" class="py-4 flex items-start justify-between gap-4">
-                <div class="flex-1">
-                  <p class="font-semibold text-slate-900 dark:text-white mb-1">
-                    {{ item.collection_name }} - {{ formatDate(item.created_at) }}
-                  </p>
-                  <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    {{ $t('AGENTS_AI.CARDS.RAG.FORM.LABEL_DESCRIPTION') }}:
-                  </p>
-                  <textarea
-                    v-if="item.id === idDescription"
-                    v-model="valueDescription"
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm"
-                    :placeholder="$t('AGENTS_AI.CARDS.RAG.FORM.PLACEHOLDER_DESCRIPTION')"
-                  />
-                  <p v-else class="text-sm text-slate-600 dark:text-slate-400">
-                    {{ item.description || '-' }}
-                  </p>
-                </div>
-                <div class="flex items-center gap-2">
-                  <div v-if="isRagUpdating || isRagDeleting" class="p-2">
-                    <Spinner />
-                  </div>
-                  <div v-else-if="item.id === idDescription" class="flex gap-2">
-                    <woot-button size="tiny" variant="smooth" color-scheme="success" icon="checkmark" @click="updateDescriptionRag" />
-                    <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="dismiss" @click="desactiveEditDescription" />
-                  </div>
-                  <div v-else-if="item.id === idDeleteRag" class="flex gap-2">
-                    <woot-button size="tiny" variant="smooth" color-scheme="success" icon="checkmark" @click="deleteRag" />
-                    <woot-button size="tiny" variant="smooth" color-scheme="alert" icon="dismiss" @click="desactiveDeleteRag" />
-                  </div>
-                  <div v-else class="flex gap-2">
-                    <woot-button
-                      v-if="dbCollections.includes(item.collection_name)"
-                      size="tiny"
-                      variant="smooth"
-                      color-scheme="primary"
-                      icon="edit"
-                      @click="activeEditDescription(item.id, item.description)"
-                    />
-                    <span v-else class="inline-flex items-center p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded">
-                      <fluent-icon icon="warning" size="16" class="text-yellow-600 dark:text-yellow-400" />
-                    </span>
-                    <woot-button
-                      size="tiny"
-                      variant="smooth"
-                      color-scheme="alert"
-                      icon="delete"
-                      @click="activeDeleteRag(item.id, item.collection_name)"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <!-- Calendar -->
 
-        <!-- Calendar -->
         <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-base font-semibold text-slate-900 dark:text-white">
@@ -1074,6 +1114,7 @@ export default {
             {{ $t('AGENTS_AI.CARDS.CATALOG.IMPORT.DESCRIPTION_A') }}
           </div>
         </div>
+        <div></div>
       </div>
     </div>
 
@@ -1089,22 +1130,49 @@ export default {
       <woot-modal :show.sync="showAgentCatalog" :on-close="hideAgentCatalog">
         <ModalAgentCatalog :on-close="hideAgentCatalog" :botId="agentBot && agentBot.id" :accountId="agentBot && agentBot.account_id" />
       </woot-modal>
+
+      <!-- Cancel confirmation modal -->
+      <woot-modal :show.sync="showCancelConfirm" :on-close="hideCancelConfirm" size="small">
+        <div class="pt-8 pl-8 pr-8 pb-4">
+          <h2 class="text-lg font-semibold leading-6 text-slate-800 dark:text-slate-50">{{ $t('AGENTS_AI.MODALS.CREATE_CANCEL.TITLE') }}</h2>
+          <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">{{ $t('AGENTS_AI.MODALS.CREATE_CANCEL.BODY') }}</p>
+          <div class="flex items-center justify-end gap-2 pt-6">
+            <button @click="showCancelConfirm = false" type="button" class="button action-button clear primary">{{ $t('AGENTS_AI.MODALS.CREATE_CANCEL.ACTION.CANCEL') }}</button>
+            <button @click="confirmExitWithoutSaving" type="button" class="button action-button smooth alert">{{ $t('AGENTS_AI.MODALS.CREATE_CANCEL.ACTION.EXIT') }}</button>
+          </div>
+        </div>
+      </woot-modal>
     </div>
+  </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-::v-deep {
-  .ProseMirror-menubar {
-    @apply hidden;
-  }
+/* Use :deep() instead of top-level ::v-deep block to avoid selector parsing issues */
+:deep(.ProseMirror-menubar) {
+  @apply hidden;
+}
+:deep(.ProseMirror-woot-style) {
+  @apply min-h-[12.5rem];
+}
+:deep(.ProseMirror-woot-style) p {
+  @apply text-base;
+}
 
-  .ProseMirror-woot-style {
-    @apply min-h-[12.5rem];
+/* Forzar que el widget del agente de prueba se incruste en el contenedor derecho */
+:deep(.woot-widget-holder),
+:deep(.woot--bubble-holder) {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
 
-    p {
-      @apply text-base;
-    }
-  }
+:deep(.woot-widget-holder) iframe {
+  position: static !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>

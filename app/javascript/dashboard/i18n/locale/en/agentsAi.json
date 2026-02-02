@@ -53,6 +53,7 @@
             "TITLE": "Create AI Agent",
             "CANCEL": "Cancel",
             "PUBLISH": "Publish",
+            "CREATE_BUTTON": "Create",
             "KNOWLEDGE_AFTER_PUBLISH": "You can add knowledge sources, calendar and catalog on the capabilities page after publishing the agent.",
             "AVATAR_INVALID_TYPE": "Please select an image file (JPG, PNG, GIF, WebP).",
             "AVATAR_SIZE_LIMIT": "The image must not exceed 5 MB.",
@@ -120,6 +121,7 @@
             "HEADER": {
                 "EDIT_TITLE": "Edit {agentName}",
                 "LAST_UPDATE": "Last update {days} days ago",
+                "LAST_UPDATE_DATE": "Last update: {date}",
                 "ACTIVE": "Active",
                 "SAVE": "Save",
                 "CANCEL": "Cancel"
@@ -135,6 +137,9 @@
                     "DESCRIPTION": "Describe the AI agent's function, communication style, and actions it should perform. Provide step-by-step instructions using clear and practical language.",
                     "ADD_TEMPLATES": "Add prompt templates",
                     "OPTIMIZE": "Optimize",
+                    "OPTIMIZE_EMPTY": "Write instructions before optimizing.",
+                    "OPTIMIZE_SUCCESS": "Instructions optimized successfully.",
+                    "OPTIMIZE_ERROR": "Could not optimize. Check connection or try again later.",
                     "LEARN_TO_WRITE": "Learn to write this"
                 }
             },
@@ -346,6 +351,22 @@
                 "CANCEL": "Cancel",
                 "SUCCESS": "Default agent updated successfully",
                 "ERROR": "Error updating default agent"
+            },
+            "CREATE_CANCEL": {
+                "TITLE": "Agent setup in progress",
+                "BODY": "You're configuring your AI Agent. If you leave now, changes won't be saved.",
+                "ACTION": {
+                  "CANCEL": "Cancel",
+                  "EXIT": "Exit"
+                }
+            },
+            "NO_RAGS": {
+                "TITLE": "No knowledge sources enabled",
+                "BODY": "If you continue without enabling any knowledge source, your AI Agent won't be able to include company-specific information in its responses.",
+                "ACTION": {
+                  "CANCEL": "Cancel",
+                  "CONTINUE": "Continue"
+                }
             }
         }
     }

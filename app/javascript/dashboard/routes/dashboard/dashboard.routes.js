@@ -10,6 +10,7 @@ import helpcenterRoutes from './helpcenter/helpcenter.routes';
 const AppContainer = () => import('./Dashboard.vue');
 const Captain = () => import('./Captain.vue');
 const Suspended = () => import('./suspended/Index.vue');
+const OnboardingPage = () => import('./OnboardingPage.vue');
 
 export default {
   routes: [
@@ -18,6 +19,14 @@ export default {
       path: frontendURL('accounts/:account_id'),
       component: AppContainer,
       children: [
+        {
+          path: frontendURL('accounts/:accountId/onboarding'),
+          name: 'onboarding',
+          component: OnboardingPage,
+          meta: {
+            permissions: ['administrator', 'agent'],
+          },
+        },
         {
           path: frontendURL('accounts/:accountId/captain'),
           name: 'captain',

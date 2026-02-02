@@ -4,24 +4,19 @@ import Spinner from 'shared/components/Spinner.vue';
 import { useAlert } from 'dashboard/composables';
 import AgentBotsAPI from '../../../../api/agentBots';
 import InfoModal from '../../../../components/widgets/modal/InfoModal.vue';
-import SwitchButton from 'dashboard/components/ui/Switch.vue';
 
 export default {
   name: 'AgentsIa',
-  components: { Spinner, InfoModal, SwitchButton },
+  components: { Spinner, InfoModal },
   data() {
     return {
-      avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
+        avatarDefault: '/assets/images/dashboard/agents-ai/robot.png',
       showDeleteModal: false,
       agentSelected: undefined,
       exceededLimit: true,
       showAlertLimit: false,
       searchQuery: '',
-      defaultAgentId: null,
-      showDefaultAgentModal: false,
-      selectedDefaultAgentId: null,
       showMenuForAgent: null,
-      agentEnabledStatus: {} // Almacena el estado enabled de cada agente
     }
   },
   computed: {
@@ -73,13 +68,7 @@ export default {
     if (!this.currentAccountData || !this.currentAccountData.id) {
       await this.$store.dispatch('accounts/get');
     }
-    this.loadDefaultAgent();
-    // Inicializar estados enabled de agentes (por defecto todos activos)
-    this.agentList.forEach(agent => {
-      // Si el agente tiene inboxes, está habilitado por defecto
-      const hasInboxes = agent.inboxes && agent.inboxes.length > 0;
-      this.$set(this.agentEnabledStatus, agent.id, hasInboxes);
-    });
+
     // Cerrar menú al hacer clic fuera
     document.addEventListener('click', this.handleDocumentClick);
   },
@@ -147,77 +136,10 @@ export default {
     editAgent(agentId) {
       this.goToCapabilities(agentId);
     },
-    async toggleAgentStatus(agent) {
-      const newStatus = !this.agentEnabledStatus[agent.id];
-      this.$set(this.agentEnabledStatus, agent.id, newStatus);
-      
-      try {
-        // Actualizar el agente con el nuevo estado enabled en bot_config o custom_attributes
-        // Por ahora, solo actualizamos el estado local
-        // TODO: Cuando se agregue el campo enabled al modelo, descomentar:
-        // await this.$store.dispatch('agentBots/update', {
-        //   id: agent.id,
-        //   enabled: newStatus
-        // });
-        
-        // Si se desactiva y es el agente predeterminado, limpiarlo
-        if (!newStatus && this.defaultAgentId === agent.id) {
-          this.defaultAgentId = null;
-          await this.saveDefaultAgent();
-        }
-        
-        useAlert(newStatus ? this.$t('AGENTS_AI.CARD.ENABLED_SUCCESS') : this.$t('AGENTS_AI.CARD.DISABLED_SUCCESS'));
-      } catch (error) {
-        // Revertir el estado en caso de error
-        this.$set(this.agentEnabledStatus, agent.id, !newStatus);
-        useAlert(this.$t('AGENTS_AI.CARD.TOGGLE_ERROR'));
-        console.warn('Error toggling agent status:', error);
-      }
-    },
     isAgentActive(agent) {
-      // Un agente está activo si tiene inboxes asignados Y está habilitado
-      const isEnabled = this.agentEnabledStatus[agent.id] !== false;
+      // Un agente está activo si tiene inboxes asignados
       const hasInboxes = agent.inboxes && agent.inboxes.length > 0;
-      return isEnabled && hasInboxes;
-    },
-    isDefaultAgent(agent) {
-      return this.defaultAgentId === agent.id;
-    },
-    async loadDefaultAgent() {
-      try {
-        const account = this.currentAccountData;
-        if (account && account.custom_attributes && account.custom_attributes.default_agent_bot_id) {
-          this.defaultAgentId = account.custom_attributes.default_agent_bot_id;
-        }
-      } catch (error) {
-        console.warn('Error loading default agent:', error);
-      }
-    },
-    openDefaultAgentModal() {
-      this.selectedDefaultAgentId = this.defaultAgentId;
-      this.showDefaultAgentModal = true;
-    },
-    closeDefaultAgentModal() {
-      this.showDefaultAgentModal = false;
-      this.selectedDefaultAgentId = null;
-    },
-    async saveDefaultAgent() {
-      try {
-        const account = this.currentAccountData;
-        const customAttributes = { ...(account.custom_attributes || {}) };
-        customAttributes.default_agent_bot_id = this.selectedDefaultAgentId;
-        
-        await this.$store.dispatch('accounts/update', {
-          custom_attributes: customAttributes
-        });
-        
-        this.defaultAgentId = this.selectedDefaultAgentId;
-        useAlert(this.$t('AGENTS_AI.MODALS.DEFAULT_AGENT.SUCCESS'));
-        this.closeDefaultAgentModal();
-      } catch (error) {
-        useAlert(this.$t('AGENTS_AI.MODALS.DEFAULT_AGENT.ERROR'));
-        console.warn('Error saving default agent:', error);
-      }
+      return hasInboxes;
     },
     toggleMenu(agentId) {
       this.showMenuForAgent = this.showMenuForAgent === agentId ? null : agentId;
@@ -229,9 +151,6 @@ export default {
       this.closeMenu();
       if (action === 'delete') {
         this.openDeleteModal(agent);
-      } else if (action === 'duplicate') {
-        // Funcionalidad de duplicar aún no implementada
-        useAlert(this.$t('AGENTS_AI.CARD.MENU.DUPLICATE_NOT_AVAILABLE'));
       }
     },
     handleDocumentClick(event) {
@@ -268,13 +187,7 @@ export default {
           icon="add-circle" 
           @click="openAddAgent()"
         >
-          {{ $t('AGENTS_AI.BUTTON.ADD') }}
-        </woot-button>
-        <woot-button 
-          variant="smooth"
-          color-scheme="secondary"
-        >
-          {{ $t('AGENTS_AI.BUTTON.MANAGE_KNOWLEDGE_SOURCES') }}
+          {{ $t('AGENTS_AI.CREATE.TITLE') }}
         </woot-button>
       </div>
       <div class="flex items-center gap-3">
@@ -289,26 +202,7 @@ export default {
       </div>
     </div>
 
-    <!-- Sección de Agente IA predeterminado -->
-    <div class="mb-6 px-4">
-      <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between">
-        <div class="flex-1">
-          <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">
-            {{ $t('AGENTS_AI.DEFAULT_AGENT.TITLE') }}
-          </h2>
-          <p class="text-sm text-slate-600 dark:text-slate-300">
-            {{ $t('AGENTS_AI.DEFAULT_AGENT.DESCRIPTION') }}
-          </p>
-        </div>
-        <woot-button 
-          variant="smooth"
-          color-scheme="secondary"
-          @click="openDefaultAgentModal"
-        >
-          {{ $t('AGENTS_AI.DEFAULT_AGENT.BUTTON') }}
-        </woot-button>
-      </div>
-    </div>
+
 
     <!-- Grid de agentes -->
     <div class="px-4">
@@ -331,9 +225,7 @@ export default {
             <span v-if="!isAgentActive(a)" class="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-xs font-semibold px-2.5 py-1 rounded-full">
               {{ $t('AGENTS_AI.CARD.INACTIVE') }}
             </span>
-            <span v-if="isDefaultAgent(a)" class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
-              {{ $t('AGENTS_AI.CARD.DEFAULT') }}
-            </span>
+
           </div>
           
           <!-- Avatar/Icono - Centrado verticalmente en la parte superior -->
@@ -379,13 +271,7 @@ export default {
                 class="absolute bottom-full left-0 mb-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-20"
               >
                 <div class="py-1">
-                  <button
-                    @click="handleMenuAction('duplicate', a)"
-                    class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
-                  >
-                    <fluent-icon icon="copy" size="16" />
-                    {{ $t('AGENTS_AI.CARD.MENU.DUPLICATE') }}
-                  </button>
+
                   <button
                     @click="handleMenuAction('delete', a)"
                     class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2"
@@ -396,12 +282,7 @@ export default {
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-2" @click.stop>
-              <SwitchButton
-                :value="isAgentActive(a)"
-                @input="toggleAgentStatus(a)"
-              />
-            </div>
+
           </div>
         </div>
 
@@ -461,67 +342,6 @@ export default {
       </div>
     </woot-modal>
     
-    <!-- Modal para seleccionar agente predeterminado -->
-    <woot-modal
-      :show.sync="showDefaultAgentModal"
-      :on-close="closeDefaultAgentModal"
-      size="small"
-    >
-      <div class="pt-8 pl-8 pr-8 pb-4">
-        <div class="mb-6">
-          <h2 class="text-lg font-semibold leading-6 text-slate-800 dark:text-slate-50">
-            {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.TITLE') }}
-          </h2>
-        </div>
-        
-        <div class="mb-4">
-          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
-            {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.SUBTITLE') }}
-          </h3>
-          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.DESCRIPTION') }}
-          </p>
-        </div>
-        
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-            {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.SELECT_LABEL') }}
-          </label>
-          <select
-            v-model="selectedDefaultAgentId"
-          >
-            <option :value="null">{{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.NONE') }}</option>
-            <option
-              v-for="agent in activeAgents"
-              :key="agent.id"
-              :value="agent.id"
-            >
-              {{ agent.name }}
-            </option>
-          </select>
-        </div>
-        
-        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
-          <button
-            @click="closeDefaultAgentModal"
-            type="button"
-            class="button action-button clear primary"
-          >
-            <span class="button__content text-left rtl:text-right">
-              {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.CANCEL') }}
-            </span>
-          </button>
-          <button
-            @click="saveDefaultAgent"
-            type="button"
-            class="button action-button smooth primary"
-          >
-            <span class="button__content text-left rtl:text-right">
-              {{ $t('AGENTS_AI.MODALS.DEFAULT_AGENT.SAVE') }}
-            </span>
-          </button>
-        </div>
-      </div>
-    </woot-modal>
+
   </div>
 </template>
